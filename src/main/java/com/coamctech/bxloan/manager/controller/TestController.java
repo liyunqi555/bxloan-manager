@@ -32,6 +32,7 @@ public class TestController {
         session.setAttribute("userId",new Random().nextLong());
 
         Page<TLOrder> page = tlOrderDao.findAll(new PageRequest(1, 2));
+        logger.info("page={}",page);
         Set<String> keys = stringRedisTemplate.keys("spring:session:*");
         return keys;
        // return page.getContent();

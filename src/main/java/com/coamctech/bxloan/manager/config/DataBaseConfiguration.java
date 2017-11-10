@@ -11,7 +11,7 @@ import javax.sql.DataSource;
 /**
  * Created by Administrator on 2017/10/23.
  */
-@Configuration
+//@Configuration
 public class DataBaseConfiguration {
     @Value("${app.datasource.driverClassName}")
     private String driverClassName;
