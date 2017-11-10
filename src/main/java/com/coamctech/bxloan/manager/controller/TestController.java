@@ -23,18 +23,18 @@ public class TestController {
     @Autowired
     private TLOrderDao tlOrderDao;
 
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
+   // @Autowired
+   // private StringRedisTemplate stringRedisTemplate;
 
     @RequestMapping("/")
-    public Set<String> home(HttpSession session){
+    public Page<TLOrder> home(HttpSession session){
         logger.info("1--------------------");
         session.setAttribute("userId",new Random().nextLong());
 
         Page<TLOrder> page = tlOrderDao.findAll(new PageRequest(1, 2));
         logger.info("page={}",page);
-        Set<String> keys = stringRedisTemplate.keys("spring:session:*");
-        return keys;
+      //  Set<String> keys = stringRedisTemplate.keys("spring:session:*");
+        return page;
        // return page.getContent();
 //        return "hello world"+page.getTotalElements();
     }
