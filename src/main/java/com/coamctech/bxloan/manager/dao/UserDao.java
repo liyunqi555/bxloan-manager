@@ -1,11 +1,11 @@
 package com.coamctech.bxloan.manager.dao;
 
 
-import com.coamctech.bxloan.manager.domain.TLOrder;
+import com.coamctech.bxloan.manager.domain.User;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TLOrderDao  extends JpaSpecificationExecutor<TLOrder>,PagingAndSortingRepository<TLOrder,Long> {
+public interface UserDao extends JpaSpecificationExecutor<User>,PagingAndSortingRepository<User,Long> {
 }
