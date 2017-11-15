@@ -5,6 +5,7 @@ define(function(require, exports, module) {
 		},
 		
 		initialize: function() { /** 初始化 */
+			console.log(1111);
 		}
 
 	});
