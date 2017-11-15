@@ -79,5 +79,5 @@
 	</div>
 </div>
 <script>
-	seajs.use('js/userMng/main');
+	seajs.use('userMng/main');
 </script>
