@@ -8,7 +8,7 @@
     <artifactId>bxloan-manager</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
-        <java.version>1.7</java.version>
+        <java.version>1.8</java.version>
         <tomcat.version>7.0.59</tomcat.version>
         <druid.version>1.0.6</druid.version>
         <log4jdbc.version>1.16</log4jdbc.version>
