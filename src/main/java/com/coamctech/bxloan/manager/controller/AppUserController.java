@@ -1,27 +1,24 @@
 package com.coamctech.bxloan.manager.controller;
 
 import com.coamctech.bxloan.manager.common.JsonResult;
-import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.service.UserService;
-import com.coamctech.bxloan.manager.utils.TokenUtils;
 import com.coamctech.bxloan.manager.utils.encrypt.MD5Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 /**
  *
  * Created by Administrator on 2017/10/20.
  */
 @RestController
-//@RequestMapping(value="api/app/user",method = RequestMethod.POST)
 @RequestMapping(value="api/app/user",method = RequestMethod.GET)
-public class AppController {
-    private static final Logger logger = LoggerFactory.getLogger(AppController.class);
+public class AppUserController {
+    private static final Logger logger = LoggerFactory.getLogger(AppUserController.class);
 
     @Autowired
     private UserService userService;
@@ -36,7 +33,6 @@ public class AppController {
                             @RequestParam(name="password",defaultValue = "25d55ad283aa400af464c76d713c07ad") String password){
         return userService.login(userName,password);
     }
-
     public static void main(String[] args) {
         System.out.println(MD5Util.md5Hex("12345678"));
     }

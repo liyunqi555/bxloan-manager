@@ -10,13 +10,22 @@ import java.util.Date;
 /**
  * Created by Administrator on 2017/11/11.
  */
-//@Entity
+@Entity
 public class RoleUserRel implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private Long roleId;
     private Long userId;
+    private Date createTime;
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 
     public Long getId() {
         return id;

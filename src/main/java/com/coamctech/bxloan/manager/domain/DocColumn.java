@@ -8,9 +8,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
+ *  文档栏目
  * Created by Administrator on 2017/11/11.
  */
-//@Entity
+@Entity
 public class DocColumn implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -8,24 +8,25 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
+ *
  * Created by Administrator on 2017/11/11.
  */
-//@Entity
+@Entity
 public class DocInfo implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String title;
-    private Integer sourceId;
-    private Integer columnId;
-    private String classification;
-    private String groupName;
-    private String website;
-    private String keyword;
-    private String summary;
-    private String body;
-    private Long creator;
+    private String title;//标题
+    private Long sourceId;//来源id
+    private Long columnId;//栏目id
+    private String classification;//分类
+    private String groupName;//分组
+    private String website;//网址
+    private String keyword;//关键字
+    private String summary;//摘要
+    private String body;//正文
+    private Long creator;//创建人id
     private Date createTime;
     private Date updateTime;
 
@@ -45,19 +46,19 @@ public class DocInfo implements Serializable {
         this.title = title;
     }
 
-    public Integer getSourceId() {
+    public Long getSourceId() {
         return sourceId;
     }
 
-    public void setSourceId(Integer sourceId) {
+    public void setSourceId(Long sourceId) {
         this.sourceId = sourceId;
     }
 
-    public Integer getColumnId() {
+    public Long getColumnId() {
         return columnId;
     }
 
-    public void setColumnId(Integer columnId) {
+    public void setColumnId(Long columnId) {
         this.columnId = columnId;
     }
 

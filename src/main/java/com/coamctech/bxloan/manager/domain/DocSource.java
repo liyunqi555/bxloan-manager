@@ -10,7 +10,7 @@ import java.util.Date;
 /**
  * Created by Administrator on 2017/11/11.
  */
-//@Entity
+@Entity
 public class DocSource implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
