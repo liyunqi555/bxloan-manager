@@ -18,7 +18,7 @@ public class DocColumn implements Serializable {
     private Long id;
 
     private String name;
-    private Integer ifSepecial;
+    private Integer ifSpecial;
     private Integer level;
     private Integer parentId;
     private Long creator;
@@ -41,12 +41,12 @@ public class DocColumn implements Serializable {
         this.name = name;
     }
 
-    public Integer getIfSepecial() {
-        return ifSepecial;
+    public Integer getIfSpecial() {
+        return ifSpecial;
     }
 
-    public void setIfSepecial(Integer ifSepecial) {
-        this.ifSepecial = ifSepecial;
+    public void setIfSpecial(Integer ifSpecial) {
+        this.ifSpecial = ifSpecial;
     }
 
     public Integer getLevel() {
