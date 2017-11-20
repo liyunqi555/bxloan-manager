@@ -17,6 +17,15 @@ public class RoleUserRel implements Serializable {
     private Long id;
     private Long roleId;
     private Long userId;
+    private Date createTime;
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 
     public Long getId() {
         return id;

@@ -21,6 +21,7 @@ import com.coamctech.bxloan.manager.domain.User;
  * Created by Administrator on 2017/10/20.
  */
 @Controller
+@RequestMapping("user")
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     @Autowired
@@ -35,7 +36,7 @@ public class UserController {
         return page;
 
     }*/
-  
+
     
     @RequestMapping(value="/userMng")
     public String index(Model model){

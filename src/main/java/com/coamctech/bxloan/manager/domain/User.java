@@ -16,7 +16,7 @@ public class User implements Serializable {
     private String userName;
     private String nickName;
     private String password;
-    private String birthday;
+    private Date birthday;
     private String email;
     private String officePhone;
     private String telephone;
@@ -24,6 +24,25 @@ public class User implements Serializable {
     private Integer status;
     private Date createTime;
     private Date updateTime;
+    private String sign;
+    @Transient
+    private String token;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
+    }
 
     public Long getId() {
         return id;
@@ -57,11 +76,11 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getBirthday() {
+    public Date getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(String birthday) {
+    public void setBirthday(Date birthday) {
         this.birthday = birthday;
     }
 

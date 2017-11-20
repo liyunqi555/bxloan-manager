@@ -8,9 +8,6 @@ public class JsonResult<T> implements Serializable {
 	private int code;
 	private String msg;
 	private T body;
-
-    private String requestId;
-	
 	public JsonResult() {
 	}
 	
@@ -56,33 +53,12 @@ public class JsonResult<T> implements Serializable {
 		this.body = body;
 	}
 
-    public String getRequestId() {
-        return requestId;
-    }
-
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
-    }
-
-//    @Override
-//    public String toString() {
-//		String bodystr = "null";
-//		if (body != null)
-//			bodystr = body.toString();
-//        return "JsonResult{" +
-//                "code=" + code +
-//                ", message=" + msg +
-//                ", body=" + bodystr +
-//                "}";
-//    }
-
     @Override
     public String toString() {
         return "JsonResult{" +
                 "code=" + code +
-                ", msg='" + msg +
+                ", msg='" + msg + '\'' +
                 ", body=" + body +
-                ", requestId='" + requestId +
                 '}';
     }
 }

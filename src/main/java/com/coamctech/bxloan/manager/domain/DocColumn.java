@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
+ *  文档栏目
  * Created by Administrator on 2017/11/11.
  */
 @Entity

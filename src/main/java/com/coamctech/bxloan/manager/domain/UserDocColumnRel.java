@@ -19,7 +19,6 @@ public class UserDocColumnRel implements Serializable {
     private Long userId;
     private Long creator;
     private Date createTime;
-    private Date updateTime;
 
     public Long getId() {
         return id;
@@ -61,11 +60,4 @@ public class UserDocColumnRel implements Serializable {
         this.createTime = createTime;
     }
 
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
 }
