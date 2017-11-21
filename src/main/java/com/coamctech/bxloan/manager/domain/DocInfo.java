@@ -1,9 +1,6 @@
 package com.coamctech.bxloan.manager.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -29,6 +26,17 @@ public class DocInfo implements Serializable {
     private Long creator;//创建人id
     private Date createTime;
     private Date updateTime;
+
+    @Transient
+    private String imgUrl;//从body中检索出的图片地址
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
 
     public Long getId() {
         return id;

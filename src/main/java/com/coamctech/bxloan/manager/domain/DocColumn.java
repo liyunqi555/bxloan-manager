@@ -20,7 +20,7 @@ public class DocColumn implements Serializable {
     private String name;
     private Integer ifSpecial;
     private Integer level;
-    private Integer parentId;
+    private Long parentId;
     private Long creator;
     private Date createTime;
     private Date updateTime;
@@ -57,11 +57,11 @@ public class DocColumn implements Serializable {
         this.level = level;
     }
 
-    public Integer getParentId() {
+    public Long getParentId() {
         return parentId;
     }
 
-    public void setParentId(Integer parentId) {
+    public void setParentId(Long parentId) {
         this.parentId = parentId;
     }
 

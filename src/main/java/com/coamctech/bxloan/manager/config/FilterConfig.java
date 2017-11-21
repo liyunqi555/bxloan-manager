@@ -17,7 +17,7 @@ import java.util.List;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class FilterConfig {
 
-    @Value("/api1/app/*")
+    @Value("/api/app/*")
     private String appUrlPattern;
     @Value("/api/back/*")
     private String backUrlPattern;

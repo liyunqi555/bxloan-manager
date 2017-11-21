@@ -67,6 +67,7 @@ public class BaseService<T, ID extends Serializable> {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         PageList pageList = new PageList(page);
         try {
+
             page.setTotalCount(count(sql,param));
             page.initPage(page.getTotalCount());
             Query query = entityManager.createQuery(sql);
@@ -100,9 +101,13 @@ public class BaseService<T, ID extends Serializable> {
     //    }
     Long count(String sql,Map<String, Object> param) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-
-        sql = "select count(1) " + sql;
-        Query query = entityManager.createQuery(sql);
+        String countSql = sql;
+        int orderIndex = countSql.indexOf("order");
+        if(orderIndex != -1){
+            countSql = countSql.substring(0,orderIndex);
+        }
+        countSql = "select count(1) " + countSql;
+        Query query = entityManager.createQuery(countSql);
         try {
             if (null != param && param.size() > 0) {
                 for (String key : param.keySet()) {
@@ -118,27 +123,5 @@ public class BaseService<T, ID extends Serializable> {
             }
         }
         return null;
-    }
-    /**
-     * 字符串非空验证
-     * @param str
-     * @return
-     */
-    boolean isNN(String str) {
-        return StringUtils.isNotEmpty(str);
-    }
-
-    //验证是否为session的手机号
-    public boolean isSessionMobile(String mobile) {
-        User user;
-        try {
-            user = TokenUtils.sessionUser();
-        } catch (Exception e) {
-            return false;
-        }
-//        if(user.getMobile().equals(mobile)) {
-//            return true;
-//        }
-        return false;
     }
 }

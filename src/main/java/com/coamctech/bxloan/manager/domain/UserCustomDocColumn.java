@@ -20,7 +20,7 @@ public class UserCustomDocColumn implements Serializable {
     private Long id;
     private Long userId;//用户ID
     private Long docColumnId;//订阅的二级栏目的ID
-    private Integer docColumnParentId;//一级栏目ID
+    private Long docColumnParentId;//一级栏目ID
     private Long customOrder ;//定制二级栏目的顺序
     private Date createTime;//定制时间
 
@@ -56,11 +56,11 @@ public class UserCustomDocColumn implements Serializable {
         this.createTime = createTime;
     }
 
-    public Integer getDocColumnParentId() {
+    public Long getDocColumnParentId() {
         return docColumnParentId;
     }
 
-    public void setDocColumnParentId(Integer docColumnParentId) {
+    public void setDocColumnParentId(Long docColumnParentId) {
         this.docColumnParentId = docColumnParentId;
     }
 

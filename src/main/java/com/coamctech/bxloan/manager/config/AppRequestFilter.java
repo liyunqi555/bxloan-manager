@@ -43,7 +43,6 @@ public class AppRequestFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-
         String servletPath = request.getServletPath();
         logger.info("servletPath={}",servletPath);
         if(pathMatcher.match(anonUrlPattern,servletPath)){
@@ -59,6 +58,7 @@ public class AppRequestFilter implements Filter {
             }
             if(checkSign(request,response)){
                 filterChain.doFilter(servletRequest,servletResponse);
+                TokenUtils.clearSession();
             }else{
                 response.setHeader("Content-Type", "application/json; charset=UTF-8");
                 response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.TOKEN_NULL_MSG)));
@@ -79,7 +79,11 @@ public class AppRequestFilter implements Filter {
         String token = request.getParameter("token");
         Long uid = TokenUtils.uid(token);
         User user = userDao.findOne(uid);
-        return TokenUtils.urlIsLegal(treemap, user.getSign());
+        boolean success = TokenUtils.urlIsLegal(treemap, user.getSign());
+        if(success){
+            TokenUtils.storeSessionUser(user);
+        }
+        return  success;
     }
     @Override
     public void destroy() {
