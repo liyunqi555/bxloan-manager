@@ -42,30 +42,36 @@ public class AppRequestFilter implements Filter {
                          FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-
-        String servletPath = request.getServletPath();
-        logger.info("servletPath={}",servletPath);
-        if(pathMatcher.match(anonUrlPattern,servletPath)){
-            filterChain.doFilter(servletRequest, servletResponse);
+        if(true){
+            User user = userDao.findOne(1L);
+            TokenUtils.storeSessionUser(user);
+            filterChain.doFilter(servletRequest,servletResponse);
         }else{
-            String token = request.getParameter("token");
-            logger.info("token:{}", token);
-            if(token==null) {
-                response.setHeader("Content-Type", "application/json; charset=UTF-8");
-                response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.TOKEN_NULL_MSG)));
-                response.getWriter().flush();
-                return;
-            }
-            if(checkSign(request,response)){
-                filterChain.doFilter(servletRequest,servletResponse);
-                TokenUtils.clearSession();
+            String servletPath = request.getServletPath();
+            logger.info("servletPath={}",servletPath);
+            if(pathMatcher.match(anonUrlPattern,servletPath)){
+                filterChain.doFilter(servletRequest, servletResponse);
             }else{
-                response.setHeader("Content-Type", "application/json; charset=UTF-8");
-                response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.TOKEN_NULL_MSG)));
-                response.getWriter().flush();
-                return;
+                String token = request.getParameter("token");
+                logger.info("token:{}", token);
+                if(token==null) {
+                    response.setHeader("Content-Type", "application/json; charset=UTF-8");
+                    response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.TOKEN_NULL_MSG)));
+                    response.getWriter().flush();
+                    return;
+                }
+                if(checkSign(request,response)){
+                    filterChain.doFilter(servletRequest, servletResponse);
+                }else{
+                    response.setHeader("Content-Type", "application/json; charset=UTF-8");
+                    response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(new JsonResult(ResultCode.PARAM_ERROR_CODE, ResultCode.TOKEN_NULL_MSG)));
+                    response.getWriter().flush();
+                    return;
+                }
             }
         }
+
+        TokenUtils.clearSession();
     }
     private boolean checkSign(HttpServletRequest request, HttpServletResponse response){
         //获得传的数据

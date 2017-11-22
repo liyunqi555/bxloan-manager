@@ -11,4 +11,5 @@ import java.util.List;
 
 @Repository
 public interface UserCustomDocColumnDao extends JpaSpecificationExecutor<UserCustomDocColumn>,PagingAndSortingRepository<UserCustomDocColumn,Long> {
+    List<UserCustomDocColumn> findByUserIdAndDocColumnParentId(Long userId,Long docColumnParentId);
 }

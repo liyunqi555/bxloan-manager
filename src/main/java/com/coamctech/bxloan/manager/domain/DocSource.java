@@ -22,6 +22,8 @@ public class DocSource implements Serializable {
     private Long creator;
     private Date createTime;
     private Date updateTime;
+    private Integer website;
+    private Integer isAbroad;//是否国外 1：是 0：否
 
     public Long getId() {
         return id;

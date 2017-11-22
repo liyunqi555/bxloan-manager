@@ -24,7 +24,7 @@ public class DocColumn implements Serializable {
     private Long creator;
     private Date createTime;
     private Date updateTime;
-
+    private String condtionField;
     public Long getId() {
         return id;
     }
@@ -87,5 +87,13 @@ public class DocColumn implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getCondtionField() {
+        return condtionField;
+    }
+
+    public void setCondtionField(String condtionField) {
+        this.condtionField = condtionField;
     }
 }

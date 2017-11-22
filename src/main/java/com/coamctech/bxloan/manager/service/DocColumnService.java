@@ -19,10 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -53,6 +50,17 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
         userCustomDocColumn.setUserId(userId);
         userCustomDocColumnDao.save(userCustomDocColumn);
         return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG);
+    }
 
+    /**
+     * 查询子栏目ID的集合
+     * @param parentId
+     * @return
+     */
+    public List<Long> getChildColumnIdsByParentId(Long parentId){
+        List<DocColumn> list = docColumnDao.findByParentId(parentId);
+        List<Long> childIds = new ArrayList<>();
+        list.forEach(docColumn-> {childIds.add(docColumn.getId());});
+        return childIds;
     }
 }

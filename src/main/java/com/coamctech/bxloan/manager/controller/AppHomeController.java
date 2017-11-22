@@ -12,6 +12,7 @@ import com.coamctech.bxloan.manager.utils.encrypt.MD5Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,22 +34,43 @@ public class AppHomeController {
     @Autowired
     private DocColumnService docColumnService;
 
+    @Value("${top.level.column.id.news}")
+    private Long topLevelColumnIdNews;
+    @Value("${top.level.column.id.doc}")
+    private Long topLevelColumnIdDoc;
+    @Value("${top.level.column.id.report}")
+    private Long topLevelColumnIdReport;
+
+    @Value("${app.home.banner.count}")
+    private Integer appHomeBannerCount;
+
     /**
      * 首页bannner
      * @return
      */
     @RequestMapping("banner")
     public JsonResult banner(){
-        return docInfoService.banner();
+        JsonResult jsonResult = JsonResult.success();
+         Long userId = TokenUtils.sessionUser().getId();
+        Page page = new Page(0,appHomeBannerCount);
+        PageList<DocInfo> pageList = docInfoService.homeDocInfos(page, userId, this.topLevelColumnIdDoc);
+        jsonResult.setBody(pageList.getList());
+        return jsonResult;
     }
 
     /**
      * 首页智汇天下
+     * @param pageIndex based zero
      * @return
      */
-    @RequestMapping("world")
-    public JsonResult world(){
-        return docInfoService.banner();
+    @RequestMapping("worlds")
+    public JsonResult worlds(@RequestParam(name="pageIndex",defaultValue ="0") Integer pageIndex){
+        JsonResult jsonResult = JsonResult.success();
+        Long userId = TokenUtils.sessionUser().getId();
+        Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
+        PageList<DocInfo> pageList = docInfoService.homeDocInfos(page, userId, this.topLevelColumnIdDoc);
+        jsonResult.setBody(pageList.getList());
+        return jsonResult;
     }
 
     /**
@@ -56,8 +78,8 @@ public class AppHomeController {
      * @param id 文章ID
      * @return
      */
-    @RequestMapping("articleDetail")
-    public JsonResult articleDetail(@RequestParam(name="id",defaultValue = "1") Long id){
+    @RequestMapping("docInfoDetail")
+    public JsonResult docInfoDetail(@RequestParam(name="id") Long id){
         return docInfoService.articleDetail(id);
     }
 
@@ -67,20 +89,24 @@ public class AppHomeController {
      * @return
      */
     @RequestMapping("search")
-    public JsonResult search(@RequestParam(name="keyword",defaultValue = "天赋") String keyword){
+    public JsonResult search(@RequestParam(name="pageIndex",defaultValue ="0") Integer pageIndex
+            ,@RequestParam(name="keyword",defaultValue = "天赋") String keyword
+            ,@RequestParam(name="parentColumnId",required = false) Long parentColumnId){
         JsonResult jsonResult = JsonResult.success();
-        Page page = new Page(0,DEFAULT_PAGE_SIZE);
-        PageList<DocInfo> pageList = this.docInfoService.news(page, 1L, keyword);
+        Long userId = TokenUtils.sessionUser().getId();
+        Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
+        PageList<DocInfo> pageList = this.docInfoService.searchDocInfos(page,userId,parentColumnId, keyword);
         jsonResult.setBody(pageList.getList());
         return jsonResult;
     }
 
     @RequestMapping("news")
-    public JsonResult news(@RequestParam(name="pageIndex",defaultValue ="1") Integer pageIndex
+    public JsonResult news(@RequestParam(name="pageIndex",defaultValue ="0") Integer pageIndex
             ,@RequestParam(name="keyword",defaultValue = "天赋") String keyword,Long columnId){
         JsonResult jsonResult = JsonResult.success();
+        Long userId = TokenUtils.sessionUser().getId();
         Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
-        PageList<DocInfo> pageList = this.docInfoService.news(page, 1L, keyword);
+        PageList<DocInfo> pageList = this.docInfoService.searchDocInfos(page, userId,1L, keyword);
         jsonResult.setBody(pageList.getList());
         return jsonResult;
     }
@@ -114,7 +140,6 @@ public class AppHomeController {
      */
     @RequestMapping("customColumn")
     public JsonResult customColumn(@RequestParam(name = "columnId",defaultValue ="5")Long columnId){
-        JsonResult jsonResult = JsonResult.success();
         long userId = TokenUtils.sessionUser().getId();
         return this.docColumnService.customColumn(userId,columnId);
     }
