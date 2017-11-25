@@ -8,6 +8,7 @@ import com.coamctech.bxloan.manager.dao.DocInfoDao;
 import com.coamctech.bxloan.manager.dao.UserDocColumnRelDao;
 import com.coamctech.bxloan.manager.domain.DocInfo;
 import com.coamctech.bxloan.manager.domain.UserDocColumnRel;
+import com.coamctech.bxloan.manager.domain.UserStore;
 import com.coamctech.bxloan.manager.domain.UserViewHistory;
 import com.coamctech.bxloan.manager.utils.TokenUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -47,6 +48,8 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
     private DocColumnService docColumnService;
     @Autowired
     private UserViewHistoryService userViewHistoryService;
+    @Autowired
+    private UserStoreService userStoreService;
 
 
     public List<DocInfo> getTopDocInfos(Long parentColumnId,Integer topCount){
@@ -54,10 +57,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         List<Long> columnIds = docColumnService.getChildColumnIdsByParentId(parentColumnId);
         List<DocInfo> docInfos = docInfoDao.findByColumnIdInOrderByIfTopDescUpdateTimeDesc(columnIds, topCount);
         docInfos.forEach(docInfo -> {
-            String body = docInfo.getBody();
-            Elements elements = Jsoup.parse(body, "UTF-8").select("img[src]");
-            String imgUrl = elements.attr("src");
-            docInfo.setImgUrl(imgUrl);
+            parseImgUrlOfDocInfo(docInfo);
         });
         return docInfos;
     }
@@ -120,12 +120,15 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
 
         PageList<DocInfo> pageList = this.pageList(page,sql,param);
         pageList.getList().forEach(docInfo -> {
-            String body = docInfo.getBody();
-            Elements elements = Jsoup.parse(body, "UTF-8").select("img[src]");
-            String imgUrl = elements.attr("src");
-            docInfo.setImgUrl(imgUrl);
+            parseImgUrlOfDocInfo(docInfo);
         });
         return pageList;
+    }
+    private void parseImgUrlOfDocInfo(DocInfo docInfo){
+        String body = docInfo.getBody();
+        Elements elements = Jsoup.parse(body, "UTF-8").select("img[src]");
+        String imgUrl = elements.attr("src");
+        docInfo.setImgUrl(imgUrl);
     }
 
     /**
@@ -138,5 +141,65 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         DocInfo docInfo = docInfoDao.findOne(docInfoId);
         userViewHistoryService.save(docInfo,userId);
         return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG, docInfo);
+    }
+
+    /**
+     * 我的历史
+     * @param page
+     * @param userId
+     * @return
+     */
+    public List<DocInfo> myHistory(Page page,Long userId){
+
+        List<UserViewHistory> userViewHistories = userViewHistoryService.pageHistory(page, userId);
+        List<Long> docInfoIds = new ArrayList<>();
+        userViewHistories.forEach(userViewHistory->{
+            docInfoIds.add(userViewHistory.getDocInfoId());
+        });
+        Iterable<DocInfo> docInfos = docInfoDao.findAll(docInfoIds);
+        List<DocInfo> docInfosList = new ArrayList<>();
+        docInfos.forEach(docInfo->{
+            parseImgUrlOfDocInfo(docInfo);
+            for(UserViewHistory userViewHistory:userViewHistories) {
+                if (userViewHistory.getDocInfoId().equals(docInfo.getId())) {
+                    docInfo.setViewTime(userViewHistory.getUpdateTime());
+                    break;
+                }
+            }
+            docInfosList.add(docInfo);
+        });
+        //按查看顺序排序
+
+        Collections.sort(docInfosList, new DocInfoViewTimeComparator());
+        return docInfosList;
+    }
+    /**
+     * 我的收藏
+     * @param page
+     * @param userId
+     * @return
+     */
+    public List<DocInfo> myStore(Page page,Long userId,Long topLevelColumnId){
+
+        List<UserStore> userStores = userStoreService.pageUserStore(page, userId, topLevelColumnId);
+        List<Long> docInfoIds = new ArrayList<>();
+        userStores.forEach(userStore->{
+            docInfoIds.add(userStore.getDocInfoId());
+        });
+        Iterable<DocInfo> docInfos = docInfoDao.findAll(docInfoIds);
+        List<DocInfo> docInfosList = new ArrayList<>();
+        docInfos.forEach(docInfo->{
+            parseImgUrlOfDocInfo(docInfo);
+            for(UserStore userStore:userStores) {
+                if (userStore.getDocInfoId().equals(docInfo.getId())) {
+                    docInfo.setViewTime(userStore.getCreateTime());
+                    break;
+                }
+            }
+            docInfosList.add(docInfo);
+        });
+        //按收藏顺序排序
+        Collections.sort(docInfosList, new DocInfoStoreTimeComparator());
+        return docInfosList;
     }
 }

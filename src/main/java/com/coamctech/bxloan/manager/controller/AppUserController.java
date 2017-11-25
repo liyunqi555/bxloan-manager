@@ -1,7 +1,9 @@
 package com.coamctech.bxloan.manager.controller;
 
 import com.coamctech.bxloan.manager.common.JsonResult;
+import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.service.UserService;
+import com.coamctech.bxloan.manager.utils.TokenUtils;
 import com.coamctech.bxloan.manager.utils.encrypt.MD5Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
  * Created by Administrator on 2017/10/20.
  */
 @RestController
-@RequestMapping(value="api/app/user",method = RequestMethod.GET)
-public class AppUserController {
-    private static final Logger logger = LoggerFactory.getLogger(AppUserController.class);
-
+@RequestMapping(value="api/app/user",method = RequestMethod.POST)
+public class AppUserController extends AppBaseController{
     @Autowired
     private UserService userService;
     /**
@@ -33,6 +33,19 @@ public class AppUserController {
                             @RequestParam(name="password",defaultValue = "25d55ad283aa400af464c76d713c07ad") String password,
                             @RequestParam(name="deviceCode",defaultValue = "123456789abcdefg") String deviceCode){
         return userService.login(userName,password,deviceCode);
+    }
+
+    /**
+     * 修改密码
+     * @param oldPassword
+     * @param newPassword
+     * @return
+     */
+    @RequestMapping("changePassword")
+    public JsonResult changePassword(@RequestParam(name="oldPassword") String oldPassword,
+                                     @RequestParam(name="newPassword") String newPassword){
+        User user = TokenUtils.sessionUser();
+        return userService.changePassword(user,oldPassword, newPassword);
     }
     public static void main(String[] args) {
         System.out.println(MD5Util.md5Hex("12345678"));

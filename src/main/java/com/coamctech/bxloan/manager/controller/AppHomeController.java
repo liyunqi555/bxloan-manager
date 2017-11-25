@@ -8,6 +8,7 @@ import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.domain.DocColumn;
 import com.coamctech.bxloan.manager.domain.DocInfo;
 import com.coamctech.bxloan.manager.service.*;
+import com.coamctech.bxloan.manager.utils.StringUtils;
 import com.coamctech.bxloan.manager.utils.TokenUtils;
 import com.coamctech.bxloan.manager.utils.encrypt.MD5Util;
 import org.slf4j.Logger;
@@ -26,10 +27,8 @@ import java.util.*;
  * Created by Administrator on 2017/10/20.
  */
 @RestController
-@RequestMapping(value="api/app/home",method = RequestMethod.GET)
-public class AppHomeController {
-    private static final Logger logger = LoggerFactory.getLogger(AppHomeController.class);
-    private static final Integer DEFAULT_PAGE_SIZE = 10;
+@RequestMapping(value="api/app/home",method = RequestMethod.POST)
+public class AppHomeController extends AppBaseController{
     @Autowired
     private UserService userService;
     @Autowired
@@ -40,7 +39,8 @@ public class AppHomeController {
     private UserCustomDocColumnService userCustomDocColumnService;
     @Autowired
     private UserStoreService userStoreService;
-
+    @Autowired
+    private UserViewHistoryService userViewHistoryService;
 
 
     @Value("${top.level.column.id.news}")
@@ -206,4 +206,57 @@ public class AppHomeController {
         return userStoreService.store(userId,docInfoId);
     }
 
+    /**
+     * 取消收藏
+     * @param docInfoIdStr 逗号隔开的资讯id
+     * @return
+     */
+    @RequestMapping("cancelStore")
+    public JsonResult cancelStore(@RequestParam(name = "docInfoIdStr") String docInfoIdStr){
+        if(StringUtils.isBlank(docInfoIdStr)){
+            return new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.PARAM_ERROR_MSG);
+        }
+        String[] arr = docInfoIdStr.split(COMMA);
+        if(arr.length==0){
+            return new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.PARAM_ERROR_MSG);
+        }
+        List<Long> docInfoIds = new ArrayList<>();
+        try{
+            List<String> ids = Arrays.asList(arr);
+            ids.forEach(id->{
+                docInfoIds.add(Long.valueOf(id));
+            });
+        }catch (Exception e){
+            logger.error("取消收藏参数错误，docInfoIdStr={}",docInfoIdStr);
+            return new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.PARAM_ERROR_MSG);
+        }
+        long userId = TokenUtils.sessionUser().getId();
+        return userStoreService.cancelStore(userId,docInfoIds);
+    }
+
+    /**
+     * 我的历史
+     * @param pageIndex
+     * @return
+     */
+    @RequestMapping("myHistory")
+    public JsonResult myHistory(@RequestParam(name="pageIndex",defaultValue ="0") Integer pageIndex){
+        long userId = TokenUtils.sessionUser().getId();
+        Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
+       List<DocInfo> docInfos = docInfoService.myHistory(page,userId);
+        return JsonResult.success(docInfos);
+    }
+    /**
+     * 我的收藏
+     * @param pageIndex
+     * @return
+     */
+    @RequestMapping("myStore")
+    public JsonResult myStore(@RequestParam(name="pageIndex",defaultValue ="0") Integer pageIndex
+            ,@RequestParam(name="topLevelColumnId",required = false) Long topLevelColumnId){
+        long userId = TokenUtils.sessionUser().getId();
+        Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
+        List<DocInfo> docInfos = docInfoService.myStore(page, userId,topLevelColumnId);
+        return JsonResult.success(docInfos);
+    }
 }
