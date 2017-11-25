@@ -17,10 +17,13 @@ public class JsonResult<T> implements Serializable {
 	}
 	
 	public JsonResult(int code, String msg, T body) {
-		this.code = code;
-		this.msg = msg;
-		this.body = body;
-	}
+        this.code = code;
+        this.msg = msg;
+        this.body = body;
+    }
+    public static JsonResult success( Object body) {
+        return new JsonResult(ResultCode.SUCCESS_CODE, ResultCode.SUCCESS_MSG,body);
+    }
 
     public static JsonResult success() {
         return new JsonResult(ResultCode.SUCCESS_CODE, ResultCode.SUCCESS_MSG);

@@ -5,6 +5,8 @@ import com.coamctech.bxloan.manager.common.PageList;
 import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.utils.StringUtils;
 import com.coamctech.bxloan.manager.utils.TokenUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 public class BaseService<T, ID extends Serializable> {
+    private  final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private PagingAndSortingRepository<T, ID> pagingAndSortingRepository;
     @Autowired

@@ -30,8 +30,9 @@ public class AppUserController {
      */
     @RequestMapping("anon/login")
     public JsonResult login(@RequestParam(name="userName",defaultValue = "admin") String userName,
-                            @RequestParam(name="password",defaultValue = "25d55ad283aa400af464c76d713c07ad") String password){
-        return userService.login(userName,password);
+                            @RequestParam(name="password",defaultValue = "25d55ad283aa400af464c76d713c07ad") String password,
+                            @RequestParam(name="deviceCode",defaultValue = "123456789abcdefg") String deviceCode){
+        return userService.login(userName,password,deviceCode);
     }
     public static void main(String[] args) {
         System.out.println(MD5Util.md5Hex("12345678"));

@@ -1,12 +1,13 @@
 package com.coamctech.bxloan.manager.controller;
 
+import com.alibaba.fastjson.JSONReader;
 import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.Page;
 import com.coamctech.bxloan.manager.common.PageList;
+import com.coamctech.bxloan.manager.common.ResultCode;
+import com.coamctech.bxloan.manager.domain.DocColumn;
 import com.coamctech.bxloan.manager.domain.DocInfo;
-import com.coamctech.bxloan.manager.service.DocColumnService;
-import com.coamctech.bxloan.manager.service.DocInfoService;
-import com.coamctech.bxloan.manager.service.UserService;
+import com.coamctech.bxloan.manager.service.*;
 import com.coamctech.bxloan.manager.utils.TokenUtils;
 import com.coamctech.bxloan.manager.utils.encrypt.MD5Util;
 import org.slf4j.Logger;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.*;
 
 /**
  *
@@ -33,6 +36,12 @@ public class AppHomeController {
     private DocInfoService docInfoService;
     @Autowired
     private DocColumnService docColumnService;
+    @Autowired
+    private UserCustomDocColumnService userCustomDocColumnService;
+    @Autowired
+    private UserStoreService userStoreService;
+
+
 
     @Value("${top.level.column.id.news}")
     private Long topLevelColumnIdNews;
@@ -44,6 +53,16 @@ public class AppHomeController {
     @Value("${app.home.banner.count}")
     private Integer appHomeBannerCount;
 
+    @RequestMapping("topColumns")
+    public JsonResult topColumns(){
+        Map<String,Long> topColumns = new HashMap<>();
+        topColumns.put("topLevelColumnIdNews",topLevelColumnIdNews);
+        topColumns.put("topLevelColumnIdDoc",topLevelColumnIdDoc);
+        topColumns.put("topLevelColumnIdReport",topLevelColumnIdReport);
+        JsonResult jsonResult = JsonResult.success();
+        jsonResult.setBody(topColumns);
+        return jsonResult;
+    }
     /**
      * 首页bannner
      * @return
@@ -51,15 +70,14 @@ public class AppHomeController {
     @RequestMapping("banner")
     public JsonResult banner(){
         JsonResult jsonResult = JsonResult.success();
-         Long userId = TokenUtils.sessionUser().getId();
-        Page page = new Page(0,appHomeBannerCount);
-        PageList<DocInfo> pageList = docInfoService.homeDocInfos(page, userId, this.topLevelColumnIdDoc);
-        jsonResult.setBody(pageList.getList());
+        List<DocInfo> docInfos = docInfoService.getTopDocInfos(this.topLevelColumnIdDoc,this.appHomeBannerCount);
+        jsonResult.setBody(docInfos);
         return jsonResult;
     }
 
     /**
      * 首页智汇天下
+     * 展示智库报告的内容
      * @param pageIndex based zero
      * @return
      */
@@ -68,70 +86,93 @@ public class AppHomeController {
         JsonResult jsonResult = JsonResult.success();
         Long userId = TokenUtils.sessionUser().getId();
         Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
-        PageList<DocInfo> pageList = docInfoService.homeDocInfos(page, userId, this.topLevelColumnIdDoc);
-        jsonResult.setBody(pageList.getList());
-        return jsonResult;
-    }
-
-    /**
-     * 文章详情
-     * @param id 文章ID
-     * @return
-     */
-    @RequestMapping("docInfoDetail")
-    public JsonResult docInfoDetail(@RequestParam(name="id") Long id){
-        return docInfoService.articleDetail(id);
+        List<DocInfo> docInfoList = docInfoService.searchDocInfos(page, userId, Arrays.asList(this.topLevelColumnIdDoc), null);
+        jsonResult.setBody(docInfoList);
+        return  jsonResult;
     }
 
     /**
      * 搜索
-     * @param keyword 搜索关键字
+     * @param pageIndex 第几页
+     * @param keyword 搜索关键词
+     * @param topLevelColumnId 搜索栏目
      * @return
      */
     @RequestMapping("search")
     public JsonResult search(@RequestParam(name="pageIndex",defaultValue ="0") Integer pageIndex
             ,@RequestParam(name="keyword",defaultValue = "天赋") String keyword
-            ,@RequestParam(name="parentColumnId",required = false) Long parentColumnId){
+            ,@RequestParam(name="topLevelColumnId",required = false) Long topLevelColumnId){
         JsonResult jsonResult = JsonResult.success();
         Long userId = TokenUtils.sessionUser().getId();
         Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
-        PageList<DocInfo> pageList = this.docInfoService.searchDocInfos(page,userId,parentColumnId, keyword);
-        jsonResult.setBody(pageList.getList());
+        List<Long> parentColumnIds = new ArrayList<>();
+        if(topLevelColumnId==null){
+            parentColumnIds.add(topLevelColumnIdDoc);
+            parentColumnIds.add(topLevelColumnIdNews);
+            parentColumnIds.add(topLevelColumnIdReport);
+        }else{
+            parentColumnIds.add(topLevelColumnId);
+        }
+        List<DocInfo> docInfos = this.docInfoService.searchDocInfos(page, userId, parentColumnIds, keyword);
+        jsonResult.setBody(docInfos);
         return jsonResult;
     }
-
-    @RequestMapping("news")
-    public JsonResult news(@RequestParam(name="pageIndex",defaultValue ="0") Integer pageIndex
-            ,@RequestParam(name="keyword",defaultValue = "天赋") String keyword,Long columnId){
-        JsonResult jsonResult = JsonResult.success();
+    /**
+     *文章详情
+     * @param docInfoId 文章ID
+     * @return
+     */
+    @RequestMapping("docInfoDetail")
+    public JsonResult docInfoDetail(@RequestParam(name="docInfoId") Long docInfoId){
         Long userId = TokenUtils.sessionUser().getId();
-        Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
-        PageList<DocInfo> pageList = this.docInfoService.searchDocInfos(page, userId,1L, keyword);
-        jsonResult.setBody(pageList.getList());
-        return jsonResult;
+        return docInfoService.articleDetail(docInfoId,userId);
     }
 
     /**
-     * 未订阅栏目列表
-     * @param columnId
+     * 资讯列表
+     * @param pageIndex
+     * @param columnId 栏目id
+     * @param topLevelColumnId 上级栏目id
      * @return
      */
-    @RequestMapping("noCustomColumns")
-    public JsonResult noCustomColumns(@RequestParam(name = "columnId",defaultValue ="1")Long columnId){
-        JsonResult jsonResult = JsonResult.success();
-        return this.docColumnService.columns(columnId);
+    @RequestMapping("docInfos")
+    public JsonResult docInfos(@RequestParam(name="pageIndex",defaultValue ="0") Integer pageIndex,
+                               @RequestParam(name="columnId") Long columnId,
+                               @RequestParam(name="topLevelColumnId") Long topLevelColumnId){
+        Long userId = TokenUtils.sessionUser().getId();
+        Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
+        if(columnId!=null){//二级栏目不为null 直接查询二级栏目的资讯
+            List<DocInfo> docInfos = this.docInfoService.docInfos(page, userId, columnId);
+            return JsonResult.success(docInfos);
+        }else{
+            List<DocInfo> docInfos = this.docInfoService.searchDocInfos(page, userId, Arrays.asList(topLevelColumnId), null);
+            return JsonResult.success(docInfos);
+        }
+    }
+
+    /**
+     * 未订阅栏目
+     * @param topLevelColumnId
+     * @return
+     */
+    @RequestMapping("noCustomDocColumns")
+    public JsonResult noCustomDocColumns(@RequestParam(name = "topLevelColumnId") Long topLevelColumnId){
+        Long userId = TokenUtils.sessionUser().getId();
+        Iterable<DocColumn> docColumns = this.docColumnService.getNoCustomColumns(userId, topLevelColumnId);
+        return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG, docColumns);
     }
 
 
     /**
      * 已订阅栏目
-     * @param columnId
+     * @param topLevelColumnId
      * @return
      */
-    @RequestMapping("haveCustomColumns")
-    public JsonResult haveCustomColumns(@RequestParam(name = "columnId",defaultValue ="5")Long columnId){
-        JsonResult jsonResult = JsonResult.success();
-        return this.docColumnService.columns(columnId);
+    @RequestMapping("haveCustomDocColumns")
+    public JsonResult haveCustomDocColumns(@RequestParam(name = "topLevelColumnId") Long topLevelColumnId){
+        Long userId = TokenUtils.sessionUser().getId();
+        Iterable<DocColumn> docColumns = this.docColumnService.getCustomColumns(userId,topLevelColumnId);
+        return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG, docColumns);
     }
     /**
      * 订阅某个栏目
@@ -139,9 +180,9 @@ public class AppHomeController {
      * @return
      */
     @RequestMapping("customColumn")
-    public JsonResult customColumn(@RequestParam(name = "columnId",defaultValue ="5")Long columnId){
+    public JsonResult customColumn(@RequestParam(name = "columnId")Long columnId){
         long userId = TokenUtils.sessionUser().getId();
-        return this.docColumnService.customColumn(userId,columnId);
+        return this.userCustomDocColumnService.customColumn(userId, columnId);
     }
     /**
      * 取消订阅某个栏目
@@ -150,8 +191,19 @@ public class AppHomeController {
      */
     @RequestMapping("cancelCustomColumn")
     public JsonResult cancelCustomColumn(@RequestParam(name = "columnId",defaultValue ="5")Long columnId){
-        JsonResult jsonResult = JsonResult.success();
-        return this.docColumnService.columns(columnId);
+        long userId = TokenUtils.sessionUser().getId();
+        return this.userCustomDocColumnService.cancelCustomColumn(userId, columnId);
+    }
+
+    /**
+     * 收藏
+     * @param docInfoId
+     * @return
+     */
+    @RequestMapping("store")
+    public JsonResult store(@RequestParam(name = "docInfoId") Long docInfoId){
+        long userId = TokenUtils.sessionUser().getId();
+        return userStoreService.store(userId,docInfoId);
     }
 
 }

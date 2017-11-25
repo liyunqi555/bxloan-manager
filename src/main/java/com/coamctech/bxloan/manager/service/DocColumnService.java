@@ -32,25 +32,32 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
     @Autowired
     private DocColumnDao docColumnDao;
     @Autowired
-    private UserCustomDocColumnDao userCustomDocColumnDao;
+    private UserCustomDocColumnService userCustomDocColumnService;
 
-    public JsonResult columns(Long id){
-        List<DocColumn> list = this.docColumnDao.findByParentId(id);
-        return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG, list);
+    /**
+     * 查询未订阅栏目
+     * @param userId
+     * @param parentDocCulumnId
+     * @return
+     */
+    public List<DocColumn> getNoCustomColumns(Long userId,Long parentDocCulumnId){
+        List<Long> customColumnIds = userCustomDocColumnService.getCustomColumnIds(userId, parentDocCulumnId);
+        List<DocColumn> docColumnList = docColumnDao.findByParentIdAndIdNotIn(parentDocCulumnId, customColumnIds);
+        return docColumnList;
+    }
 
+    /**
+     * 查询已订阅栏目
+     * @param userId
+     * @param parentDocCulumnId
+     * @return
+     */
+    public Iterable<DocColumn> getCustomColumns(Long userId,Long parentDocCulumnId){
+        List<Long> customColumnIds = userCustomDocColumnService.getCustomColumnIds(userId, parentDocCulumnId);
+        Iterable<DocColumn> list = docColumnDao.findAll(customColumnIds);
+        return list;
     }
-    public JsonResult customColumn(Long userId,Long customColumnId){
-        UserCustomDocColumn userCustomDocColumn = new UserCustomDocColumn();
-        userCustomDocColumn.setDocColumnId(customColumnId);
-        userCustomDocColumn.setCreateTime(new Date());
-        Long count = this.userCustomDocColumnDao.count();
-        userCustomDocColumn.setCustomOrder(count+1);
-        DocColumn docColumn = docColumnDao.findOne(customColumnId);
-        userCustomDocColumn.setDocColumnParentId(docColumn.getParentId());
-        userCustomDocColumn.setUserId(userId);
-        userCustomDocColumnDao.save(userCustomDocColumn);
-        return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG);
-    }
+
 
     /**
      * 查询子栏目ID的集合

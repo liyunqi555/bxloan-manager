@@ -26,9 +26,16 @@ public class UserViewHistory implements Serializable {
     //数据中心相关
     private String conceptUri;//数据概念
     private String entityid;//实体ID
+    private Date updateTime;//浏览时间
+    private Date createTime;//创建时间，第一次浏览时间
 
-    private Date createTime;//浏览时间
+    public Date getUpdateTime() {
+        return updateTime;
+    }
 
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
 
     public Long getDocInfoId() {
         return docInfoId;
