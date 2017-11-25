@@ -15,6 +15,7 @@ public class DocInfo implements Serializable {
     private Long id;
 
     private String title;//标题
+    private String cnTitle;//中文标题
     private Long sourceId;//来源id
     private Long columnId;//栏目id
     private String classification;//分类
@@ -22,10 +23,36 @@ public class DocInfo implements Serializable {
     private String website;//网址
     private String keyword;//关键字
     private String summary;//摘要
-    private String body;//正文
+    private String body;//原文正文
+    private String cnBoty;//中文正文
     private Long creator;//创建人id
     private Date createTime;
     private Date updateTime;
+    private Integer ifTop;//是否置顶，数字大小代表置顶的顺序
+
+    public String getCnTitle() {
+        return cnTitle;
+    }
+
+    public void setCnTitle(String cnTitle) {
+        this.cnTitle = cnTitle;
+    }
+
+    public String getCnBoty() {
+        return cnBoty;
+    }
+
+    public void setCnBoty(String cnBoty) {
+        this.cnBoty = cnBoty;
+    }
+
+    public Integer getIfTop() {
+        return ifTop;
+    }
+
+    public void setIfTop(Integer ifTop) {
+        this.ifTop = ifTop;
+    }
 
     @Transient
     private String imgUrl;//从body中检索出的图片地址

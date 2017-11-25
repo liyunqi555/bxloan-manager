@@ -25,8 +25,35 @@ public class User implements Serializable {
     private Date createTime;
     private Date updateTime;
     private String sign;
+    private Long departmentId;
+    private Date startTime;
+    private Date endTime;
     @Transient
     private String token;
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
 
     public String getToken() {
         return token;

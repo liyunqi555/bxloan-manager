@@ -56,7 +56,8 @@ public class AppRequestFilter implements Filter {
                 logger.info("token:{}", token);
                 if(token==null) {
                     response.setHeader("Content-Type", "application/json; charset=UTF-8");
-                    response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.TOKEN_NULL_MSG)));
+                    response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(
+                            new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.TOKEN_NULL_MSG)));
                     response.getWriter().flush();
                     return;
                 }
