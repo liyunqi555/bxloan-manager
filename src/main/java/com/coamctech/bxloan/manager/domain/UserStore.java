@@ -25,7 +25,7 @@ public class UserStore implements Serializable {
 
     //数据中心相关
     private String conceptUri;//数据概念
-    private String entityid;//实体ID
+    private String entityId;//实体ID
     private Date createTime;//收藏时间
 
 
@@ -53,12 +53,12 @@ public class UserStore implements Serializable {
         this.conceptUri = conceptUri;
     }
 
-    public String getEntityid() {
-        return entityid;
+    public String getEntityId() {
+        return entityId;
     }
 
-    public void setEntityid(String entityid) {
-        this.entityid = entityid;
+    public void setEntityId(String entityId) {
+        this.entityId = entityId;
     }
 
     public Long getId() {

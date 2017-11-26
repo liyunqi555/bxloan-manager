@@ -208,30 +208,30 @@ public class AppHomeController extends AppBaseController{
 
     /**
      * 取消收藏
-     * @param docInfoIdStr 逗号隔开的资讯id
+     * @param idsStr 逗号隔开的收藏id
      * @return
      */
     @RequestMapping("cancelStore")
-    public JsonResult cancelStore(@RequestParam(name = "docInfoIdStr") String docInfoIdStr){
-        if(StringUtils.isBlank(docInfoIdStr)){
+    public JsonResult cancelStore(@RequestParam(name = "idsStr") String idsStr){
+        if(StringUtils.isBlank(idsStr)){
             return new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.PARAM_ERROR_MSG);
         }
-        String[] arr = docInfoIdStr.split(COMMA);
+        String[] arr = idsStr.split(COMMA);
         if(arr.length==0){
             return new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.PARAM_ERROR_MSG);
         }
-        List<Long> docInfoIds = new ArrayList<>();
+        List<Long> longList = new ArrayList<>();
         try{
-            List<String> ids = Arrays.asList(arr);
-            ids.forEach(id->{
-                docInfoIds.add(Long.valueOf(id));
+            List<String> stringList = Arrays.asList(arr);
+            stringList.forEach(id->{
+                longList.add(Long.valueOf(id));
             });
         }catch (Exception e){
-            logger.error("取消收藏参数错误，docInfoIdStr={}",docInfoIdStr);
+            logger.error("取消收藏参数错误，docInfoIdStr={}",idsStr);
             return new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.PARAM_ERROR_MSG);
         }
         long userId = TokenUtils.sessionUser().getId();
-        return userStoreService.cancelStore(userId,docInfoIds);
+        return userStoreService.cancelStore(userId,longList);
     }
 
     /**

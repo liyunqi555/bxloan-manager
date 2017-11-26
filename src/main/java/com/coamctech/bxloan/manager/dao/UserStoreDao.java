@@ -12,5 +12,8 @@ import java.util.List;
 @Repository
 public interface UserStoreDao extends JpaSpecificationExecutor<UserStore>,PagingAndSortingRepository<UserStore,Long> {
     UserStore findByUserIdAndDocInfoId(Long userId,Long docInfoId);
+    List<UserStore> findByUserIdAndIdIn(Long userId,Collection<Long> id);
+
+    UserStore findByUserIdAndConceptUriAndEntityId(Long userId,String conceptUri,String entityId);
     List<UserStore> findByUserIdAndDocInfoIdIn(Long userId,Collection<Long> docInfoId);
 }

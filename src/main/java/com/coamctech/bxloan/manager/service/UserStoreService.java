@@ -60,11 +60,35 @@ public class UserStoreService extends BaseService<UserStore,Long>{
         userStoreDao.save(userStore);
         return JsonResult.success();
     }
-    public JsonResult cancelStore(Long userId,List<Long> docInfoIds){
-        if(docInfoIds==null || docInfoIds.size()==0){
+
+    /**
+     * 收藏数据中心数据
+     * @param userId
+     * @param conceptUri
+     * @param entityId
+     * @return
+     */
+    public JsonResult storeData(Long userId,String conceptUri,String entityId){
+        if(StringUtils.isBlank(conceptUri) || StringUtils.isBlank(entityId)){
             return new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.PARAM_ERROR_MSG);
         }
-        List<UserStore> userStores = userStoreDao.findByUserIdAndDocInfoIdIn(userId,docInfoIds);
+        UserStore userStore = userStoreDao.findByUserIdAndConceptUriAndEntityId(userId, conceptUri,entityId);
+        if(userStore!=null){
+            return JsonResult.success();
+        }
+        userStore = new UserStore();
+        userStore.setUserId(userId);
+        userStore.setCreateTime(new Date());
+        userStore.setConceptUri(conceptUri);
+        userStore.setEntityId(entityId);
+        userStoreDao.save(userStore);
+        return JsonResult.success();
+    }
+    public JsonResult cancelStore(Long userId,List<Long> ids){
+        if(ids==null || ids.size()==0){
+            return new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.PARAM_ERROR_MSG);
+        }
+        List<UserStore> userStores = userStoreDao.findByUserIdAndIdIn(userId, ids);
         if(userStores.size()==0){
             return JsonResult.success();
         }
@@ -76,6 +100,16 @@ public class UserStoreService extends BaseService<UserStore,Long>{
         String sql = " from UserStore where  userId=:userId and docColumnParentId=:docColumnParentId";
         param.put("userId",userId);
         param.put("docColumnParentId",docColumnParentId);
+        sql = sql + " order by updateTime desc ";
+
+        PageList<UserStore> pageList = this.pageList(page,sql,param);
+
+        return pageList.getList();
+    }
+    public List<UserStore> pageUserStoreData(Page page , Long userId){
+        Map<String, Object> param = new HashMap<>();
+        String sql = " from UserStore where  userId=:userId and docColumnParentId is null ";
+        param.put("userId",userId);
         sql = sql + " order by updateTime desc ";
 
         PageList<UserStore> pageList = this.pageList(page,sql,param);
