@@ -30,9 +30,9 @@ public class AppUserController extends AppBaseController{
      * @return User 对象，包括token ，之后每次请求都带着token，
      */
     @RequestMapping("anon/login")
-    public JsonResult login(@RequestParam(name="userName",defaultValue = "admin") String userName,
-                            @RequestParam(name="password",defaultValue = "25d55ad283aa400af464c76d713c07ad") String password,
-                            @RequestParam(name="deviceCode",defaultValue = "123456789abcdefg") String deviceCode){
+    public JsonResult login(@RequestParam(name="userName") String userName,
+                            @RequestParam(name="password") String password,
+                            @RequestParam(name="deviceCode") String deviceCode){
         return appUserService.login(userName,password,deviceCode);
     }
 

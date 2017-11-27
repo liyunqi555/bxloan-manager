@@ -31,10 +31,23 @@ public class AppDataCenterController extends AppBaseController{
     private DataCenterService dataCenterService;
     @Autowired
     private UserStoreService userStoreService;
+
+    /**
+     * 数据中心首页
+     * @param conceptUri
+     * @return
+     */
     @RequestMapping("home")
     public JsonResult home(String conceptUri){
         return dataCenterService.entityList(conceptUri);
     }
+
+    /**
+     *
+     * @param conceptUri
+     * @param entityId
+     * @return
+     */
     @RequestMapping("detail")
     public JsonResult detail(String conceptUri,String entityId){
         return dataCenterService.detail(conceptUri, entityId);
