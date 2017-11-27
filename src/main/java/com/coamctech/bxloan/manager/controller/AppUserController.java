@@ -2,6 +2,7 @@ package com.coamctech.bxloan.manager.controller;
 
 import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.domain.User;
+import com.coamctech.bxloan.manager.service.AppUserService;
 import com.coamctech.bxloan.manager.service.UserService;
 import com.coamctech.bxloan.manager.utils.TokenUtils;
 import com.coamctech.bxloan.manager.utils.encrypt.MD5Util;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value="api/app/user",method = RequestMethod.POST)
 public class AppUserController extends AppBaseController{
     @Autowired
-    private UserService userService;
+    private AppUserService appUserService;
     /**
      * 登陆接口
      * @param userName 用户名
@@ -32,7 +33,7 @@ public class AppUserController extends AppBaseController{
     public JsonResult login(@RequestParam(name="userName",defaultValue = "admin") String userName,
                             @RequestParam(name="password",defaultValue = "25d55ad283aa400af464c76d713c07ad") String password,
                             @RequestParam(name="deviceCode",defaultValue = "123456789abcdefg") String deviceCode){
-        return userService.login(userName,password,deviceCode);
+        return appUserService.login(userName,password,deviceCode);
     }
 
     /**
@@ -45,7 +46,7 @@ public class AppUserController extends AppBaseController{
     public JsonResult changePassword(@RequestParam(name="oldPassword") String oldPassword,
                                      @RequestParam(name="newPassword") String newPassword){
         User user = TokenUtils.sessionUser();
-        return userService.changePassword(user,oldPassword, newPassword);
+        return appUserService.changePassword(user,oldPassword, newPassword);
     }
     public static void main(String[] args) {
         System.out.println(MD5Util.md5Hex("12345678"));

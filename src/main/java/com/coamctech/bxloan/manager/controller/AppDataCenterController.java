@@ -55,8 +55,6 @@ public class AppDataCenterController extends AppBaseController{
 
     /**
      * 我的收藏
-     * @param conceptUri
-     * @param entityId
      * @return
      */
 

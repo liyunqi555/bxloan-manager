@@ -8,10 +8,7 @@
     <artifactId>bxloan-manager</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
-        <java.version>1.8</java.version>
-        <servlet.version>3.0.1</servlet.version>
-        <jstl.version>1.2</jstl.version>
-        <jsp.version>2.0</jsp.version>
+        <java.version>1.7</java.version>
         <tomcat.version>7.0.59</tomcat.version>
         <druid.version>1.0.6</druid.version>
         <log4jdbc.version>1.16</log4jdbc.version>
@@ -19,7 +16,6 @@
         <jdbc.driver.artifactId>ojdbc6</jdbc.driver.artifactId>
         <jdbc.driver.version>11.2.0.1.0</jdbc.driver.version>
         <commons-lang3.version>3.3.2</commons-lang3.version>
-        <guava.version>16.0.1</guava.version>
         <commons-io.version>2.4</commons-io.version>
         <commons-codec.version>1.9</commons-codec.version>
         <commons-beanutils.version>1.9.1</commons-beanutils.version>
@@ -37,12 +33,12 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-        <dependency>  
-         	<groupId>org.springframework.boot</groupId>  
-        	 <artifactId>spring-boot-starter-thymeleaf</artifactId>  
-		</dependency>  
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-juli</artifactId>
@@ -58,11 +54,6 @@
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
         </dependency>
-        <dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>${guava.version}</version>
-		</dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -139,40 +130,42 @@
             <artifactId>httpmime</artifactId>
             <version>${httpmime.version}</version>
         </dependency>
+       <!-- <dependency>
+            <groupId>${jdbc.driver.groupId}</groupId>
+            <artifactId>${jdbc.driver.artifactId}</artifactId>
+            <version>${jdbc.driver.version}</version>
+            <scope>runtime</scope>
+        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <version>1.5.7.RELEASE</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional><!-- optional=true,依赖不会传递，该项目依赖devtools；之后依赖myboot项目的项目如果想要使用devtools，需要重新引入 -->
         </dependency>
+        <!-- <dependency>
+             <groupId>org.springframework.session</groupId>
+             <artifactId>spring-session</artifactId>
+             <version>${spring-session.version}</version>
+             <exclusions>
+                 <exclusion>
+                     <artifactId>commons-logging</artifactId>
+                     <groupId>commons-logging</groupId>
+                 </exclusion>
+             </exclusions>
+         </dependency>-->
+        <!--<dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
+            <version>${spring-session.version}</version>
+        </dependency>-->
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>sqljdbc4</artifactId>
             <version>4.0</version>
-        </dependency>
-        <dependency>  
-	 	  	<groupId>org.apache.tomcat.embed</groupId>  
-		  	<artifactId>tomcat-embed-jasper</artifactId>  
-		 	 <scope>provided</scope>  
-		</dependency>
-		<dependency>  
-            <groupId>org.webjars</groupId>  
-            <artifactId>bootstrap</artifactId>  
-            <version>3.3.5</version>  
-        </dependency>  
-        <dependency>  
-            <groupId>org.webjars</groupId>  
-            <artifactId>jquery</artifactId>  
-            <version>3.1.1</version>  
-        </dependency>
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.11.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.belerweb</groupId>
-            <artifactId>pinyin4j</artifactId>
-            <version>2.5.1</version>
         </dependency>
     </dependencies>
     <build>
