@@ -31,7 +31,74 @@ values(getdate(),'1','1','1','2017恐袭','3',getdate());
 delete from t_doc_info;
 insert into t_doc_info
 (body,classification,column_id,create_time,creator
-,group_name,keyword,source_id,summary,title,update_time,website)
-values('<p>何为圣战，<IMAGE SRC="http://pic.dragon-flight.com:8089/PIC/89f41edeebf258ca1ce0d44e40d1b95d.jpg"从理论上将拉三德科技法拉盛快递费骄傲了上岛咖啡静安寺两地分居<p>',
-'分类1','1',getdate(),'1','分组名','圣战,理论','1','何为圣战，从理论上','比天赋更关键的，是'
-,getdate(),'http://www.baidu.com');
+,group_name,keyword,source_id,summary,title,update_time,website,if_top)
+values('<p>何为圣战1，<IMAGE SRC="http://pic.dragon-flight.com:8089/PIC/89f41edeebf258ca1ce0d44e40d1b95d.jpg"从理论上将拉三德科技法拉盛快递费骄傲了上岛咖啡静安寺两地分居<p>',
+'分类1','4',getdate(),'1','分组名','圣战,理论','1','何为圣战1，从理论上','比天赋更关键的1'
+,getdate(),'http://www.baidu.com',1);
+insert into t_doc_info
+(body,classification,column_id,create_time,creator
+,group_name,keyword,source_id,summary,title,update_time,website,if_top)
+values('<p>何为圣战2，<IMAGE SRC="http://pic.dragon-flight.com:8089/PIC/89f41edeebf258ca1ce0d44e40d1b95d.jpg"从理论上将拉三德科技法拉盛快递费骄傲了上岛咖啡静安寺两地分居<p>',
+'分类1','4',getdate(),'1','分组名','圣战,理论','1','何为圣战2，从理论上','比天赋更关键的2'
+,getdate(),'http://www.baidu.com',2);
+insert into t_doc_info
+(body,classification,column_id,create_time,creator
+,group_name,keyword,source_id,summary,title,update_time,website,if_top)
+values('<p>何为圣战3，<IMAGE SRC="http://pic.dragon-flight.com:8089/PIC/89f41edeebf258ca1ce0d44e40d1b95d.jpg"从理论上将拉三德科技法拉盛快递费骄傲了上岛咖啡静安寺两地分居<p>',
+'分类1','4',getdate(),'1','分组名','圣战,理论','1','何为圣战3，从理论上','比天赋更关键的3'
+,getdate(),'http://www.baidu.com',3);
+insert into t_doc_info
+(body,classification,column_id,create_time,creator
+,group_name,keyword,source_id,summary,title,update_time,website,if_top)
+values('<p>何为圣战4，<IMAGE SRC="http://pic.dragon-flight.com:8089/PIC/89f41edeebf258ca1ce0d44e40d1b95d.jpg"从理论上将拉三德科技法拉盛快递费骄傲了上岛咖啡静安寺两地分居<p>',
+'分类1','5',getdate(),'1','分组名','圣战,理论','1','何为圣战4，从理论上','比天赋更关键4'
+,getdate(),'http://www.baidu.com',4);
+insert into t_doc_info
+(body,classification,column_id,create_time,creator
+,group_name,keyword,source_id,summary,title,update_time,website,if_top)
+values('<p>何为圣战5，<IMAGE SRC="http://pic.dragon-flight.com:8089/PIC/89f41edeebf258ca1ce0d44e40d1b95d.jpg"从理论上将拉三德科技法拉盛快递费骄傲了上岛咖啡静安寺两地分居<p>',
+'分类1','5',getdate(),'1','分组名','圣战,理论','1','何为圣战5，从理论上','比天赋更关键的5'
+,getdate(),'http://www.baidu.com',5);
+insert into t_doc_info
+(body,classification,column_id,create_time,creator
+,group_name,keyword,source_id,summary,title,update_time,website,if_top)
+values('<p>何为圣战6，<IMAGE SRC="http://pic.dragon-flight.com:8089/PIC/89f41edeebf258ca1ce0d44e40d1b95d.jpg"从理论上将拉三德科技法拉盛快递费骄傲了上岛咖啡静安寺两地分居<p>',
+'分类1','5',getdate(),'1','分组名','圣战,理论','1','何为圣战6，从理论上','比天赋更关键的6'
+,getdate(),'http://www.baidu.com',6);
+
+--初始化几条智库报告数据
+insert into t_doc_info
+(body,classification,column_id,create_time,creator
+,group_name,keyword,source_id,summary,title,update_time,website,if_top)
+values('<p>凡成大事者不唯有超市之才已有坚韧不拔之志1，<IMAGE SRC="http://pic.dragon-flight.com:8089/PIC/89f41edeebf258ca1ce0d44e40d1b95d.jpg"从理论上将拉三德科技法拉盛快递费骄傲了上岛咖啡静安寺两地分居<p>',
+'分类1','6',getdate(),'1','分组名','成大事,超市之才,坚韧不拔','1','成大事者不唯有超市之才1','成大事者不唯有超市之才1'
+,getdate(),'http://www.baidu.com',0);
+insert into t_doc_info
+(body,classification,column_id,create_time,creator
+,group_name,keyword,source_id,summary,title,update_time,website,if_top)
+values('<p>凡成大事者不唯有超市之才已有坚韧不拔之志2，<IMAGE SRC="http://pic.dragon-flight.com:8089/PIC/89f41edeebf258ca1ce0d44e40d1b95d.jpg"从理论上将拉三德科技法拉盛快递费骄傲了上岛咖啡静安寺两地分居<p>',
+'分类1','6',getdate(),'1','分组名','成大事,超市之才,坚韧不拔','1','成大事者不唯有超市之才2','成大事者不唯有超市之才2'
+,getdate(),'http://www.baidu.com',0);
+insert into t_doc_info
+(body,classification,column_id,create_time,creator
+,group_name,keyword,source_id,summary,title,update_time,website,if_top)
+values('<p>凡成大事者不唯有超市之才已有坚韧不拔之志2，<IMAGE SRC="http://pic.dragon-flight.com:8089/PIC/89f41edeebf258ca1ce0d44e40d1b95d.jpg"从理论上将拉三德科技法拉盛快递费骄傲了上岛咖啡静安寺两地分居<p>',
+'分类1','6',getdate(),'1','分组名','成大事,超市之才,坚韧不拔','1','成大事者不唯有超市之才2','成大事者不唯有超市之才2'
+,getdate(),'http://www.baidu.com',0);
+insert into t_doc_info
+(body,classification,column_id,create_time,creator
+,group_name,keyword,source_id,summary,title,update_time,website,if_top)
+values('<p>凡成大事者不唯有超市之才已有坚韧不拔之志2，<IMAGE SRC="http://pic.dragon-flight.com:8089/PIC/89f41edeebf258ca1ce0d44e40d1b95d.jpg"从理论上将拉三德科技法拉盛快递费骄傲了上岛咖啡静安寺两地分居<p>',
+'分类1','6',getdate(),'1','分组名','成大事,超市之才,坚韧不拔','1','成大事者不唯有超市之才2','成大事者不唯有超市之才2'
+,getdate(),'http://www.baidu.com',0);
+insert into t_doc_info
+(body,classification,column_id,create_time,creator
+,group_name,keyword,source_id,summary,title,update_time,website,if_top)
+values('<p>凡成大事者不唯有超市之才已有坚韧不拔之志2，<IMAGE SRC="http://pic.dragon-flight.com:8089/PIC/89f41edeebf258ca1ce0d44e40d1b95d.jpg"从理论上将拉三德科技法拉盛快递费骄傲了上岛咖啡静安寺两地分居<p>',
+'分类1','6',getdate(),'1','分组名','成大事,超市之才,坚韧不拔','1','成大事者不唯有超市之才2','成大事者不唯有超市之才2'
+,getdate(),'http://www.baidu.com',0);
+
+--插入来源
+delete from t_doc_source;
+insert into t_doc_source (create_time,creator,if_special,is_abroad,language_type,name,type,update_time,website)
+values(getdate(),'1','1','','1','今日要闻','1',getdate(),'1');

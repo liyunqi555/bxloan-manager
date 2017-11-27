@@ -70,7 +70,11 @@ public class AppHomeController extends AppBaseController{
     @RequestMapping("banner")
     public JsonResult banner(){
         JsonResult jsonResult = JsonResult.success();
-        List<DocInfo> docInfos = docInfoService.getTopDocInfos(this.topLevelColumnIdDoc,this.appHomeBannerCount);
+        List<DocInfo> docInfos = docInfoService.getTopDocInfos(this.topLevelColumnIdNews,this.appHomeBannerCount);
+        docInfos.forEach(docInfo->{
+            docInfo.setBody("");
+            docInfo.setSummary("");
+        });
         jsonResult.setBody(docInfos);
         return jsonResult;
     }
@@ -82,7 +86,7 @@ public class AppHomeController extends AppBaseController{
      * @return
      */
     @RequestMapping("worlds")
-    public JsonResult worlds(@RequestParam(name="pageIndex",defaultValue ="0") Integer pageIndex){
+    public JsonResult worlds(@RequestParam(name="pageIndex") Integer pageIndex){
         JsonResult jsonResult = JsonResult.success();
         Long userId = TokenUtils.sessionUser().getId();
         Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
@@ -190,7 +194,7 @@ public class AppHomeController extends AppBaseController{
      * @return
      */
     @RequestMapping("cancelCustomColumn")
-    public JsonResult cancelCustomColumn(@RequestParam(name = "columnId",defaultValue ="5")Long columnId){
+    public JsonResult cancelCustomColumn(@RequestParam(name = "columnId")Long columnId){
         long userId = TokenUtils.sessionUser().getId();
         return this.userCustomDocColumnService.cancelCustomColumn(userId, columnId);
     }

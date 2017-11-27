@@ -33,6 +33,16 @@ public class DocInfo implements Serializable {
     private Date viewTime;//浏览时间
     @Transient
     private Date storeTime;//收藏时间
+    @Transient
+    private String sourceName;//来源名称
+
+    public String getSourceName() {
+        return sourceName;
+    }
+
+    public void setSourceName(String sourceName) {
+        this.sourceName = sourceName;
+    }
 
     public Date getStoreTime() {
         return storeTime;
