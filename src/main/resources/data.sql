@@ -1,7 +1,7 @@
 delete from t_user;
-insert into t_user (nick_name,user_name,password,birthday,email,office_Phone,telephone,creator,status,create_Time,update_time)
+insert into t_user (nick_name,user_name,password,birthday,email,office_Phone,telephone,creator,status,create_Time,update_time,if_Store_View_Hitory)
 values('管理员','admin','25d55ad283aa400af464c76d713c07ad','2015-09-14'
-,'123456@qq.com','010-55555555','13123456789',0,1,getdate(),getdate());
+,'123456@qq.com','010-55555555','13123456789',0,1,getdate(),getdate(),1);
 
 delete from t_doc_column;
 

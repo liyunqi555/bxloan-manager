@@ -20,7 +20,7 @@ import java.util.Date;
  */
 @Service
 @Transactional
-public class AppUserService  extends BaseService<UserStore,Long> {
+public class AppUserService  extends BaseService<User,Long> {
     @Autowired
     private UserDao userDao;
     @Autowired

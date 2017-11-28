@@ -50,6 +50,8 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
     private UserStoreService userStoreService;
     @Autowired
     private DocSourceService docSourceService;
+    @Autowired
+    private AppUserService appUserService;
 
 
     public List<DocInfo> getTopDocInfos(Long parentColumnId,Integer topCount){
@@ -154,7 +156,14 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
      */
     public JsonResult articleDetail(Long docInfoId,Long userId){
         DocInfo docInfo = docInfoDao.findOne(docInfoId);
-        userViewHistoryService.save(docInfo,userId);
+        User user = appUserService.findOne(userId);
+        if(user.getIfStoreViewHitory()==1){
+            userViewHistoryService.save(docInfo,userId);
+        }
+        DocSource docSource = docSourceService.findOne(docInfo.getSourceId());
+        if(docSource!=null){
+            docInfo.setSourceName(docSource.getName());
+        }
         return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG, docInfo);
     }
 

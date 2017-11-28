@@ -28,8 +28,17 @@ public class User implements Serializable {
     private Long departmentId;
     private Date startTime;
     private Date endTime;
+    private Integer ifStoreViewHitory;//是否存储浏览历史，1：是，0：否
     @Transient
     private String token;
+
+    public Integer getIfStoreViewHitory() {
+        return ifStoreViewHitory;
+    }
+
+    public void setIfStoreViewHitory(Integer ifStoreViewHitory) {
+        this.ifStoreViewHitory = ifStoreViewHitory;
+    }
 
     public Long getDepartmentId() {
         return departmentId;

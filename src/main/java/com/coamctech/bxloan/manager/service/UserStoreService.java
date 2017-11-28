@@ -100,7 +100,7 @@ public class UserStoreService extends BaseService<UserStore,Long>{
         String sql = " from UserStore where  userId=:userId and docColumnParentId=:docColumnParentId";
         param.put("userId",userId);
         param.put("docColumnParentId",docColumnParentId);
-        sql = sql + " order by updateTime desc ";
+        sql = sql + " order by createTime desc ";
 
         PageList<UserStore> pageList = this.pageList(page,sql,param);
 

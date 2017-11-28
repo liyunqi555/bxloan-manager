@@ -257,7 +257,7 @@ public class AppHomeController extends AppBaseController{
      */
     @RequestMapping("myStore")
     public JsonResult myStore(@RequestParam(name="pageIndex",defaultValue ="0") Integer pageIndex
-            ,@RequestParam(name="topLevelColumnId",required = false) Long topLevelColumnId){
+            ,@RequestParam(name="topLevelColumnId") Long topLevelColumnId){
         long userId = TokenUtils.sessionUser().getId();
         Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
         List<DocInfo> docInfos = docInfoService.myStore(page, userId,topLevelColumnId);

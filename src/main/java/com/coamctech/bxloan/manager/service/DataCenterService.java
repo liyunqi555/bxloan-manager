@@ -98,7 +98,7 @@ public class DataCenterService {
      * @return
      */
     private List<Map<String,Object>> list(String columns,String nativeSql,String... params){
-        List<String> fields = Arrays.asList(columns.split(","));
+        List<String> fields = Arrays.asList(columns.trim().split(","));
         return this.list(fields,nativeSql,params);
     }
     private  List<Map<String,Object>> list(List<String> fields,String nativeSql,String... params){
@@ -111,14 +111,18 @@ public class DataCenterService {
             sql.append("select ");
             List<String> keys = new ArrayList<>();
             fields.forEach(field->{
-                sql.append(field+", ");
-                keys.add(field.substring(field.indexOf(".")));
+                sql.append(field+",");
+                if(field.indexOf(".")!=-1){
+                    keys.add(field.substring(field.indexOf(".")));
+                }else{
+                    keys.add(field);
+                }
             });
-            sql.append(nativeSql);
-            Query query = entityManager.createNativeQuery(sql.toString());
+            String sqlEnd = sql.substring(0,sql.length()-1)+nativeSql;
+            Query query = entityManager.createNativeQuery(sqlEnd);
             if(params!=null){
-                for(int i=1;i<params.length;i++){
-                    query.setParameter(i,params[i]);
+                for(int i=0;i<params.length;i++){
+                    query.setParameter(i+1,params[i]);
                 }
             }
             List<Object[]> objecArraytList = query.getResultList();

@@ -23,7 +23,7 @@ public class BaseTest {
     protected static String token = "477b9bb3a60beb023698abcb62a336c0v101000000_f8749b2ce88fc56125d6b6a22a37506d1178f793";
     protected static String sign = "415F24D4C5C09169A706ACE283602DE7";
     public static void main(String[] args) {
-        login();
+        /*login();
         topColumns();
         banner();
         customColumn();
@@ -31,6 +31,67 @@ public class BaseTest {
         noCustomDocColumns();
         cancelCustomColumn();
         worlds();
+        docInfos();
+        search();
+        docInfoDetail();
+        store();
+        cancelStore();
+        myStore();
+        myHistory();*/
+        dataCenter_home();
+    }
+    public static void dataCenter_home(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("conceptUri","国家"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/dataCenter/home");
+    }
+    public static void myHistory(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("pageIndex","0"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/home/myHistory");
+    }
+    public static void myStore(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("pageIndex","0"));
+        nvps.add(new NameValuePair("topLevelColumnId","1"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/home/myStore");
+    }
+    public static void cancelStore(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("idsStr","1"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/home/cancelStore");
+    }
+    public static void store(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("docInfoId","19"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/home/store");
+    }
+    public static void docInfoDetail(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("docInfoId","18"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/home/docInfoDetail");
+    }
+    public static void search(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("pageIndex","0"));
+        nvps.add(new NameValuePair("keyword","关键的1"));
+        nvps.add(new NameValuePair("topLevelColumnId","1"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/home/search");
+    }
+    public static void docInfos(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("pageIndex","0"));
+        nvps.add(new NameValuePair("columnId","4"));
+        nvps.add(new NameValuePair("topLevelColumnId","1"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/home/docInfos");
     }
     public static void haveCustomDocColumns(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
@@ -46,7 +107,7 @@ public class BaseTest {
     }
     public static void customColumn(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new NameValuePair("columnId","6"));
+        nvps.add(new NameValuePair("columnId","4"));
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/home/customColumn");
     }
