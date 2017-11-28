@@ -57,11 +57,18 @@ public class AppRequestFilter implements Filter {
                 if(token==null) {
                     response.setHeader("Content-Type", "application/json; charset=UTF-8");
                     response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(
-                            new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.TOKEN_NULL_MSG)));
+                            new JsonResult(ResultCode.TOKEN_NULL_CODE,ResultCode.TOKEN_NULL_MSG)));
                     response.getWriter().flush();
                     return;
                 }
-                if(checkSign(request,response)){
+                Long uid = TokenUtils.uid(token);
+                if(uid==null){
+                    response.setHeader("Content-Type", "application/json; charset=UTF-8");
+                    response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(new JsonResult(ResultCode.TOKEN_LLLEGAL_CODE, ResultCode.TOKEN_LLLEGAL_MSG)));
+                    response.getWriter().flush();
+                    return;
+                }
+                if(checkSign(request,response,uid)){
                     filterChain.doFilter(servletRequest, servletResponse);
                 }else{
                     response.setHeader("Content-Type", "application/json; charset=UTF-8");
@@ -74,7 +81,7 @@ public class AppRequestFilter implements Filter {
 
         TokenUtils.clearSession();
     }
-    private boolean checkSign(HttpServletRequest request, HttpServletResponse response){
+    private boolean checkSign(HttpServletRequest request, HttpServletResponse response,Long uid){
         //获得传的数据
         Enumeration enumeration =  request.getParameterNames();
         TreeMap treemap = new TreeMap<String, String>(TokenUtils.URLSortedComparator.INSTANCE);
@@ -83,8 +90,6 @@ public class AppRequestFilter implements Filter {
             String thisValue=request.getParameter(thisName);
             treemap.put(thisName, thisValue);
         }
-        String token = request.getParameter("token");
-        Long uid = TokenUtils.uid(token);
         User user = userDao.findOne(uid);
         boolean success = TokenUtils.urlIsLegal(treemap, user.getSign());
         if(success){

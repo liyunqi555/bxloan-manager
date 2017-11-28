@@ -42,6 +42,9 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
      */
     public List<DocColumn> getNoCustomColumns(Long userId,Long parentDocCulumnId){
         List<Long> customColumnIds = userCustomDocColumnService.getCustomColumnIds(userId, parentDocCulumnId);
+        if(customColumnIds.size()==0){
+            customColumnIds.add(-1L);
+        }
         List<DocColumn> docColumnList = docColumnDao.findByParentIdAndIdNotIn(parentDocCulumnId, customColumnIds);
         return docColumnList;
     }

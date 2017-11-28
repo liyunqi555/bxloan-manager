@@ -6,10 +6,8 @@ import com.coamctech.bxloan.manager.common.PageList;
 import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.dao.DocInfoDao;
 import com.coamctech.bxloan.manager.dao.UserDocColumnRelDao;
-import com.coamctech.bxloan.manager.domain.DocInfo;
-import com.coamctech.bxloan.manager.domain.UserDocColumnRel;
-import com.coamctech.bxloan.manager.domain.UserStore;
-import com.coamctech.bxloan.manager.domain.UserViewHistory;
+import com.coamctech.bxloan.manager.domain.*;
+import com.coamctech.bxloan.manager.utils.StringUtils;
 import com.coamctech.bxloan.manager.utils.TokenUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.jsoup.Jsoup;
@@ -50,12 +48,15 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
     private UserViewHistoryService userViewHistoryService;
     @Autowired
     private UserStoreService userStoreService;
+    @Autowired
+    private DocSourceService docSourceService;
 
 
     public List<DocInfo> getTopDocInfos(Long parentColumnId,Integer topCount){
 
         List<Long> columnIds = docColumnService.getChildColumnIdsByParentId(parentColumnId);
-        List<DocInfo> docInfos = docInfoDao.findByColumnIdInOrderByIfTopDescUpdateTimeDesc(columnIds, topCount);
+        //List<DocInfo> docInfos = docInfoDao.findByColumnIdInOrderByIfTopDescUpdateTimeDesc(columnIds, topCount);
+        List<DocInfo> docInfos = docInfoDao.findFirst6ByColumnIdInOrderByIfTopDescUpdateTimeDesc(columnIds);
         docInfos.forEach(docInfo -> {
             parseImgUrlOfDocInfo(docInfo);
         });
@@ -85,6 +86,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
      * @return
      */
     public List<DocInfo> searchDocInfos(Page page,Long userId,List<Long> parentColumnIds,String keyWorld){
+        logger.info("userId={},parentColumnIds={}", userId, parentColumnIds.get(0));
         List<Long> childColumnIds = new ArrayList<>();
         parentColumnIds.forEach(parentColumnId->{
             List<Long> columnIds = userCustomDocColumnService.getCustomColumnIds(userId,parentColumnId);
@@ -112,15 +114,28 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         Map<String, Object> param = new HashMap<>();
         String sql = " from DocInfo where  columnId in (:columnId) ";
         param.put("columnId",columnIds);
-        if(!"".equals(keyworld)){
+        if(StringUtils.isNotEmpty(keyworld)){
             sql = sql + " and title like :title ";
             param.put("title","%"+keyworld+"%");
         }
         sql = sql + " order by updateTime desc ";
 
         PageList<DocInfo> pageList = this.pageList(page,sql,param);
+        List<Long> sourceIds = new ArrayList<>();
         pageList.getList().forEach(docInfo -> {
+            sourceIds.add(docInfo.getSourceId());
             parseImgUrlOfDocInfo(docInfo);
+        });
+        Iterable<DocSource> docSources = docSourceService.findAll(sourceIds);
+        pageList.getList().forEach(docInfo->{
+            if(docInfo.getSourceId()!=null){
+                docSources.forEach(docSource->{
+                    if(docInfo.getSourceId().equals(docSource.getId())){
+                        docInfo.setSourceName(docSource.getName());
+                    }
+                });
+            }
+
         });
         return pageList;
     }

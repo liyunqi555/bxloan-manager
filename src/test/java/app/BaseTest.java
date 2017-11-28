@@ -7,6 +7,7 @@ import java.util.*;
 import com.coamctech.bxloan.manager.utils.Encodes;
 import com.coamctech.bxloan.manager.utils.TokenUtils;
 import com.coamctech.bxloan.manager.utils.encrypt.Cryptos;
+import com.coamctech.bxloan.manager.utils.encrypt.MD5Util;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -18,13 +19,74 @@ import org.slf4j.LoggerFactory;
 public class BaseTest {
 	private static Logger logger = LoggerFactory.getLogger(BaseTest.class);
 	protected static final String base = "http://localhost:8080/";
-	protected static void login(){
+
+    protected static String token = "477b9bb3a60beb023698abcb62a336c0v101000000_f8749b2ce88fc56125d6b6a22a37506d1178f793";
+    protected static String sign = "415F24D4C5C09169A706ACE283602DE7";
+    public static void main(String[] args) {
+        login();
+        topColumns();
+        banner();
+        customColumn();
+        haveCustomDocColumns();
+        noCustomDocColumns();
+        cancelCustomColumn();
+        worlds();
+    }
+    public static void haveCustomDocColumns(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("topLevelColumnId","2"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/home/haveCustomDocColumns");
+    }
+    public static void cancelCustomColumn(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("columnId","7"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/home/cancelCustomColumn");
+    }
+    public static void customColumn(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("columnId","6"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/home/customColumn");
+    }
+    public static void noCustomDocColumns(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("topLevelColumnId","2"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/home/noCustomDocColumns");
+    }
+    public static void worlds(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("pageIndex","0"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/home/worlds");
+    }
+    public static void banner(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/home/banner");
+    }
+    public static void topColumns(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/home/topColumns");
+    }
+    protected static void login(){
 		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 		nvps.add(new NameValuePair("userName", "admin"));
-		nvps.add(new NameValuePair("password", "61540"));
+		nvps.add(new NameValuePair("password", MD5Util.md5Hex("12345678")));
 		nvps.add(new NameValuePair("deviceCode", "123456789abcdef"));
 		String res = post(nvps,"api/app/user/anon/login");
 	}
+    public static void addTokenAndSign(List<NameValuePair> nvps){
+        Map<String,String> params = new HashMap<String,String>();
+        nvps.forEach(nvp -> {
+            params.put(nvp.getName(), nvp.getValue());
+        });
+        nvps.add(new NameValuePair("token", token));
+        nvps.add(new NameValuePair("sign", createSign(params, sign)));
+    }
 	public static String post(List<NameValuePair> nvps,String uri){
 		uri = base+uri;
 		logger.info("uri={}",uri);
@@ -33,7 +95,6 @@ public class BaseTest {
 		PostMethod method = new PostMethod(uri);
 		method.addParameters(nvps.toArray(new NameValuePair[nvps.size()]));
 		method.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
-		method.setRequestHeader("version", "1.0.0");
 		String result = "";
 		try {
 			client.executeMethod(method);

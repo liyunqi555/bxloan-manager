@@ -14,11 +14,15 @@ public class ResultCode implements Serializable {
     /**通用错误码：6xx,记录业务级别通用错误，比如：数据库错误**/
     public static final int PARAM_ERROR_CODE = 601;
     public static final String PARAM_ERROR_MSG = "参数错误，请检查参数";
+    public static final int TOKEN_NULL_CODE = 602;
     public static final String TOKEN_NULL_MSG = "参数错误，没有TOKEN";
+    public static final int TOKEN_LLLEGAL_CODE = 603;
+    public static final String TOKEN_LLLEGAL_MSG = "TOKEN 不合法！";
     public static final String DEVICE_CODE_ERROR_MSG = "该设备已登录其它账号，不能再登录该账号";
-    public static final int USER_NULL_CODE = 602;
+
+    public static final int USER_NULL_CODE = 604;
     public static final String USER_NULL_MSG = "用户不存在或密码错误";
-    public static final int PASSWORD_ERR_CODE = 603;
+    public static final int PASSWORD_ERR_CODE = 605;
     public static final String PASSWORD_ERR_MSG = "用户不存在或密码错误";
 
     /**业务相关错误码：7xx,记录业务级别具体错误，比如登陆密码错误**/
