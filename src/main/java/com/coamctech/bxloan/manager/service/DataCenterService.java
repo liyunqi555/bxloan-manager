@@ -160,6 +160,13 @@ public class DataCenterService {
         }
         return list;
     }
+    public void getMedia(Long mediaId){
+        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        String sql = "select * from FileBlock t where t.多媒体ID=?1 order by t.文件块位置 asc ";
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter(1,mediaId);
+        //List<Object[]> query.getResultList();
+    }
     private void closeEntityManager(EntityManager entityManager){
         if(entityManager!=null){
             entityManager.close();
