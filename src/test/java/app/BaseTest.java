@@ -39,7 +39,31 @@ public class BaseTest {
         myStore();
         myHistory();*/
         dataCenter_home();
+        dataCenter_detail();
+        dataCenter_store();
+        dataCenter_myStore();
     }
+    public static void dataCenter_myStore(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("pageIndex","0"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/dataCenter/myStore");
+    }
+    public static void dataCenter_store(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("conceptUri","人物"));
+        nvps.add(new NameValuePair("entityid","曹操"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/dataCenter/store");
+    }
+    public static void dataCenter_detail(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("conceptUri","人物"));
+        nvps.add(new NameValuePair("entityid","曹操"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/dataCenter/detail");
+    }
+
     public static void dataCenter_home(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new NameValuePair("conceptUri","国家"));

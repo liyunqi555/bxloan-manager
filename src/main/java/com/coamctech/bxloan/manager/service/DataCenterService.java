@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.Page;
 import com.coamctech.bxloan.manager.domain.UserStore;
+import com.coamctech.bxloan.manager.utils.ChineseToPinYin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +29,33 @@ public class DataCenterService {
         List<Map<String,Object>> list = this.list("entityid,name,多媒体ID", " from entity_info t where t.concept_uri=?1 ", conceptUri);
         list.forEach(map->{
             map.put("mediaId", map.get("多媒体ID"));
+            map.put("namePinYin", ChineseToPinYin.getPingYin(String.valueOf(map.get("name"))));
+        });
+        Collections.sort(list, new Comparator<Map<String, Object>>() {
+            @Override
+            public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+                return String.valueOf(o1.get("namePinYin")).compareTo(String.valueOf(o2.get("namePinYin")));
+            }
         });
         return JsonResult.success(list);
     }
     public JsonResult myStore(Page page,Long userId){
-        List<UserStore> userStores = userStoreService.pageUserStoreData(page, userId);
-        JSONArray ja = new JSONArray();
-        JSONObject jo = new JSONObject();
-        return JsonResult.success(userStores);
+//        List<UserStore> userStores = userStoreService.pageUserStoreData(page, userId);
+        String sql = " from t_user_store ts " +
+                " left join entity_info t on t.concept_uri=ts.concept_uri and t.entityid=ts.entity_id " +
+                " where ts.user_id=?1 and ts.doc_column_parent_id is null " +
+                " order by ts.create_time desc ";
+        List<String> fields = new ArrayList<>();//,t2.name,t1.v_string,t1.v_datetime
+        fields.add("ts.id");
+        fields.add("ts.user_id");
+        fields.add("ts.concept_uri");
+        fields.add("ts.entity_id");
+        fields.add("t.多媒体ID");
+        List<Map<String,Object>> list = this.list(fields,sql,userId);
+        list.forEach(m->{
+            m.put("mediaId",m.get("多媒体ID"));
+        });
+        return JsonResult.success(list);
     }
     public JsonResult detail(String conceptUri,String entityId){
         String sql = "from entity_property_info t1 ,ont_property t2 " +
@@ -44,7 +64,7 @@ public class DataCenterService {
         fields.add("t1.entityid");
         fields.add("t2.name");
         fields.add("t2.datatype");
-        fields.add("t1.v_boolean");
+        fields.add("t1.v_bool");
         fields.add("t1.v_string");
         fields.add("t1.v_long");
         fields.add("t1.v_float");
@@ -63,11 +83,12 @@ public class DataCenterService {
         }
         list.forEach(m->{
             String key = String.valueOf(m.get("name"));
+            logger.info("datatype=",String.valueOf(m.get("datatype")));
             int datatype = Integer.valueOf(String.valueOf(m.get("datatype")));
             Object value = "";
             switch (datatype){
                 case 1:
-                    value=m.get("v_boolean");break;
+                    value=m.get("v_bool");break;
                 case 2:
                     value=m.get("v_string");break;
                 case 3:
@@ -101,7 +122,7 @@ public class DataCenterService {
         List<String> fields = Arrays.asList(columns.trim().split(","));
         return this.list(fields,nativeSql,params);
     }
-    private  List<Map<String,Object>> list(List<String> fields,String nativeSql,String... params){
+    private  List<Map<String,Object>> list(List<String> fields,String nativeSql,Object... params){
 
         EntityManager entityManager = null;
         List<Map<String,Object>> list = new ArrayList<>();
@@ -113,12 +134,12 @@ public class DataCenterService {
             fields.forEach(field->{
                 sql.append(field+",");
                 if(field.indexOf(".")!=-1){
-                    keys.add(field.substring(field.indexOf(".")));
+                    keys.add(field.substring(field.indexOf(".")+1));
                 }else{
                     keys.add(field);
                 }
             });
-            String sqlEnd = sql.substring(0,sql.length()-1)+nativeSql;
+            String sqlEnd = sql.substring(0,sql.length()-1)+" "+nativeSql;
             Query query = entityManager.createNativeQuery(sqlEnd);
             if(params!=null){
                 for(int i=0;i<params.length;i++){
@@ -126,6 +147,7 @@ public class DataCenterService {
                 }
             }
             List<Object[]> objecArraytList = query.getResultList();
+//            query.unwrap()
             objecArraytList.forEach(objectArray->{
                 Map<String,Object> m = new HashMap<>();
                 for(int i=0;i<keys.size();i++){

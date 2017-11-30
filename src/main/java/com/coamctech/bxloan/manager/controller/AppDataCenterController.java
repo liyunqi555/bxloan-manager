@@ -38,32 +38,34 @@ public class AppDataCenterController extends AppBaseController{
      * @return
      */
     @RequestMapping("home")
-    public JsonResult home(String conceptUri){
+    public JsonResult home(@RequestParam(name="conceptUri")String conceptUri){
         return dataCenterService.entityList(conceptUri);
     }
 
     /**
      *
      * @param conceptUri
-     * @param entityId
+     * @param entityid
      * @return
      */
     @RequestMapping("detail")
-    public JsonResult detail(String conceptUri,String entityId){
-        return dataCenterService.detail(conceptUri, entityId);
+    public JsonResult detail(@RequestParam(name="conceptUri")String conceptUri
+            ,@RequestParam(name="entityid") String entityid){
+        return dataCenterService.detail(conceptUri, entityid);
     }
 
     /**
      * 收藏
      * @param conceptUri
-     * @param entityId
+     * @param entityid
      * @return
      */
 
     @RequestMapping("store")
-    public JsonResult store(String conceptUri,String entityId){
+    public JsonResult store(@RequestParam(name="conceptUri")String conceptUri
+            ,@RequestParam(name="entityid")String entityid){
         long userId = TokenUtils.sessionUser().getId();
-        return userStoreService.storeData(userId,conceptUri, entityId);
+        return userStoreService.storeData(userId,conceptUri, entityid);
     }
 
     /**

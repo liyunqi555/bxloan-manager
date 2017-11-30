@@ -110,7 +110,7 @@ public class UserStoreService extends BaseService<UserStore,Long>{
         Map<String, Object> param = new HashMap<>();
         String sql = " from UserStore where  userId=:userId and docColumnParentId is null ";
         param.put("userId",userId);
-        sql = sql + " order by updateTime desc ";
+        sql = sql + " order by createTime desc ";
 
         PageList<UserStore> pageList = this.pageList(page,sql,param);
 
