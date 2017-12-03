@@ -48,6 +48,23 @@ public class AppUserController extends AppBaseController{
         User user = TokenUtils.sessionUser();
         return appUserService.changePassword(user,oldPassword, newPassword);
     }
+    /**
+     * 开关浏览记录
+     * @return
+     */
+    @RequestMapping("switchViewHistory")
+    public JsonResult switchViewHistory(){
+        User user = TokenUtils.sessionUser();
+        return appUserService.switchViewHistory(user.getId());
+    }
+    /**
+     * 最新版本数据
+     * @return
+     */
+    @RequestMapping("lastVersion")
+    public JsonResult lastVersion(){
+        return appUserService.lastVersion();
+    }
     public static void main(String[] args) {
         System.out.println(MD5Util.md5Hex("12345678"));
     }

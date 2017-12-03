@@ -1,5 +1,7 @@
 package com.coamctech.bxloan.manager.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -26,12 +28,16 @@ public class DocInfo implements Serializable {
     private String body;//原文正文
     private String cnBoty;//中文正文
     private Long creator;//创建人id
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date updateTime;
     private Integer ifTop;//是否置顶，数字大小代表置顶的顺序
     @Transient
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date viewTime;//浏览时间
     @Transient
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date storeTime;//收藏时间
     @Transient
     private String sourceName;//来源名称

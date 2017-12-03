@@ -6,14 +6,22 @@ import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.Page;
 import com.coamctech.bxloan.manager.domain.UserStore;
 import com.coamctech.bxloan.manager.utils.ChineseToPinYin;
+import com.coamctech.bxloan.manager.utils.CommonHelper;
+import com.coamctech.bxloan.manager.utils.Encodes;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.stream.FileImageOutputStream;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.*;
 
 @Service
@@ -53,7 +61,7 @@ public class DataCenterService {
         fields.add("t.多媒体ID");
         List<Map<String,Object>> list = this.list(fields,sql,userId);
         list.forEach(m->{
-            m.put("mediaId",m.get("多媒体ID"));
+            m.put("mediaId", m.get("多媒体ID"));
         });
         return JsonResult.success(list);
     }
@@ -96,7 +104,10 @@ public class DataCenterService {
                 case 4:
                     value=m.get("v_float");break;
                 case 5:
-                    value=m.get("v_datetime");break;
+                    if(m.get("v_datetime")!=null){
+                        value = CommonHelper.date2Str((Date) m.get("v_datetime"),CommonHelper.DF_DATE);
+                    }
+                    break;
                 case 6:
                     value=m.get("v_datetime_start")+"-"+m.get("v_datetime_end");break;
                 case 7:
@@ -160,16 +171,29 @@ public class DataCenterService {
         }
         return list;
     }
-    public void getMedia(Long mediaId){
+    public List<byte[]> getMedia(Long mediaId){
         EntityManager entityManager = this.entityManagerFactory.createEntityManager();
-        String sql = "select * from FileBlock t where t.多媒体ID=?1 order by t.文件块位置 asc ";
+        String sql = "select 文件块内容 from FileBlock t where t.多媒体ID=?1 order by t.文件块位置 asc ";
         Query query = entityManager.createNativeQuery(sql);
         query.setParameter(1,mediaId);
-        //List<Object[]> query.getResultList();
+        List<byte[]> list = query.getResultList();
+        return list;
+       /* FileImageOutputStream imageOutput = null;
+        try {
+            imageOutput = new FileImageOutputStream(new File("f://e.jpg"));
+            for(byte[] arr:list){
+                imageOutput.write(arr, 0, arr.length);
+            }
+            imageOutput.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
     }
     private void closeEntityManager(EntityManager entityManager){
         if(entityManager!=null){
             entityManager.close();
         }
     }
+
 }

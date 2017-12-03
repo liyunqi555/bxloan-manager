@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
 
 /**
@@ -78,5 +82,41 @@ public class AppDataCenterController extends AppBaseController{
         long userId = TokenUtils.sessionUser().getId();
         Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
         return dataCenterService.myStore(page,userId);
+    }
+    /**
+     * 我的收藏
+     * @return
+     */
+
+    @RequestMapping("file")
+    public void file(@RequestParam(name="mediaId") Long mediaId,HttpServletResponse response){
+        List<byte[]> list = dataCenterService.getMedia(mediaId);
+        response.reset();
+        Long fileSize = 0L;
+        for(int i=0;i<list.size();i++){
+            fileSize+=list.get(i).length;
+        }
+        OutputStream toClient = null ;
+        try {
+            // 设置response的Header
+            response.addHeader("Content-Disposition", "attachment;filename=" + new String("中国".getBytes()));
+            response.addHeader("Content-Length", "" + fileSize);
+            toClient = new BufferedOutputStream(response.getOutputStream());
+            response.setContentType("application/octet-stream");
+            for(byte[] arr:list) {
+                toClient.write(arr);
+            }
+            toClient.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if(toClient!=null){
+                try {
+                    toClient.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

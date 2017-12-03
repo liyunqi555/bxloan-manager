@@ -2,8 +2,10 @@ package com.coamctech.bxloan.manager.service;
 
 import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.ResultCode;
+import com.coamctech.bxloan.manager.dao.AppConfigDao;
 import com.coamctech.bxloan.manager.dao.DeviceDao;
 import com.coamctech.bxloan.manager.dao.UserDao;
+import com.coamctech.bxloan.manager.domain.AppConfig;
 import com.coamctech.bxloan.manager.domain.Device;
 import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.domain.UserStore;
@@ -25,6 +27,8 @@ public class AppUserService  extends BaseService<User,Long> {
     private UserDao userDao;
     @Autowired
     private DeviceDao deviceDao;
+    @Autowired
+    private AppConfigDao appConfigDao;
 
     public JsonResult login(String userName, String password, String deviceCode) {
         if (StringUtils.isBlank(userName) || StringUtils.isBlank(password) || StringUtils.isBlank(deviceCode)) {
@@ -79,5 +83,24 @@ public class AppUserService  extends BaseService<User,Long> {
         user1.setUpdateTime(new Date());
         userDao.save(user1);
         return JsonResult.success();
+    }
+    public JsonResult switchViewHistory(Long userId) {
+
+        User user = userDao.findOne(userId);
+        if (user == null) {
+            return new JsonResult(ResultCode.USER_NULL_CODE, ResultCode.USER_NULL_MSG);
+        }
+        int ifViewHistory = 1;
+        if(user.getIfStoreViewHitory()!=null){
+            ifViewHistory = user.getIfStoreViewHitory()==1?0:1;
+        }
+        user.setIfStoreViewHitory(ifViewHistory);
+        user.setUpdateTime(new Date());
+        userDao.save(user);
+        return JsonResult.success();
+    }
+    public JsonResult lastVersion() {
+        AppConfig appConfig = appConfigDao.findTopByOrderByCreateTimeDesc();
+        return JsonResult.success(appConfig);
     }
 }

@@ -1,5 +1,6 @@
 package com.coamctech.bxloan.manager.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONReader;
 import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.Page;
@@ -175,7 +176,7 @@ public class AppHomeController extends AppBaseController{
     @RequestMapping("haveCustomDocColumns")
     public JsonResult haveCustomDocColumns(@RequestParam(name = "topLevelColumnId") Long topLevelColumnId){
         Long userId = TokenUtils.sessionUser().getId();
-        Iterable<DocColumn> docColumns = this.docColumnService.getCustomColumns(userId,topLevelColumnId);
+        JSONArray docColumns = this.docColumnService.getCustomColumns(userId,topLevelColumnId);
         return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG, docColumns);
     }
     /**
@@ -262,5 +263,18 @@ public class AppHomeController extends AppBaseController{
         Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
         List<DocInfo> docInfos = docInfoService.myStore(page, userId,topLevelColumnId);
         return JsonResult.success(docInfos);
+    }
+
+    /**
+     * 栏目排序
+     * @param customColumnIdOne
+     * @param customColumnIdTwo
+     * @return
+     */
+    @RequestMapping("switchOrder")
+    public JsonResult switchOrder(@RequestParam(name = "customColumnIdOne")Long customColumnIdOne,
+                                  @RequestParam(name = "customColumnIdTwo")Long customColumnIdTwo){
+        Long userId = TokenUtils.sessionUser().getId();
+        return userCustomDocColumnService.switchOrder(userId, customColumnIdOne, customColumnIdTwo);
     }
 }

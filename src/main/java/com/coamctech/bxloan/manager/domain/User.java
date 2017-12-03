@@ -1,5 +1,7 @@
 package com.coamctech.bxloan.manager.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -16,17 +18,22 @@ public class User implements Serializable {
     private String userName;
     private String nickName;
     private String password;
+    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
     private Date birthday;
     private String email;
     private String officePhone;
     private String telephone;
     private Long creator;
     private Integer status;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date updateTime;
     private String sign;
     private Long departmentId;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date startTime;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date endTime;
     private Integer ifStoreViewHitory;//是否存储浏览历史，1：是，0：否
     @Transient

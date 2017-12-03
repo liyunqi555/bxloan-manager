@@ -1,7 +1,13 @@
 delete from t_user;
-insert into t_user (nick_name,user_name,password,birthday,email,office_Phone,telephone,creator,status,create_Time,update_time,if_Store_View_Hitory)
+insert into t_user (nick_name,user_name,password,birthday,email,office_Phone
+,telephone,creator,status,create_Time,update_time,start_time,end_time,if_Store_View_Hitory)
 values('管理员','admin','25d55ad283aa400af464c76d713c07ad','2015-09-14'
-,'123456@qq.com','010-55555555','13123456789',0,1,getdate(),getdate(),1);
+,'123456@qq.com','010-55555555','13123456789',0,1,getdate(),getdate(),'2017-11-27 22:45:03','2099-12-02 22:45:03',1);
+
+insert into t_user (nick_name,user_name,password,birthday,email,office_Phone
+,telephone,creator,status,create_Time,update_time,start_time,end_time,if_Store_View_Hitory)
+values('vip1','vip1','25d55ad283aa400af464c76d713c07ad','2015-09-14'
+,'123456@qq.com','010-55555555','13123456789',0,1,getdate(),getdate(),'2017-11-27 22:45:03','2017-12-02 22:45:03',1);
 
 delete from t_doc_column;
 
@@ -102,3 +108,8 @@ values('<p>凡成大事者不唯有超市之才已有坚韧不拔之志2，<IMAG
 delete from t_doc_source;
 insert into t_doc_source (create_time,creator,if_special,is_abroad,language_type,name,type,update_time,website)
 values(getdate(),'1','1','','1','今日要闻','1',getdate(),'1');
+
+--初始化版本
+delete from t_app_config;
+insert into t_app_config (create_time,description,down_load_url,version)
+values(getdate(),'初始版本','http://www.baidu.com','0.0.1');

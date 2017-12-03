@@ -19,30 +19,39 @@ import org.slf4j.LoggerFactory;
 public class BaseTest {
 	private static Logger logger = LoggerFactory.getLogger(BaseTest.class);
 	protected static final String base = "http://localhost:8080/";
-
+    //admin
     protected static String token = "477b9bb3a60beb023698abcb62a336c0v101000000_f8749b2ce88fc56125d6b6a22a37506d1178f793";
+    //vip1
+//    protected static String token = "c932f5e63dc530e5d00f90a5aaf07b8ev101000000_b21077fb541f46b6e4f79108121e08e4ac58a2f9";
     protected static String sign = "415F24D4C5C09169A706ACE283602DE7";
     public static void main(String[] args) {
-        /*login();
-        topColumns();
-        banner();
-        customColumn();
-        haveCustomDocColumns();
-        noCustomDocColumns();
-        cancelCustomColumn();
-        worlds();
-        docInfos();
-        search();
-        docInfoDetail();
-        store();
-        cancelStore();
-        myStore();
-        myHistory();*/
-        dataCenter_home();
-        dataCenter_detail();
-        dataCenter_store();
-        dataCenter_myStore();
+        login();
+        login_vip1();
+//        topColumns();
+//        banner();
+//        customColumn();
+//
+//        haveCustomDocColumns();
+//        noCustomDocColumns();
+//        switchOrder();
+//        lastVersion();
+//        cancelCustomColumn();
+//        worlds();
+//        docInfos();
+//        search();
+//        docInfoDetail();
+//        store();
+//        cancelStore();
+//        myStore();
+//        myHistory();
+        //dataCenter_home();
+//        dataCenter_detail();
+        //dataCenter_store();
+//        dataCenter_myStore();
+        //changePassword();
+        //switchViewHistory();
     }
+
     public static void dataCenter_myStore(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new NameValuePair("pageIndex","0"));
@@ -117,6 +126,13 @@ public class BaseTest {
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/home/docInfos");
     }
+    public static void switchOrder(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("customColumnIdOne","6"));
+        nvps.add(new NameValuePair("customColumnIdTwo","7"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/home/switchOrder");
+    }
     public static void haveCustomDocColumns(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new NameValuePair("topLevelColumnId","2"));
@@ -131,7 +147,7 @@ public class BaseTest {
     }
     public static void customColumn(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new NameValuePair("columnId","4"));
+        nvps.add(new NameValuePair("columnId","7"));
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/home/customColumn");
     }
@@ -157,11 +173,35 @@ public class BaseTest {
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/home/topColumns");
     }
+    protected static void lastVersion(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/user/lastVersion");
+    }
+    protected static void switchViewHistory(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/user/switchViewHistory");
+    }
+    protected static void changePassword(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("oldPassword", MD5Util.md5Hex("12345678")));
+        nvps.add(new NameValuePair("newPassword", MD5Util.md5Hex("123456789")));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/user/changePassword");
+    }
+    protected static void login_vip1(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("userName", "vip1"));
+        nvps.add(new NameValuePair("password", MD5Util.md5Hex("12345678")));
+        nvps.add(new NameValuePair("deviceCode", "123456789abcdefvip1"));
+        String res = post(nvps,"api/app/user/anon/login");
+    }
     protected static void login(){
 		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 		nvps.add(new NameValuePair("userName", "admin"));
-		nvps.add(new NameValuePair("password", MD5Util.md5Hex("12345678")));
-		nvps.add(new NameValuePair("deviceCode", "123456789abcdef"));
+		nvps.add(new NameValuePair("password", MD5Util.md5Hex("123456789")));
+		nvps.add(new NameValuePair("deviceCode", "123456789abcdef9"));
 		String res = post(nvps,"api/app/user/anon/login");
 	}
     public static void addTokenAndSign(List<NameValuePair> nvps){

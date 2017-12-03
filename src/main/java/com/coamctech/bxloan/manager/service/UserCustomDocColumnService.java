@@ -29,7 +29,7 @@ public class UserCustomDocColumnService extends BaseService<UserCustomDocColumn,
     private DocColumnService docColumnService;
 
     /**
-     * 根据一级栏目查询某用户已定制的下级栏目
+     * 根据一级栏目查询某用户已定制的下级栏目id
      * @param userId
      * @param docColumnParentId
      * @return
@@ -40,7 +40,16 @@ public class UserCustomDocColumnService extends BaseService<UserCustomDocColumn,
         list.forEach(userCustomDocColumn->{childColumns.add(userCustomDocColumn.getDocColumnId());});
         return childColumns;
     }
-
+    /**
+     * 根据一级栏目查询某用户已定制的下级栏目id
+     * @param userId
+     * @param docColumnParentId
+     * @return
+     */
+    public List<UserCustomDocColumn> getCustomColumns(Long userId,Long docColumnParentId){
+        List<UserCustomDocColumn> list = userCustomDocColumnDao.findByUserIdAndDocColumnParentId(userId,docColumnParentId);
+        return list;
+    }
     /**
      * 某用户是否已经定制某栏目
      * @param userId
@@ -116,7 +125,7 @@ public class UserCustomDocColumnService extends BaseService<UserCustomDocColumn,
      * @param customColumnIdTwo
      * @return
      */
-    public JsonResult changeCustomColumnOrder(Long userId,Long customColumnIdOne,Long customColumnIdTwo){
+    public JsonResult switchOrder(Long userId,Long customColumnIdOne,Long customColumnIdTwo){
         if(customColumnIdOne==null ||customColumnIdTwo==null){
             return new JsonResult(ResultCode.PARAM_ERROR_CODE,"该栏目不存在");
         }
@@ -124,7 +133,7 @@ public class UserCustomDocColumnService extends BaseService<UserCustomDocColumn,
         if(userCustomDocColumnOne==null){
             return new JsonResult(ResultCode.PARAM_ERROR_CODE,"该栏目未订阅");
         }
-        UserCustomDocColumn userCustomDocColumnTwo = userCustomDocColumnDao.findByUserIdAndDocColumnId(userId, customColumnIdOne);
+        UserCustomDocColumn userCustomDocColumnTwo = userCustomDocColumnDao.findByUserIdAndDocColumnId(userId, customColumnIdTwo);
         if(userCustomDocColumnTwo==null){
             return new JsonResult(ResultCode.PARAM_ERROR_CODE,"该栏目未订阅");
         }
