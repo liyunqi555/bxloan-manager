@@ -5,8 +5,10 @@ import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.dao.DocColumnDao;
 import com.coamctech.bxloan.manager.dao.UserCustomDocColumnDao;
+import com.coamctech.bxloan.manager.dao.UserDocColumnOrderDao;
 import com.coamctech.bxloan.manager.domain.DocColumn;
 import com.coamctech.bxloan.manager.domain.UserCustomDocColumn;
+import com.coamctech.bxloan.manager.domain.UserDocColumnOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,13 @@ public class UserCustomDocColumnService extends BaseService<UserCustomDocColumn,
     @Autowired
     private UserCustomDocColumnDao userCustomDocColumnDao;
     @Autowired
+    private UserDocColumnOrderService userDocColumnOrderService;
+    @Autowired
     private DocColumnService docColumnService;
+    @Autowired
+    private RoleUserRelService roleUserRelService;
+    @Autowired
+    private RoleDocColumnService roleDocColumnService;
 
     /**
      * 根据一级栏目查询某用户已定制的下级栏目id
@@ -49,6 +57,21 @@ public class UserCustomDocColumnService extends BaseService<UserCustomDocColumn,
     public List<UserCustomDocColumn> getCustomColumns(Long userId,Long docColumnParentId){
         List<UserCustomDocColumn> list = userCustomDocColumnDao.findByUserIdAndDocColumnParentId(userId,docColumnParentId);
         return list;
+    }
+    public List<UserCustomDocColumn> getCustomColumns(Long userId,List<Long> docColumnParentIds){
+        List<UserCustomDocColumn> list = userCustomDocColumnDao.findByUserIdAndDocColumnParentIdIn(userId,docColumnParentIds);
+        return list;
+    }
+    /**
+     * 某用户是否已经定制某栏目
+     * @param userId
+     * @param docColumnId
+     * @return
+     */
+    public boolean ifCustomColumnId(Long userId,Long docColumnId,Long docColumnParentId){
+        UserCustomDocColumn userCustomDocColumn = userCustomDocColumnDao.
+                findByUserIdAndDocColumnIdAndDocColumnParentId(userId, docColumnId, docColumnParentId);
+        return userCustomDocColumn!=null;
     }
     /**
      * 某用户是否已经定制某栏目
@@ -83,11 +106,10 @@ public class UserCustomDocColumnService extends BaseService<UserCustomDocColumn,
         userCustomDocColumn.setCreateTime(new Date());
         Map<String,Object> params = new HashMap<>();
         params.put("userId",userId);
-        List<UserCustomDocColumn> userCustomDocColumns = userCustomDocColumnDao.findByUserId(userId);
-        userCustomDocColumn.setCustomOrder(userCustomDocColumns.size()+1);
         userCustomDocColumn.setDocColumnParentId(docColumn.getParentId());
         userCustomDocColumn.setUserId(userId);
         userCustomDocColumnDao.save(userCustomDocColumn);
+        userDocColumnOrderService.save(userId,docColumn.getId());
         return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG);
     }
     /**
@@ -104,46 +126,9 @@ public class UserCustomDocColumnService extends BaseService<UserCustomDocColumn,
         if(delUserCustomDocColumn==null){
             return new JsonResult(ResultCode.PARAM_ERROR_CODE,"该栏目未订阅");
         }
-        int delCustomOrder = delUserCustomDocColumn.getCustomOrder();
         userCustomDocColumnDao.delete(delUserCustomDocColumn);
-        //调整所有该客户已订阅栏目的顺序
-        List<UserCustomDocColumn> userCustomDocColumns = userCustomDocColumnDao.findByUserId(userId);
-        userCustomDocColumns.forEach(userCustomDocColumn->{
-            int customOrder = userCustomDocColumn.getCustomOrder();
-            if(customOrder > delCustomOrder){
-                userCustomDocColumn.setCustomOrder(customOrder-1);
-            }
-        });
-        userCustomDocColumnDao.save(userCustomDocColumns);
-        return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG);
-    }
 
-    /**
-     * 调整订阅的栏目的顺序
-     * @param userId
-     * @param customColumnIdOne
-     * @param customColumnIdTwo
-     * @return
-     */
-    public JsonResult switchOrder(Long userId,Long customColumnIdOne,Long customColumnIdTwo){
-        if(customColumnIdOne==null ||customColumnIdTwo==null){
-            return new JsonResult(ResultCode.PARAM_ERROR_CODE,"该栏目不存在");
-        }
-        UserCustomDocColumn userCustomDocColumnOne = userCustomDocColumnDao.findByUserIdAndDocColumnId(userId, customColumnIdOne);
-        if(userCustomDocColumnOne==null){
-            return new JsonResult(ResultCode.PARAM_ERROR_CODE,"该栏目未订阅");
-        }
-        UserCustomDocColumn userCustomDocColumnTwo = userCustomDocColumnDao.findByUserIdAndDocColumnId(userId, customColumnIdTwo);
-        if(userCustomDocColumnTwo==null){
-            return new JsonResult(ResultCode.PARAM_ERROR_CODE,"该栏目未订阅");
-        }
-        Integer customOrderOne = userCustomDocColumnOne.getCustomOrder();
-        Integer customOrderTwo = userCustomDocColumnTwo.getCustomOrder();
-        userCustomDocColumnOne.setCustomOrder(customOrderTwo);
-        userCustomDocColumnTwo.setCustomOrder(customOrderOne);
-
-        userCustomDocColumnDao.save(userCustomDocColumnOne);
-        userCustomDocColumnDao.save(userCustomDocColumnTwo);
+        userDocColumnOrderService.deleteByUserIdAndDocColumnId(userId,customColumnId);
         return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG);
     }
 }

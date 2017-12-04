@@ -54,6 +54,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
     private AppUserService appUserService;
 
 
+
     public List<DocInfo> getTopDocInfos(Long parentColumnId,Integer topCount){
 
         List<Long> columnIds = docColumnService.getChildColumnIdsByParentId(parentColumnId);
@@ -72,13 +73,16 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
      * @param columnId 栏目id
      * @return
      */
-    public List<DocInfo> docInfos(Page page,Long userId,Long columnId){
-        if(!userCustomDocColumnService.ifCustomColumnId(userId,columnId)){
+    public List<DocInfo> docInfos(Page page,Long userId,Long columnId,Long topLevelColumnId){
+        if(docColumnService.ifCanVisitColumnId(userId,columnId,topLevelColumnId)){
             return Collections.EMPTY_LIST;
         }
+
         PageList<DocInfo> pageList =   this.getDocInfos(page, Arrays.asList(columnId), null);
         return pageList.getList();
     }
+
+
     /**
      * 查询文档信息列表
      * @param page 分页查询
@@ -89,15 +93,8 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
      */
     public List<DocInfo> searchDocInfos(Page page,Long userId,List<Long> parentColumnIds,String keyWorld){
         logger.info("userId={},parentColumnIds={}", userId, parentColumnIds.get(0));
-        List<Long> childColumnIds = new ArrayList<>();
-        parentColumnIds.forEach(parentColumnId->{
-            List<Long> columnIds = userCustomDocColumnService.getCustomColumnIds(userId,parentColumnId);
-            if(columnIds.size()>0){
-                childColumnIds.addAll(columnIds);
-            }
-        });
 
-
+        List<Long> childColumnIds = docColumnService.getCanVisitColumnIds(userId,parentColumnIds);
         if(childColumnIds.size()==0){
             return Collections.EMPTY_LIST;
         }

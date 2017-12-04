@@ -15,4 +15,5 @@ import java.util.List;
 public interface DocColumnDao extends JpaSpecificationExecutor<DocColumn>,PagingAndSortingRepository<DocColumn,Long> {
     List<DocColumn> findByParentId(Long parentId);
     List<DocColumn> findByParentIdAndIdNotIn(Long parentId,Collection<Long> ids);
+    List<DocColumn> findByParentIdInAndIdNotIn(Collection<Long> parentId,Collection<Long> ids);
 }

@@ -7,14 +7,17 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
 public interface UserCustomDocColumnDao extends JpaSpecificationExecutor<UserCustomDocColumn>,PagingAndSortingRepository<UserCustomDocColumn,Long> {
 
     List<UserCustomDocColumn> findByUserIdAndDocColumnParentId(Long userId,Long docColumnParentId);
+    List<UserCustomDocColumn> findByUserIdAndDocColumnParentIdIn(Long userId,Collection<Long> docColumnParentIds);
     List<UserCustomDocColumn> findByUserId(Long userId);
 
     UserCustomDocColumn findByUserIdAndDocColumnId(Long userId,Long docColumnId);
+    UserCustomDocColumn findByUserIdAndDocColumnIdAndDocColumnParentId(Long userId,Long docColumnId,Long docColumnParentId);
 
 }

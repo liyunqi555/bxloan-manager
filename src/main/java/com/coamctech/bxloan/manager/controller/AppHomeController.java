@@ -6,8 +6,10 @@ import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.Page;
 import com.coamctech.bxloan.manager.common.PageList;
 import com.coamctech.bxloan.manager.common.ResultCode;
+import com.coamctech.bxloan.manager.dao.UserDocColumnOrderDao;
 import com.coamctech.bxloan.manager.domain.DocColumn;
 import com.coamctech.bxloan.manager.domain.DocInfo;
+import com.coamctech.bxloan.manager.domain.UserDocColumnOrder;
 import com.coamctech.bxloan.manager.service.*;
 import com.coamctech.bxloan.manager.utils.StringUtils;
 import com.coamctech.bxloan.manager.utils.TokenUtils;
@@ -42,7 +44,8 @@ public class AppHomeController extends AppBaseController{
     private UserStoreService userStoreService;
     @Autowired
     private UserViewHistoryService userViewHistoryService;
-
+    @Autowired
+    private UserDocColumnOrderService userDocColumnOrderService;
 
     @Value("${top.level.column.id.news}")
     private Long topLevelColumnIdNews;
@@ -119,6 +122,10 @@ public class AppHomeController extends AppBaseController{
             parentColumnIds.add(topLevelColumnId);
         }
         List<DocInfo> docInfos = this.docInfoService.searchDocInfos(page, userId, parentColumnIds, keyword);
+        docInfos.forEach(d->{
+            d.setBody("");
+            d.setCnBoty("");
+        });
         jsonResult.setBody(docInfos);
         return jsonResult;
     }
@@ -142,17 +149,21 @@ public class AppHomeController extends AppBaseController{
      */
     @RequestMapping("docInfos")
     public JsonResult docInfos(@RequestParam(name="pageIndex",defaultValue ="0") Integer pageIndex,
-                               @RequestParam(name="columnId") Long columnId,
+                               @RequestParam(name="columnId",required = false) Long columnId,
                                @RequestParam(name="topLevelColumnId") Long topLevelColumnId){
         Long userId = TokenUtils.sessionUser().getId();
         Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
+        List<DocInfo> docInfos = new ArrayList<>();
         if(columnId!=null){//二级栏目不为null 直接查询二级栏目的资讯
-            List<DocInfo> docInfos = this.docInfoService.docInfos(page, userId, columnId);
-            return JsonResult.success(docInfos);
+            docInfos = this.docInfoService.docInfos(page, userId, columnId,topLevelColumnId);
         }else{
-            List<DocInfo> docInfos = this.docInfoService.searchDocInfos(page, userId, Arrays.asList(topLevelColumnId), null);
-            return JsonResult.success(docInfos);
+            docInfos = this.docInfoService.searchDocInfos(page, userId, Arrays.asList(topLevelColumnId), null);
         }
+        docInfos.forEach(d->{
+            d.setBody("");
+            d.setCnBoty("");
+        });
+        return JsonResult.success(docInfos);
     }
 
     /**
@@ -161,10 +172,18 @@ public class AppHomeController extends AppBaseController{
      * @return
      */
     @RequestMapping("noCustomDocColumns")
-    public JsonResult noCustomDocColumns(@RequestParam(name = "topLevelColumnId") Long topLevelColumnId){
+    public JsonResult noCustomDocColumns(@RequestParam(name = "topLevelColumnId",required = false) Long topLevelColumnId){
         Long userId = TokenUtils.sessionUser().getId();
-        Iterable<DocColumn> docColumns = this.docColumnService.getNoCustomColumns(userId, topLevelColumnId);
+        List<Long> parentDocCulumnIds = new ArrayList<>();
+        if(topLevelColumnId!=null){
+            parentDocCulumnIds.add(topLevelColumnId);
+        }else{
+            parentDocCulumnIds.add(topLevelColumnIdNews);
+            parentDocCulumnIds.add(topLevelColumnIdDoc);
+        }
+        List<DocColumn> docColumns = this.docColumnService.getNoCustomColumns(userId, Arrays.asList(topLevelColumnId));
         return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG, docColumns);
+
     }
 
 
@@ -174,9 +193,16 @@ public class AppHomeController extends AppBaseController{
      * @return
      */
     @RequestMapping("haveCustomDocColumns")
-    public JsonResult haveCustomDocColumns(@RequestParam(name = "topLevelColumnId") Long topLevelColumnId){
+    public JsonResult haveCustomDocColumns(@RequestParam(name = "topLevelColumnId",required = false) Long topLevelColumnId){
         Long userId = TokenUtils.sessionUser().getId();
-        JSONArray docColumns = this.docColumnService.getCustomColumns(userId,topLevelColumnId);
+        List<Long> parentDocCulumnIds = new ArrayList<>();
+        if(topLevelColumnId!=null){
+            parentDocCulumnIds.add(topLevelColumnId);
+        }else{
+            parentDocCulumnIds.add(topLevelColumnIdNews);
+            parentDocCulumnIds.add(topLevelColumnIdDoc);
+        }
+        JSONArray docColumns = this.docColumnService.getCustomColumns(userId,parentDocCulumnIds);
         return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG, docColumns);
     }
     /**
@@ -275,6 +301,6 @@ public class AppHomeController extends AppBaseController{
     public JsonResult switchOrder(@RequestParam(name = "customColumnIdOne")Long customColumnIdOne,
                                   @RequestParam(name = "customColumnIdTwo")Long customColumnIdTwo){
         Long userId = TokenUtils.sessionUser().getId();
-        return userCustomDocColumnService.switchOrder(userId, customColumnIdOne, customColumnIdTwo);
+        return userDocColumnOrderService.switchOrder(userId, customColumnIdOne, customColumnIdTwo);
     }
 }

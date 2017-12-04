@@ -1,9 +1,6 @@
 package com.coamctech.bxloan.manager.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -25,6 +22,17 @@ public class DocColumn implements Serializable {
     private Date createTime;
     private Date updateTime;
     private String condtionField;
+    @Transient
+    private int customOrder;
+
+    public int getCustomOrder() {
+        return customOrder;
+    }
+
+    public void setCustomOrder(int customOrder) {
+        this.customOrder = customOrder;
+    }
+
     public Long getId() {
         return id;
     }

@@ -36,6 +36,10 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
     private DocColumnDao docColumnDao;
     @Autowired
     private UserCustomDocColumnService userCustomDocColumnService;
+    @Autowired
+    private RoleUserRelService roleUserRelService;
+    @Autowired
+    private RoleDocColumnService roleDocColumnService;
 
     /**
      * 查询未订阅栏目
@@ -43,12 +47,12 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
      * @param parentDocCulumnId
      * @return
      */
-    public List<DocColumn> getNoCustomColumns(Long userId,Long parentDocCulumnId){
-        List<Long> customColumnIds = userCustomDocColumnService.getCustomColumnIds(userId, parentDocCulumnId);
+    public List<DocColumn> getNoCustomColumns(Long userId,List<Long> parentDocCulumnIds){
+        List<Long> customColumnIds = getCanVisitColumnIds(userId,parentDocCulumnIds);
         if(customColumnIds.size()==0){
             customColumnIds.add(-1L);
         }
-        List<DocColumn> docColumnList = docColumnDao.findByParentIdAndIdNotIn(parentDocCulumnId, customColumnIds);
+        List<DocColumn> docColumnList = docColumnDao.findByParentIdInAndIdNotIn(parentDocCulumnIds, customColumnIds);
         return docColumnList;
     }
 
@@ -58,14 +62,18 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
      * @param parentDocCulumnId
      * @return
      */
-    public JSONArray getCustomColumns(Long userId,Long parentDocCulumnId){
-        //List<UserCustomDocColumn> customDocColumns = userCustomDocColumnService.getCustomColumns(userId, parentDocCulumnId);
-        Query query = this.entityManagerFactory.createEntityManager().createNativeQuery(" select t2.id,t2.name,t2.parent_id,t1.custom_order " +
-                " from t_user_custom_doc_column t1  " +
-                " left join t_doc_column t2 on t1.doc_column_id=t2.id " +
-                " where t1.user_id=?1 and t1.doc_column_parent_id=?2 order by t1.custom_order asc ");
-        query.setParameter(1,userId);
-        query.setParameter(2,parentDocCulumnId);
+    public JSONArray getCustomColumns(Long userId,List<Long> parentDocCulumnIds){
+        //List<UserCustomDocColumn> customDocColumns = userCustomDocColumnService.getCustomColumns(userId, parentDocCulumnIds);
+        List<Long> docColumnIds = this.getCanVisitColumnIds(userId,parentDocCulumnIds);
+        if(docColumnIds.isEmpty()){
+            return new JSONArray();
+        }
+        String sql = " SELECT t1.id,t1.name,t1.parent_id,t2.custom_order from t_doc_column t1 " +
+                " left join t_user_doc_column_order t2 on t1.id=t2.doc_column_id " +
+                " where t1.id in (?1) order by t2.custom_order asc ";
+        Query query = this.entityManagerFactory.createEntityManager().createNativeQuery(sql);
+
+        query.setParameter(1,docColumnIds);
         List<Object[]> list = query.getResultList();
         JSONArray ja = new JSONArray();
         list.forEach(arr->{
@@ -76,7 +84,6 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
             jo.put("customOrder",arr[3]);
             ja.add(jo);
         });
-        //Iterable<DocColumn> list = docColumnDao.findAll(customColumnIds);
         return ja;
     }
 
@@ -91,5 +98,40 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
         List<Long> childIds = new ArrayList<>();
         list.forEach(docColumn-> {childIds.add(docColumn.getId());});
         return childIds;
+    }
+    public boolean ifCanVisitColumnId(Long userId,Long columnId,Long topLevelColumnId){
+        if(userCustomDocColumnService.ifCustomColumnId(userId,columnId,topLevelColumnId)){
+            return true;
+        }
+        List<Long> roleIds = roleUserRelService.getRoleIds(userId);
+        if(roleIds.size()==0){
+            return false;
+        }
+        List<Long> columnIds = roleDocColumnService.getColumnIds(roleIds,Arrays.asList(columnId));
+        if(columnIds.size()==0){
+            return false;
+        }
+        return true;
+    }
+    public List<Long> getCanVisitColumnIds(Long userId,List<Long> parentColumnIds){
+        List<Long> ids = new ArrayList<>();
+        parentColumnIds.forEach(parentColumnId->{
+            List<Long> columnIds = userCustomDocColumnService.getCustomColumnIds(userId, parentColumnId);
+            if(columnIds.size()>0){
+                ids.addAll(columnIds);
+            }
+            List<Long> roleIds = roleUserRelService.getRoleIds(userId);
+            if(roleIds.size()>0){
+                List<Long> childColumnIds = getChildColumnIdsByParentId(parentColumnId);
+                if(childColumnIds.size()>0){
+                    List<Long> roleColumnIds = roleDocColumnService.getColumnIds(roleIds,childColumnIds);
+
+                    if(roleColumnIds.size()>0){
+                        ids.addAll(roleColumnIds);
+                    }
+                }
+            }
+        });
+        return ids;
     }
 }
