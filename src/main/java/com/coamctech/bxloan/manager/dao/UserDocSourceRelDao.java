@@ -10,6 +10,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import com.coamctech.bxloan.manager.domain.UserDocSourceRel;
 
 public interface UserDocSourceRelDao extends JpaSpecificationExecutor<UserDocSourceRel>,PagingAndSortingRepository<UserDocSourceRel,Long>{
+    List<UserDocSourceRel> findByUserId(Long userId);
 	@Modifying
 	@Query("delete from UserDocSourceRel where userId=?1")
 	public void deleteRelByUserId(Long userId);

@@ -74,11 +74,11 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
      * @return
      */
     public List<DocInfo> docInfos(Page page,Long userId,Long columnId,Long topLevelColumnId){
-        if(docColumnService.ifCanVisitColumnId(userId,columnId,topLevelColumnId)){
+        if(userCustomDocColumnService.ifCustomColumnId(userId, columnId, topLevelColumnId)){
             return Collections.EMPTY_LIST;
         }
 
-        PageList<DocInfo> pageList =   this.getDocInfos(page, Arrays.asList(columnId), null);
+        PageList<DocInfo> pageList =   this.getDocInfos(userId,page, Arrays.asList(columnId), null);
         return pageList.getList();
     }
 
@@ -98,7 +98,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         if(childColumnIds.size()==0){
             return Collections.EMPTY_LIST;
         }
-        PageList<DocInfo> pageList =   this.getDocInfos(page, childColumnIds, keyWorld);
+        PageList<DocInfo> pageList =   this.getDocInfos(userId,page, childColumnIds, keyWorld);
         return pageList.getList();
     }
 
@@ -109,17 +109,20 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
      * @param keyworld 搜索词，如果为空，则查询所有
      * @return
      */
-    public PageList<DocInfo> getDocInfos(Page page,List<Long> columnIds,String keyworld){
+    public PageList<DocInfo> getDocInfos(Long userId,Page page,List<Long> columnIds,String keyworld){
+        List<Long> canVisitDocSourceIds = docSourceService.getCanVisitDocSourceIds(userId);
         Map<String, Object> param = new HashMap<>();
-        String sql = " from DocInfo where  columnId in (:columnId) ";
+        StringBuilder sql = new StringBuilder(" from DocInfo where  columnId in (:columnId) ");
         param.put("columnId",columnIds);
+        sql.append(" sourceId in(:sourceId) ");
+        param.put("sourceId",canVisitDocSourceIds);
         if(StringUtils.isNotEmpty(keyworld)){
-            sql = sql + " and title like :title ";
+            sql.append(" and title like :title ");
             param.put("title","%"+keyworld+"%");
         }
-        sql = sql + " order by updateTime desc ";
+        sql.append(" order by updateTime desc ");
 
-        PageList<DocInfo> pageList = this.pageList(page,sql,param);
+        PageList<DocInfo> pageList = this.pageList(page,sql.toString(),param);
         List<Long> sourceIds = new ArrayList<>();
         pageList.getList().forEach(docInfo -> {
             sourceIds.add(docInfo.getSourceId());
@@ -134,10 +137,10 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
                     }
                 });
             }
-
         });
         return pageList;
     }
+
     private void parseImgUrlOfDocInfo(DocInfo docInfo){
         String body = docInfo.getBody();
         Elements elements = Jsoup.parse(body, "UTF-8").select("img[src]");

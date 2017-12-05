@@ -9,9 +9,11 @@ import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.dao.DocColumnDao;
 import com.coamctech.bxloan.manager.dao.DocInfoDao;
 import com.coamctech.bxloan.manager.dao.UserCustomDocColumnDao;
+import com.coamctech.bxloan.manager.dao.UserDocColumnRelDao;
 import com.coamctech.bxloan.manager.domain.DocColumn;
 import com.coamctech.bxloan.manager.domain.DocInfo;
 import com.coamctech.bxloan.manager.domain.UserCustomDocColumn;
+import com.coamctech.bxloan.manager.domain.UserDocColumnRel;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
@@ -37,43 +39,47 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
     @Autowired
     private UserCustomDocColumnService userCustomDocColumnService;
     @Autowired
-    private RoleUserRelService roleUserRelService;
-    @Autowired
-    private RoleDocColumnService roleDocColumnService;
+    private UserDocColumnRelDao userDocColumnRelDao;
 
     /**
      * 查询未订阅栏目
      * @param userId
-     * @param parentDocCulumnId
+     * @param parentDocCulumnIds
      * @return
      */
     public List<DocColumn> getNoCustomColumns(Long userId,List<Long> parentDocCulumnIds){
-        List<Long> customColumnIds = getCanVisitColumnIds(userId,parentDocCulumnIds);
-        if(customColumnIds.size()==0){
-            customColumnIds.add(-1L);
+        List<Long> customColumnIds = userCustomDocColumnService.getCustomColumnIds(userId, parentDocCulumnIds);
+        List<Long> canVisitColumnIds = getCanVisitColumnIds(userId,parentDocCulumnIds);
+        canVisitColumnIds.removeAll(customColumnIds);
+        if(canVisitColumnIds.size()==0){
+            return Collections.EMPTY_LIST;
         }
-        List<DocColumn> docColumnList = docColumnDao.findByParentIdInAndIdNotIn(parentDocCulumnIds, customColumnIds);
+        List<DocColumn> docColumnList = docColumnDao.findByParentIdInAndIdIn(parentDocCulumnIds, canVisitColumnIds);
         return docColumnList;
     }
-
+    public List<Long> getCanVisitColumnIds(Long userId,List<Long> parentDocCulumnIds){
+        List<Long> childColumnIds = getChildColumnIdsByParentId(parentDocCulumnIds);
+        List<UserDocColumnRel> userDocColumnRels = userDocColumnRelDao.findByUserIdAndDocColumnIdIn(userId, childColumnIds);
+        List<Long> ids = new ArrayList<>();
+        userDocColumnRels.forEach(u->{
+            ids.add(u.getDocColumnId());
+        });
+        return ids;
+    }
     /**
      * 查询已订阅栏目
      * @param userId
-     * @param parentDocCulumnId
+     * @param parentDocCulumnIds
      * @return
      */
     public JSONArray getCustomColumns(Long userId,List<Long> parentDocCulumnIds){
         //List<UserCustomDocColumn> customDocColumns = userCustomDocColumnService.getCustomColumns(userId, parentDocCulumnIds);
-        List<Long> docColumnIds = this.getCanVisitColumnIds(userId,parentDocCulumnIds);
-        if(docColumnIds.isEmpty()){
-            return new JSONArray();
-        }
-        String sql = " SELECT t1.id,t1.name,t1.parent_id,t2.custom_order from t_doc_column t1 " +
-                " left join t_user_doc_column_order t2 on t1.id=t2.doc_column_id " +
-                " where t1.id in (?1) order by t2.custom_order asc ";
-        Query query = this.entityManagerFactory.createEntityManager().createNativeQuery(sql);
-
-        query.setParameter(1,docColumnIds);
+        Query query = this.entityManagerFactory.createEntityManager().createNativeQuery(" select t2.id,t2.name,t2.parent_id,t1.custom_order " +
+                " from t_user_custom_doc_column t1  " +
+                " left join t_doc_column t2 on t1.doc_column_id=t2.id " +
+                " where t1.user_id=?1 and t1.doc_column_parent_id in ?2 order by t1.custom_order asc ");
+        query.setParameter(1,userId);
+        query.setParameter(2,parentDocCulumnIds);
         List<Object[]> list = query.getResultList();
         JSONArray ja = new JSONArray();
         list.forEach(arr->{
@@ -84,6 +90,7 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
             jo.put("customOrder",arr[3]);
             ja.add(jo);
         });
+        //Iterable<DocColumn> list = docColumnDao.findAll(customColumnIds);
         return ja;
     }
 
@@ -99,39 +106,15 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
         list.forEach(docColumn-> {childIds.add(docColumn.getId());});
         return childIds;
     }
-    public boolean ifCanVisitColumnId(Long userId,Long columnId,Long topLevelColumnId){
-        if(userCustomDocColumnService.ifCustomColumnId(userId,columnId,topLevelColumnId)){
-            return true;
-        }
-        List<Long> roleIds = roleUserRelService.getRoleIds(userId);
-        if(roleIds.size()==0){
-            return false;
-        }
-        List<Long> columnIds = roleDocColumnService.getColumnIds(roleIds,Arrays.asList(columnId));
-        if(columnIds.size()==0){
-            return false;
-        }
-        return true;
-    }
-    public List<Long> getCanVisitColumnIds(Long userId,List<Long> parentColumnIds){
-        List<Long> ids = new ArrayList<>();
-        parentColumnIds.forEach(parentColumnId->{
-            List<Long> columnIds = userCustomDocColumnService.getCustomColumnIds(userId, parentColumnId);
-            if(columnIds.size()>0){
-                ids.addAll(columnIds);
-            }
-            List<Long> roleIds = roleUserRelService.getRoleIds(userId);
-            if(roleIds.size()>0){
-                List<Long> childColumnIds = getChildColumnIdsByParentId(parentColumnId);
-                if(childColumnIds.size()>0){
-                    List<Long> roleColumnIds = roleDocColumnService.getColumnIds(roleIds,childColumnIds);
-
-                    if(roleColumnIds.size()>0){
-                        ids.addAll(roleColumnIds);
-                    }
-                }
-            }
-        });
-        return ids;
+    /**
+     * 查询子栏目ID的集合
+     * @param parentId
+     * @return
+     */
+    public List<Long> getChildColumnIdsByParentId(List<Long> parentDocCulumnIds){
+        List<DocColumn> list = docColumnDao.findByParentIdIn(parentDocCulumnIds);
+        List<Long> childIds = new ArrayList<>();
+        list.forEach(docColumn-> {childIds.add(docColumn.getId());});
+        return childIds;
     }
 }

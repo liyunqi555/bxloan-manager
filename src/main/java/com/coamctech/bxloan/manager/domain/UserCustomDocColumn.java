@@ -21,8 +21,16 @@ public class UserCustomDocColumn implements Serializable {
     private Long userId;//用户ID
     private Long docColumnId;//订阅的二级栏目的ID
     private Long docColumnParentId;//一级栏目ID
-    //private Integer customOrder ;//定制二级栏目的顺序
+    private Integer customOrder ;//定制二级栏目的顺序
     private Date createTime;//定制时间
+
+    public Integer getCustomOrder() {
+        return customOrder;
+    }
+
+    public void setCustomOrder(Integer customOrder) {
+        this.customOrder = customOrder;
+    }
 
     public Long getId() {
         return id;
