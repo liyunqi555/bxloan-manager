@@ -171,7 +171,7 @@ public class AppHomeController extends AppBaseController{
             parentDocCulumnIds.add(topLevelColumnIdNews);
             parentDocCulumnIds.add(topLevelColumnIdDoc);
         }
-        List<DocColumn> docColumns = this.docColumnService.getNoCustomColumns(userId, Arrays.asList(topLevelColumnId));
+        List<DocColumn> docColumns = this.docColumnService.getNoCustomColumns(userId,parentDocCulumnIds);
         return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG, docColumns);
 
     }

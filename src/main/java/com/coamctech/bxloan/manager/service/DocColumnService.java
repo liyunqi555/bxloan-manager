@@ -77,7 +77,7 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
         //List<UserCustomDocColumn> customDocColumns = userCustomDocColumnService.getCustomColumns(userId, parentDocCulumnIds);
         EntityManager entityManager = null;
         try{
-            this.entityManagerFactory.createEntityManager();
+            entityManager = this.entityManagerFactory.createEntityManager();
             Query query = entityManager.createNativeQuery(" select t2.id,t2.name,t2.parent_id,t1.custom_order " +
                     " from t_user_custom_doc_column t1  " +
                     " left join t_doc_column t2 on t1.doc_column_id=t2.id " +
@@ -96,7 +96,9 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
             });
             return ja;
         }finally {
-            entityManager.close();
+            if(entityManager!=null){
+                entityManager.close();
+            }
         }
     }
 
