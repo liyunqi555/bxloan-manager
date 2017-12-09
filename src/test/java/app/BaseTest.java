@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
+import com.alibaba.fastjson.JSONObject;
 import com.coamctech.bxloan.manager.utils.Encodes;
 import com.coamctech.bxloan.manager.utils.TokenUtils;
 import com.coamctech.bxloan.manager.utils.encrypt.Cryptos;
@@ -18,20 +19,21 @@ import org.slf4j.LoggerFactory;
 
 public class BaseTest {
 	private static Logger logger = LoggerFactory.getLogger(BaseTest.class);
-	protected static final String base = "http://localhost:8080/";
+//	protected static final String base = "http://localhost:8080/";
+    protected static final String base = "http://211.99.230.29:8096/";
     //admin
-    protected static String token = "477b9bb3a60beb023698abcb62a336c0v101000000_f8749b2ce88fc56125d6b6a22a37506d1178f793";
+    protected static String token = "ee859669ff48b631da9401687e250c3cv101000000_788fc2920c99964013f1703d99aa7394ba61eada";
     //vip1
-//    protected static String token = "c932f5e63dc530e5d00f90a5aaf07b8ev101000000_b21077fb541f46b6e4f79108121e08e4ac58a2f9";
-    protected static String sign = "415F24D4C5C09169A706ACE283602DE7";
+//    protected static String token = "C667EFAA2F3B2D80D1D2184519813E57";
+    protected static String sign = "C667EFAA2F3B2D80D1D2184519813E57";
     public static void main(String[] args) {
-        login();
-        login_vip1();
+      login();
+        //login_vip1();
 //        topColumns();
-//        banner();
+//       banner();
 //        customColumn();
 //
-//        haveCustomDocColumns();
+        haveCustomDocColumns();
 //        noCustomDocColumns();
 //        switchOrder();
 //        lastVersion();
@@ -48,7 +50,7 @@ public class BaseTest {
 //        dataCenter_detail();
         //dataCenter_store();
 //        dataCenter_myStore();
-        //changePassword();
+//        changePassword();
         //switchViewHistory();
     }
 
@@ -147,7 +149,7 @@ public class BaseTest {
     }
     public static void customColumn(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new NameValuePair("columnId","7"));
+        nvps.add(new NameValuePair("columnId","4"));
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/home/customColumn");
     }
@@ -185,8 +187,8 @@ public class BaseTest {
     }
     protected static void changePassword(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new NameValuePair("oldPassword", MD5Util.md5Hex("12345678")));
-        nvps.add(new NameValuePair("newPassword", MD5Util.md5Hex("123456789")));
+        nvps.add(new NameValuePair("oldPassword", MD5Util.md5Hex("123456789")));
+        nvps.add(new NameValuePair("newPassword", MD5Util.md5Hex("12345678")));
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/user/changePassword");
     }
@@ -200,15 +202,20 @@ public class BaseTest {
     protected static void login(){
 		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 		nvps.add(new NameValuePair("userName", "admin"));
-		nvps.add(new NameValuePair("password", MD5Util.md5Hex("123456789")));
+		nvps.add(new NameValuePair("password", MD5Util.md5Hex("12345678")));
 		nvps.add(new NameValuePair("deviceCode", "123456789abcdef9"));
 		String res = post(nvps,"api/app/user/anon/login");
+        JSONObject jo = JSONObject.parseObject(res);
+        token=jo.getJSONObject("body").getString("token");
+        sign = jo.getJSONObject("body").getString("sign");
+
 	}
     public static void addTokenAndSign(List<NameValuePair> nvps){
         Map<String,String> params = new HashMap<String,String>();
         nvps.forEach(nvp -> {
             params.put(nvp.getName(), nvp.getValue());
         });
+        params.put("token",token);
         nvps.add(new NameValuePair("token", token));
         nvps.add(new NameValuePair("sign", createSign(params, sign)));
     }
@@ -303,17 +310,18 @@ public class BaseTest {
 		if(params==null || params.size()==0){
 			return "";
 		}
-		TreeMap treemap = new TreeMap<String, String>();
+		TreeMap<String,String> treemap = new TreeMap<>(TokenUtils.URLSortedComparator.INSTANCE);
 		params.entrySet().forEach(entry -> {
 			treemap.put(entry.getKey(), entry.getValue());
 		});
 		StringBuilder sb = new StringBuilder();
-		for(Map.Entry<String,String> entry : params.entrySet()){
+		for(Map.Entry<String,String> entry : treemap.entrySet()){
 			sb.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
 		}
 		sb.deleteCharAt(sb.length() - 1);
+        logger.info("sb={},signKey={}",sb.toString(),signKey);
 		try {
-			Encodes.encodeHex(Cryptos.hmacSha1(sb.toString().getBytes("UTF-8"),signKey.getBytes("UTF-8")));
+			return Encodes.encodeHex(Cryptos.hmacSha1(sb.toString().getBytes("UTF-8"),signKey.getBytes("UTF-8")));
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}

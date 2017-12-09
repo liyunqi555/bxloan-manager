@@ -124,7 +124,7 @@ public class TokenUtils {
             sb.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
         }
         sb.deleteCharAt(sb.length() - 1);
-
+        logger.info("sb={},signKey={}",sb.toString(),signKey);
         try {
             logger.info("**sign:{},originSign:{}**", Encodes.encodeHex(Cryptos.hmacSha1(sb.toString().getBytes("UTF-8"),signKey.getBytes("UTF-8"))), originSign);
             return Encodes.encodeHex(Cryptos.hmacSha1(sb.toString().getBytes("UTF-8"),signKey.getBytes("UTF-8"))).equals(originSign);

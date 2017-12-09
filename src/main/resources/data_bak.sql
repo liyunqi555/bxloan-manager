@@ -113,3 +113,29 @@ values(getdate(),'1','1','','1','今日要闻','1',getdate(),'1');
 delete from t_app_config;
 insert into t_app_config (create_time,description,down_load_url,version)
 values(getdate(),'初始版本','http://www.baidu.com','0.0.1');
+
+--增加国家概念的属性所属州
+insert into ont_property (uri,name,concept_uri,is_must,is_geo,is_aggr,datatype,insert_time,update_time)
+values('国家.81.所属洲','所属洲','国家',0,1,1,2,getDate(),getDate());
+--在国家实体上增加所属洲数据
+insert into entity_property_info (entityid,property_uri,v_string,ver_main,ver_second,status,insert_time,update_time)
+values('中华人民共和国','所属洲','亚洲',1,0,1,getDate(),getDate());
+insert into entity_property_info (entityid,property_uri,v_string,ver_main,ver_second,status,insert_time,update_time)
+values('柬埔寨','所属洲','亚洲',1,0,1,getDate(),getDate());
+insert into entity_property_info (entityid,property_uri,v_string,ver_main,ver_second,status,insert_time,update_time)
+values('科威特','所属洲','亚洲',1,0,1,getDate(),getDate());
+insert into entity_property_info (entityid,property_uri,v_string,ver_main,ver_second,status,insert_time,update_time)
+values('克罗地亚共和国','所属洲','欧洲',1,0,1,getDate(),getDate());
+insert into entity_property_info (entityid,property_uri,v_string,ver_main,ver_second,status,insert_time,update_time)
+values('罗马尼亚','所属洲','欧洲',1,0,1,getDate(),getDate());
+insert into entity_property_info (entityid,property_uri,v_string,ver_main,ver_second,status,insert_time,update_time)
+values('马尔代夫','所属洲','亚洲',1,0,1,getDate(),getDate());
+insert into entity_property_info (entityid,property_uri,v_string,ver_main,ver_second,status,insert_time,update_time)
+values('埃及','所属洲','非洲',1,0,1,getDate(),getDate());
+insert into entity_property_info (entityid,property_uri,v_string,ver_main,ver_second,status,insert_time,update_time)
+values('新西兰','所属洲','大洋洲',1,0,1,getDate(),getDate());
+
+--国家查询方法
+select e.concept_uri,e.entityid,ep.v_string ,ep.property_uri
+from entity_info e ,  entity_property_info ep
+where e.concept_uri='国家'   and e.entityid=ep.entityid and ep.property_uri='所属洲' ;

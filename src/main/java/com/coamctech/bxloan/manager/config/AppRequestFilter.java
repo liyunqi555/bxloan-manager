@@ -42,40 +42,35 @@ public class AppRequestFilter implements Filter {
                          FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
-        if(true){
-            User user = userDao.findOne(1L);
-            TokenUtils.storeSessionUser(user);
-            filterChain.doFilter(servletRequest,servletResponse);
+
+        String servletPath = request.getServletPath();
+        logger.info("servletPath={}",servletPath);
+        if(pathMatcher.match(anonUrlPattern,servletPath)){
+            filterChain.doFilter(servletRequest, servletResponse);
         }else{
-            String servletPath = request.getServletPath();
-            logger.info("servletPath={}",servletPath);
-            if(pathMatcher.match(anonUrlPattern,servletPath)){
+            String token = request.getParameter("token");
+            logger.info("token:{}", token);
+            if(token==null) {
+                response.setHeader("Content-Type", "application/json; charset=UTF-8");
+                response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(
+                        new JsonResult(ResultCode.TOKEN_NULL_CODE,ResultCode.TOKEN_NULL_MSG)));
+                response.getWriter().flush();
+                return;
+            }
+            Long uid = TokenUtils.uid(token);
+            if(uid==null){
+                response.setHeader("Content-Type", "application/json; charset=UTF-8");
+                response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(new JsonResult(ResultCode.TOKEN_LLLEGAL_CODE, ResultCode.TOKEN_LLLEGAL_MSG)));
+                response.getWriter().flush();
+                return;
+            }
+            if(checkSign(request,response,uid)){
                 filterChain.doFilter(servletRequest, servletResponse);
             }else{
-                String token = request.getParameter("token");
-                logger.info("token:{}", token);
-                if(token==null) {
-                    response.setHeader("Content-Type", "application/json; charset=UTF-8");
-                    response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(
-                            new JsonResult(ResultCode.TOKEN_NULL_CODE,ResultCode.TOKEN_NULL_MSG)));
-                    response.getWriter().flush();
-                    return;
-                }
-                Long uid = TokenUtils.uid(token);
-                if(uid==null){
-                    response.setHeader("Content-Type", "application/json; charset=UTF-8");
-                    response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(new JsonResult(ResultCode.TOKEN_LLLEGAL_CODE, ResultCode.TOKEN_LLLEGAL_MSG)));
-                    response.getWriter().flush();
-                    return;
-                }
-                if(checkSign(request,response,uid)){
-                    filterChain.doFilter(servletRequest, servletResponse);
-                }else{
-                    response.setHeader("Content-Type", "application/json; charset=UTF-8");
-                    response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(new JsonResult(ResultCode.PARAM_ERROR_CODE, ResultCode.TOKEN_NULL_MSG)));
-                    response.getWriter().flush();
-                    return;
-                }
+                response.setHeader("Content-Type", "application/json; charset=UTF-8");
+                response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(new JsonResult(ResultCode.PARAM_ERROR_CODE, ResultCode.TOKEN_NULL_MSG)));
+                response.getWriter().flush();
+                return;
             }
         }
 

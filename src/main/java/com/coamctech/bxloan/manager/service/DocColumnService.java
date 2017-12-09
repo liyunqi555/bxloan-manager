@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.util.*;
@@ -74,24 +75,29 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
      */
     public JSONArray getCustomColumns(Long userId,List<Long> parentDocCulumnIds){
         //List<UserCustomDocColumn> customDocColumns = userCustomDocColumnService.getCustomColumns(userId, parentDocCulumnIds);
-        Query query = this.entityManagerFactory.createEntityManager().createNativeQuery(" select t2.id,t2.name,t2.parent_id,t1.custom_order " +
-                " from t_user_custom_doc_column t1  " +
-                " left join t_doc_column t2 on t1.doc_column_id=t2.id " +
-                " where t1.user_id=?1 and t1.doc_column_parent_id in ?2 order by t1.custom_order asc ");
-        query.setParameter(1,userId);
-        query.setParameter(2,parentDocCulumnIds);
-        List<Object[]> list = query.getResultList();
-        JSONArray ja = new JSONArray();
-        list.forEach(arr->{
-            JSONObject jo = new JSONObject();
-            jo.put("id",arr[0]);
-            jo.put("name",arr[1]);
-            jo.put("parentId",arr[2]);
-            jo.put("customOrder",arr[3]);
-            ja.add(jo);
-        });
-        //Iterable<DocColumn> list = docColumnDao.findAll(customColumnIds);
-        return ja;
+        EntityManager entityManager = null;
+        try{
+            this.entityManagerFactory.createEntityManager();
+            Query query = entityManager.createNativeQuery(" select t2.id,t2.name,t2.parent_id,t1.custom_order " +
+                    " from t_user_custom_doc_column t1  " +
+                    " left join t_doc_column t2 on t1.doc_column_id=t2.id " +
+                    " where t1.user_id=?1 and t1.doc_column_parent_id in ?2 order by t1.custom_order asc ");
+            query.setParameter(1,userId);
+            query.setParameter(2,parentDocCulumnIds);
+            List<Object[]> list = query.getResultList();
+            JSONArray ja = new JSONArray();
+            list.forEach(arr->{
+                JSONObject jo = new JSONObject();
+                jo.put("id",arr[0]);
+                jo.put("name",arr[1]);
+                jo.put("parentId",arr[2]);
+                jo.put("customOrder",arr[3]);
+                ja.add(jo);
+            });
+            return ja;
+        }finally {
+            entityManager.close();
+        }
     }
 
 
@@ -108,7 +114,7 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
     }
     /**
      * 查询子栏目ID的集合
-     * @param parentId
+     * @param parentDocCulumnIds
      * @return
      */
     public List<Long> getChildColumnIdsByParentId(List<Long> parentDocCulumnIds){
