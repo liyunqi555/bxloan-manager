@@ -149,7 +149,7 @@ define(function(require, exports, module) {
 					console.log(result);
 					if(result.code=='200'){
 						$('#addRoleName').val(result.body.roleName);
-						$('#englishName').val(result.body.roleName);
+						$('#englishName').val(result.body.englishName);
 						$('#roleType').val(result.body.type);
 						if(type=='view'){
 							$("#addRoleName").attr("disabled",true);

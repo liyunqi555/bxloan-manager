@@ -6,15 +6,15 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,11 +25,15 @@ import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.dao.DocColumnDao;
 import com.coamctech.bxloan.manager.dao.DocSourceDao;
+import com.coamctech.bxloan.manager.dao.RoleUserRelDao;
+import com.coamctech.bxloan.manager.dao.UserDao;
 import com.coamctech.bxloan.manager.domain.DocColumn;
 import com.coamctech.bxloan.manager.domain.DocSource;
+import com.coamctech.bxloan.manager.domain.Role;
 import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.service.UserMngService;
 import com.coamctech.bxloan.manager.service.VO.UserVO;
+import com.coamctech.bxloan.manager.utils.CommonHelper;
 
 /**
  * Created by Administrator on 2017/10/20.
@@ -49,6 +53,10 @@ public class UserController {
     private DocColumnDao docColumnDao;
     @Autowired
     private DocSourceDao docSourceDao;
+    @Autowired
+    private RoleUserRelDao roleUserRelDao;
+    @Autowired
+    private UserDao userDao;
     
     /**
      * 用户管理主页面
@@ -70,12 +78,17 @@ public class UserController {
     public String edit(Model model,@PathVariable("type") String type,@PathVariable("userId") Long userId){
     	model.addAttribute("type", type);
     	model.addAttribute("userId", userId);
-    	//用户对应的角色信息
-    	model.addAttribute("roleIds", userMngService.getAllRoleByUserId(userId));
-    	//用户对应的栏目信息
-    	model.addAttribute("roleIds", userMngService.getAllColumnByUserId(userId));
-    	//用户对于的来源信息
-    	model.addAttribute("roleIds", userMngService.getAllSourceByUserId(userId));
+    	User user = userDao.findOne(userId);
+    	List<Long> ll = roleUserRelDao.getRoleIdsByUserId(userId);
+    	UserVO vo = new UserVO();
+    	BeanUtils.copyProperties(user, vo,"birthday");
+    	if(CollectionUtils.isNotEmpty(ll)){
+    		vo.setRoleIds(CommonHelper.toStr(ll.get(0)));
+    	}
+    	vo.setBirthday(CommonHelper.date2Str(user.getBirthday(), CommonHelper.DF_DATE));
+    	vo.setStartTime(CommonHelper.date2Str(user.getStartTime(), CommonHelper.DF_DATE));
+    	vo.setEndTime(CommonHelper.date2Str(user.getEndTime(), CommonHelper.DF_DATE));
+    	model.addAttribute("user",vo);
     	return userEditPage;
     }
     

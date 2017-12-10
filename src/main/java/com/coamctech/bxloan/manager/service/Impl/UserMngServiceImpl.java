@@ -86,9 +86,10 @@ public class UserMngServiceImpl implements UserMngService{
 
 	@Override
 	public JsonResult deleteUserById(Long userId) throws Exception{
-		List<Role> ll = roleUserRelDao.getRoleByUserId(userId);
+		List<Long> ll = roleUserRelDao.getRoleIdsByUserId(userId);
 		if(CollectionUtils.isNotEmpty(ll)){
-			for(Role r:ll){
+			for(Long id:ll){
+				Role r = roleDao.findOne(id);
 				if(r.getType()==1){//管理员
 					return new JsonResult(ResultCode.ERROR_CODE,"该用户为管理员，不可删除",null);
 				}
@@ -109,20 +110,28 @@ public class UserMngServiceImpl implements UserMngService{
 			//新增
 			User user = new User();
 			BeanUtils.copyProperties(vo, user,"id","password");
+			user.setUserName(vo.getUserName());
+			user.setBirthday(CommonHelper.str2Date(vo.getBirthday(), CommonHelper.DF_DATE));
+			user.setEmail(vo.getEmail());
+			user.setNickName(vo.getNickName());
+			user.setOfficePhone(vo.getOfficePhone());
+			user.setTelephone(vo.getTelephone());
+			user.setUpdateTime(CommonHelper.getNow());
 			user.setPassword(MD5Util.md5Hex(vo.getPassword()));
 			user.setCreateTime(CommonHelper.getNow());
 			user.setCreator(curUser.getId());
 			user.setStatus(1);//默认为1：启用
+			user.setStartTime(CommonHelper.str2Date(vo.getStartTime(), CommonHelper.DF_DATE));
+			user.setEndTime(CommonHelper.str2Date(vo.getEndTime(), CommonHelper.DF_DATE));
 			userDao.save(user);
 			
-			/*if(CollectionUtils.isNotEmpty(roleIds)){
-				for(String roleId:roleIds){
-					RoleUserRel rel = new  RoleUserRel();
-					rel.setRoleId(CommonHelper.toLong(roleId));
-					rel.setUserId(user.getId());
-					roleUserRelDao.save(rel);
-				}
-			}*/
+			
+			RoleUserRel rrel = new  RoleUserRel();
+			rrel.setRoleId(CommonHelper.toLong(vo.getRoleIds()));
+			rrel.setUserId(user.getId());
+			roleUserRelDao.save(rrel);
+				
+			
 			
 			if(CollectionUtils.isNotEmpty(columnIds)){
 				for(String columnId:columnIds){
@@ -150,25 +159,24 @@ public class UserMngServiceImpl implements UserMngService{
 			//修改
 			User user = userDao.findOne(vo.getId());
 			user.setUserName(vo.getUserName());
-			user.setBirthday(CommonHelper.toDate(vo.getBirthday()));
+			user.setBirthday(CommonHelper.str2Date(vo.getBirthday(), CommonHelper.DF_DATE));
 			user.setEmail(vo.getEmail());
 			user.setNickName(vo.getNickName());
 			user.setOfficePhone(vo.getOfficePhone());
 			user.setTelephone(vo.getTelephone());
 			user.setUpdateTime(CommonHelper.getNow());
 			user.setPassword(MD5Util.md5Hex(vo.getPassword()));
+			user.setStartTime(CommonHelper.str2Date(vo.getStartTime(), CommonHelper.DF_DATE));
+			user.setEndTime(CommonHelper.str2Date(vo.getEndTime(), CommonHelper.DF_DATE));
 			userDao.save(user);
 			roleUserRelDao.deleteByUserId(user.getId());
 			userDocSourceRelDao.deleteRelByUserId(user.getId());
 			userDocColumnRelDao.deleteRelByUserId(user.getId());
-			/*if(CollectionUtils.isNotEmpty(roleIds)){
-				for(String roleId:roleIds){
-					RoleUserRel rel = new  RoleUserRel();
-					rel.setRoleId(CommonHelper.toLong(roleId));
-					rel.setUserId(user.getId());
-					roleUserRelDao.save(rel);
-				}
-			}*/
+			
+			RoleUserRel rrel = new  RoleUserRel();
+			rrel.setRoleId(CommonHelper.toLong(vo.getRoleIds()));
+			rrel.setUserId(user.getId());
+			roleUserRelDao.save(rrel);
 			
 			if(CollectionUtils.isNotEmpty(columnIds)){
 				for(String columnId:columnIds){

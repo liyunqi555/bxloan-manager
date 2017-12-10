@@ -7,6 +7,8 @@ define(function(require, exports, module) {
 			"click button[role='btn-Reset']":"reset",
 			"click button[role='btn-Add']":"add",
 			"click button[role='remove']":"remove",
+			"click button[role='edit']":"edit",
+			"click button[role='detail']":"detail"
 			
 		},
 		initialize: function() { /** 初始化 */
@@ -15,6 +17,18 @@ define(function(require, exports, module) {
 		render: function() { /** 页面渲染 */
 			 /** 页面渲染 */
             this.initDataTables();
+		},
+		edit:function(e){
+			var viewSelf = this;
+			var btnSelf = $(e.currentTarget);
+			var userId = btnSelf.data("id"); 
+			window.location.href="/userMng/edit/"+"edit"+"/"+userId;
+		},
+		detail:function(e){
+			var viewSelf = this;
+			var btnSelf = $(e.currentTarget);
+			var userId = btnSelf.data("id"); 
+			window.location.href="/userMng/edit/"+"view"+"/"+userId;
 		},
 		initDataTables : function(){
 			var viewSelf = this;
