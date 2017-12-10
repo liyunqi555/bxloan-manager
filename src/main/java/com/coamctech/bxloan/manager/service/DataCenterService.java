@@ -47,6 +47,22 @@ public class DataCenterService {
         });
         return JsonResult.success(list);
     }
+    public JsonResult entityList(String conceptUri,String propertyUri){
+
+        List<Map<String,Object>> list = this.list("e.entityid,e.name,e.多媒体ID"," from entity_info e ,  entity_property_info ep " +
+                " where e.concept_uri=?1   and e.entityid=ep.entityid and ep.property_uri='所属洲' and ep.v_string=?2  ", conceptUri,propertyUri);
+        list.forEach(map->{
+            map.put("mediaId", map.get("多媒体ID"));
+            map.put("namePinYin", ChineseToPinYin.getPingYin(String.valueOf(map.get("name"))));
+        });
+        Collections.sort(list, new Comparator<Map<String, Object>>() {
+            @Override
+            public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+                return String.valueOf(o1.get("namePinYin")).compareTo(String.valueOf(o2.get("namePinYin")));
+            }
+        });
+        return JsonResult.success(list);
+    }
     public JsonResult myStore(Page page,Long userId){
 //        List<UserStore> userStores = userStoreService.pageUserStoreData(page, userId);
         String sql = " from t_user_store ts " +
