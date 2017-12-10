@@ -2,7 +2,7 @@ define(function(require, exports, module) {
 	var view = Backbone.View.extend({
 		el: "body",
 		events: {
-			"click #signIn" : "signIn"
+			"click #login-btn" : "signIn"
 		},
 		initialize: function() { /** 初始化 */
 		},
@@ -10,8 +10,15 @@ define(function(require, exports, module) {
 		},
 		signIn : function(){
 			var userName = $('#Username').val();
-			var password = $('#Password').val();
-			console.log(userName);
+			var password = $('#password').val();
+			if(!userName){
+				alert("请输入用户名！");
+				return false;
+			}
+			if(!password){
+				alert("请输入密码！");
+				return false;
+			}
 			$.ajax({
         		type : "post",
         		data : {
@@ -23,7 +30,7 @@ define(function(require, exports, module) {
         		success : function(result){
         			console.log(result.code);
         			if(result.code==200){
-        				window.location.href="userMng";
+        				window.location.href="index";
         			}else{
         				alert(result.msg);
         			}

@@ -1,0 +1,29 @@
+body, h1, h2, h3, h4, h5, h6 {
+	font-family: "Microsoft YaHei";
+}
+
+.dataTables_wrapper .row:first-child {
+	background-color: #FFF;
+}
+
+.dataTables_wrapper .row:last-child {
+	background-color: #FFF;
+	border-bottom: 0px;
+}
+
+.border-radius { 
+	border-radius: 10px; 
+	-webkit-border-radius: 10px; 
+	-moz-border-radius: 10px; 
+	-ms-border-radius: 10px;
+}
+
+form select {
+	height: 34px;
+}
+.user-avatar{
+	margin: -4px 8px 0 0;
+    border-radius: 100%;
+    border: 2px solid #FFF;
+    max-width: 40px;
+}

@@ -1,7 +1,13 @@
 define(function(require, exports, module) {
+	var utils = require("../common/utils.js");
 	var view = Backbone.View.extend({
 		el: "body",
 		events: {
+			"click button[role='btn-Query']":"query",
+			"click button[role='btn-Reset']":"reset",
+			"click button[role='btn-Add']":"add",
+			"click button[role='remove']":"remove",
+			
 		},
 		initialize: function() { /** 初始化 */
 			this.render();
@@ -21,8 +27,8 @@ define(function(require, exports, module) {
 		        bServerSide: true,  
 				fnServerParams: function(aoData){
 					aoData.push({  
-	                     name: "customerName",  
-	                     value: $("#customerName").val()  
+	                     name: "userName",  
+	                     value: $("#userName").val()  
                     });
 				},
 				aoColumns: [
@@ -31,22 +37,61 @@ define(function(require, exports, module) {
 			        {mData: "nickName"},
 			        {mData: "email"},
 			        {mData: "telephone"},
-			        /*{mData: null, mRender: function(data, type, rowdata) {
+			        {mData: null, mRender: function(data, type, rowdata) {
 		    	    	var operation = 
 						"<div class='btn-group'>" + 
-							"<button data-id='" + rowdata.id + "' class='btn btn-xs btn-info' role='editMngPrivilege' data-toggle='tooltip' data-placement='bottom' title='编辑'>" +
+							"<button data-id='" + rowdata.id + "' class='btn btn-xs btn-info' role='edit' data-toggle='tooltip' data-placement='bottom' title='编辑'>" +
 								"<i class='ace-icon fa fa-edit'></i></button>" +
-							"<button data-id='" + rowdata.id + "' class='btn btn-xs btn-yellow' role='detailMngPrivilege' data-toggle='tooltip' data-placement='bottom' title='查看'>" +
+							"<button data-id='" + rowdata.id + "' class='btn btn-xs btn-yellow' role='detail' data-toggle='tooltip' data-placement='bottom' title='查看'>" +
 								"<i class='ace-icon fa fa-eye'></i></button>" +
-							"<button data-id='" + rowdata.id + "' class='btn btn-xs btn-danger' role='removeMngPrivilege' data-toggle='tooltip' data-placement='bottom' title='删除'>" +
+							"<button data-id='" + rowdata.id + "' class='btn btn-xs btn-danger' role='remove' data-toggle='tooltip' data-placement='bottom' title='删除'>" +
 								"<i class='ace-icon fa fa-trash-o' title='删除'></i>" +
 						"</div>";
 		    	    	return operation;
-		    		}}*/
+		    		}}
 			    ]
 			});
 			viewSelf.dt = dt;
+		},
+		query : function(){
+			var viewSelf = this;
+			viewSelf.dt.fnPageChange(0);
+		},
+		add : function(){
+			window.location.href="userMng/addUser";
+		},
+		reset:function(){//表单重置
+			var viewSelf = this;
+			$('#userName').val("");
+			viewSelf.dt.fnPageChange(0);
+		},
+		remove:function(e){
+			var viewSelf = this;
+			var btnSelf = $(e.currentTarget);
+			var userId = btnSelf.data("id"); 
+			utils.button.confirm(btnSelf,function(result){
+				if(!result){//取消
+					return false;
+				}
+				$.ajax({
+					type : "post",
+					url : "/userMng/deleteById",
+					data: {
+						userId : userId
+					},
+					success : function(result){
+						if(result.code=='200'){
+							utils.alert.suc(result.msg);
+							viewSelf.dt.fnPageChange(0);
+						}else{
+							utils.alert.warn(result.msg);
+						}
+					}
+				});
+			},'是否确认删除？');
+			
 		}
+
 	});
 	module.exports = view;
 });

@@ -10,6 +10,7 @@ import com.coamctech.bxloan.manager.domain.DocColumn;
 import com.coamctech.bxloan.manager.domain.DocSource;
 import com.coamctech.bxloan.manager.domain.Role;
 import com.coamctech.bxloan.manager.domain.User;
+import com.coamctech.bxloan.manager.service.VO.UserTreeVO;
 import com.coamctech.bxloan.manager.service.VO.UserVO;
 
 public interface UserMngService {
@@ -21,7 +22,7 @@ public interface UserMngService {
 	JsonResult deleteUserById(Long userId) throws Exception;
 	
 	//新增查询用户
-	JsonResult addOrEdit(User curUser,UserVO vo,List<String> roleIds,
+	JsonResult addOrEdit(User curUser,UserVO vo,
 			List<String> columnIds, List<String> sourceIds, String type) throws Exception;
 	
 	//用户来源栏目分配
@@ -35,4 +36,13 @@ public interface UserMngService {
 	
 	//查询用户的所有的来源信息
 	List<Long> getAllSourceByUserId(Long userId);
+	
+	//查询角色用户树
+	List<UserTreeVO> getUserTree();
+	
+	//查询用户已选栏目列表
+	JsonResult getCheckedColumn(Long userId);
+	
+	//查询用户已选来源列表
+	JsonResult getCheckedSource(Long userId);
 }

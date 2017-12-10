@@ -9,6 +9,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.coamctech.bxloan.manager.domain.Role;
 import com.coamctech.bxloan.manager.domain.RoleUserRel;
+import com.coamctech.bxloan.manager.domain.User;
 
 public interface RoleUserRelDao extends JpaSpecificationExecutor<RoleUserRel>,PagingAndSortingRepository<RoleUserRel,Long>{
 	//查找某一用户的所有角色
@@ -29,8 +30,12 @@ public interface RoleUserRelDao extends JpaSpecificationExecutor<RoleUserRel>,Pa
 	public List<Long> findRoleIdsByUserId(Long userId);
 	
 	//查找某一角色下的所有用户id
-	@Query(value="select u.id from user u,role_user_rel rur where rur.user_id = u.id and rur.role_id = ?1",nativeQuery=true)
+	@Query(value="select u.id from t_user u,t_role_user_rel rur where rur.user_id = u.id and rur.role_id = ?1",nativeQuery=true)
 	public List<Long> findUserIdsByRoleId(Long roleId);
+	
+	//查找某一角色下的所有用户id
+	@Query(value="select u.* from t_user u,t_role_user_rel rur where rur.user_id = u.id and rur.role_id = ?1",nativeQuery=true)
+	public List<User> findUserByRoleId(Long roleId);
 
 	
 }

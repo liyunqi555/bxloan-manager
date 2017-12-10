@@ -176,7 +176,7 @@ public class DynamicQueryImpl implements DynamicQuery {
 	@Override
 	public Long nativeQueryCount(String nativeSql, Object... params) {
 		nativeSql = StringUtils.substringBeforeLast(nativeSql, "order by"); // 去掉order by, 提升执行效率
-		String countSql = "select count(*) from (" + nativeSql + ")";
+		String countSql = "select count(*) from (" + nativeSql + ") oname";
 		Object count = createNativeQuery(countSql, params).getSingleResult();
 		return ((Number) count).longValue();
 	}

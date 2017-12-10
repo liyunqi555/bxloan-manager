@@ -25,7 +25,7 @@
 						<ul class="breadcrumb">
 							<li>
 								<i class="ace-icon fa fa-home home-icon"></i>
-								<a href="dashboard">首页</a>
+								<a href="/index">首页</a>
 							</li>
 							<li class="active">用户管理</li>
 						</ul><!-- /.breadcrumb -->
@@ -34,26 +34,32 @@
 					<div class="page-content">
 						<div class="page-header">
 							<h1>
-		            			用户管理
+		            			用户新增
             				</h1>
 						</div><!-- /.page-header -->
-						
-						<div class="form-group"  >
-							<label for="customerName" class="control-label col-sm-1">用户名称：</label>
+						<form id="searchForm">
+							<div class="form-group">
+							<label for="userName" class="control-label col-sm-1">用户名称：</label>
 							<div class="col-sm-2">
 								<input type="text" id="userName" class="form-control col-sm-5 input-sm" placeholder="请输入客户名称" name="userName" />
 							</div>
-						</div>
+							</div>
+						</form>
 						<span style="float:right;">
 							<button role="btn-Query" type="button" class="btn btn-sm btn-purple" >
 		                      <i class="ace-icon fa fa-search">
 		                      </i>
 		                      	  查询
 		                    </button>
-		                    <button role="btn-Reset" type="button" class="btn btn-sm btn-purple" >
-		                      <i class="ace-icon fa fa-reset">
+		                    <button role="btn-Reset" type="button" class="btn btn-sm" >
+		                      <i class="ace-icon fa fa-undo">
 		                      </i>
 		                      	  重置
+		                    </button>
+		                    <button role="btn-Add" type="button" class="btn btn-sm btn-success" >
+		                      <i class="ace-icon fa fa-plus">
+		                      </i>
+		                      	  新增
 		                    </button>
 						</span>
 						
@@ -79,9 +85,9 @@
 											<th>
 											  	创建人
 											</th>
-											<!-- <th width="20%">
+											 <th width="20%">
 											  	操作
-											</th> -->
+											</th> 
 										</tr>
 									</thead>
 								</table>
@@ -92,35 +98,9 @@
 					</div><!-- /.page-content -->
 				</div>
 			</div><!-- /.main-content -->
-
-			<!-- <div class="footer">
-				<div class="footer-inner">
-					<div class="footer-content">
-						<span class="bigger-120">
-							<span class="blue bolder">Ace</span>
-							XXX公司 &copy; 2017-2018
-						</span>
-
-						&nbsp; &nbsp;
-						<span class="action-buttons">
-							<a href="#">
-								<i class="ace-icon fa fa-twitter-square light-blue bigger-150"></i>
-							</a>
-
-							<a href="#">
-								<i class="ace-icon fa fa-facebook-square text-primary bigger-150"></i>
-							</a>
-
-							<a href="#">
-								<i class="ace-icon fa fa-rss-square orange bigger-150"></i>
-							</a>
-						</span>
-					</div>
-				</div>
-			</div> -->
 		</div><!-- /.main-container -->		
 		<script>
-	     seajs.use('/js/userMng/main');
+	      seajs.use('/js/userMng/main');
 	 </script>
 	</body>
 </html>
