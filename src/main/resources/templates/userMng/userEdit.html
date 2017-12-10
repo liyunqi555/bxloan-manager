@@ -37,14 +37,18 @@
             				</h1>
 						</div><!-- /.page-header -->
 						  <div class="row row_content">
+						  	
 							<!-- 左列 -->
 							<div class="col-md-6 row_left">
 								<form id="basicInfoForm" class="form-horizontal">
+									<input type="hidden" id="type" th:value="${type}"/>
+									<input type="hidden" id="checkedRole" th:value="${user.roleIds}"/>
+						  			<input type="hidden" id="id" name="id" th:value="${userId}"/>
 									<div class="row">
 										<label class="control-label col-sm-3" for="userName">用户名：</label>
 										<div class="col-sm-6">
 											<input id="userName" type="text" class="form-control col-sm-3 input-sm" 
-											name="userName"/>
+											name="userName" th:value="${user.userName}"/>
 										</div>
 									</div>
 									<br/>
@@ -52,12 +56,12 @@
 										<label class="control-label col-sm-3" for="nickName">昵称：</label>
 										<div class="col-sm-6">
 											<input id="nickName" type="text" class="form-control col-sm-3 input-sm" 
-											name="nickName"/>
+											name="nickName" th:value="${user.nickName}"/>
 										</div>
 									</div>
 									<br/>
 									<div class="row">
-										<label class="control-label col-sm-3" for="password">密码：</label>
+										<label class="control-label col-sm-3" for="password">新密码：</label>
 										<div class="col-sm-6">
 											<input id="password" type="text" class="form-control col-sm-3 input-sm" 
 											name="password"/>
@@ -68,7 +72,7 @@
 										<label class="control-label col-sm-3" for="email">邮箱：</label>
 										<div class="col-sm-6">
 											<input id="email" type="text" class="form-control col-sm-3 input-sm" 
-											name="email"/>
+											name="email" th:value="${user.email}"/>
 										</div>
 									</div>
 									<br/>
@@ -76,7 +80,7 @@
 										<label class="control-label col-sm-3" for="officePhone">办公电话：</label>
 										<div class="col-sm-6">
 											<input id="officePhone" type="text" class="form-control col-sm-3 input-sm" 
-											name="officePhone"/>
+											name="officePhone" th:value="${user.officePhone}"/>
 										</div>
 									</div>
 									<br/>
@@ -84,7 +88,7 @@
 										<label class="control-label col-sm-3" for="telephone">办公电话：</label>
 										<div class="col-sm-6">
 											<input id="telephone" type="text" class="form-control col-sm-3 input-sm" 
-											name="telephone"></input>
+											name="telephone" th:value="${user.telephone}"></input>
 										</div>
 									</div>
 									<br/>
@@ -102,7 +106,7 @@
 										<div class="col-sm-8">
 											<span class="input-icon input-icon-right"><input
 												style="width: 150px" id="birthday" name="birthday" type="text"
-												placeholder="出生日期" value="" readonly="readonly"/>
+												placeholder="出生日期"  th:value="${user.birthday}" readonly="readonly" />
 												<i class="ace-icon fa fa-calendar"></i>
 											</span>
 										</div>
@@ -113,17 +117,16 @@
 										<div class="col-sm-8">
 											<span class="input-icon input-icon-right"><input
 												style="width: 150px" id="startTime" name="startTime" type="text"
-												placeholder="开始日期" value="" readonly="readonly"/>
+												placeholder="开始日期" th:value="${user.startTime}" readonly="readonly"/>
 												<i class="ace-icon fa fa-calendar"></i>
 											</span> &nbsp;&nbsp;&nbsp;~&nbsp;&nbsp;&nbsp; <span
 												class="input-icon input-icon-right"> <input
 												id="endTime" style="width: 150px" type="text" name="endTime"
-												placeholder="结束日期" value="" readonly="readonly"/>
+												placeholder="结束日期" th:value="${user.endTime}" readonly="readonly"/>
 												<i class="ace-icon fa fa-calendar"></i>
 											</span>	
 										</div>
 									</div>
-									
 								</form>
 							</div>
 							<!-- 中列 -->
@@ -179,7 +182,7 @@
 		
 		</div><!-- /.main-container -->		
 		<script>
-	      seajs.use('/js/userMng/addUser/main');
+	      seajs.use('/js/userMng/editUser/main');
 	 	</script>
 	</body>
 </html>

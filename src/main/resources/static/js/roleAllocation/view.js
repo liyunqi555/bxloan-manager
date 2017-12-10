@@ -46,7 +46,7 @@ define(function(require, exports, module) {
 				data: {
 					"columnIds" : v1,
 					"sourceIds" : v2,
-					"roleIdId" : roleId
+					"roleId" : roleId
 				},
 				success : function(result){
 					if(result.code=='200'){
@@ -117,7 +117,7 @@ define(function(require, exports, module) {
 			            	type : "post",
 							url : "/roleColumnSourceAssign/getCheckedColumn",
 							data: {
-								"role" : roleId
+								"roleId" : roleId
 							},
 							success : function(result){
 								if(result.code=='200'){

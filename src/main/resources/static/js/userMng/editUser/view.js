@@ -13,6 +13,69 @@ define(function(require, exports, module) {
 			this.initSourceTree();
 			this.initDate();
 			this.initRole();
+			this.initChecked();
+		},
+		initChecked(){
+			var userId = $('#id').val();
+			 $("#roleIds option").each(function(){ //遍历全部option  
+				  var value = $(this).val(); //获取option的value 
+				  if(value==$('#checkedRole').val())  
+					  $(this).attr("selected",true);
+			  });  
+			$.ajax({
+            	type : "post",
+				url : "/userColumnSourceAssign/getCheckedColumn",
+				data: {
+					"userId" : userId
+				},
+				success : function(result){
+					if(result.code=='200'){
+						var ids = result.body;
+						var treeObj = $.fn.zTree.getZTreeObj("ColumnZTree");
+						treeObj.checkAllNodes(false);
+						$.each(ids,function(key,value){
+							var node = treeObj.getNodeByParam("id",
+									value, null);
+							treeObj.checkNode(node, true, true);
+						}); 
+						
+					}else{
+						utils.alert.warn(result.msg);
+					}
+				}
+            });
+			
+			$.ajax({
+            	type : "post",
+				url : "/userColumnSourceAssign/getCheckedSource",
+				data: {
+					"userId" : userId
+				},
+				success : function(result){
+					if(result.code=='200'){
+						var ids = result.body;
+						var treeObj = $.fn.zTree.getZTreeObj("SourceZTree");
+						treeObj.checkAllNodes(false);
+						$.each(ids,function(key,value){
+							var node = treeObj.getNodeByParam("id",
+									value, null);
+							treeObj.checkNode(node, true, true);
+						}); 
+						
+					}else{
+						utils.alert.warn(result.msg);
+					}
+				}
+            });
+			
+			
+			var type = $('#type').val();
+			if(type=='view'){
+				$('input').attr("readonly",true);
+				$('select').attr("disabled",true);
+				$('#save').hide();
+			}
+			
 		},
 		initRole:function(){
 			var roleIds=$("#roleIds");
@@ -35,22 +98,6 @@ define(function(require, exports, module) {
 				$("#birthday").datepicker("setBirthday",ev.date?ev.date:"");
 				
 			});
-			$('#startTime').datepicker({
-				format : 'yyyy-mm-dd', 
-				clearBtn:true,
-				autoclose:true
-			}).on("changeDate",function(ev){
-				$("#startTime").datepicker("setStartTime",ev.date?ev.date:"");
-				
-			});
-			$('#endTime').datepicker({
-				format : 'yyyy-mm-dd', 
-				clearBtn:true,
-				autoclose:true
-			}).on("changeDate",function(ev){
-				$("#endTime").datepicker("setEndTime",ev.date?ev.date:"");
-				
-			});
 		},
 		save:function(){
 			var treeObj1=$.fn.zTree.getZTreeObj("ColumnZTree");
@@ -69,7 +116,7 @@ define(function(require, exports, module) {
             var params = [];
             params.push("columnIds="+v1);
             params.push("sourceIds="+v2);
-            params.push("operateType="+"add");
+            params.push("operateType="+"edit");
             //校验
             if(v1==""){
             	utils.alert.warn("请选择栏目");
@@ -85,10 +132,6 @@ define(function(require, exports, module) {
             }
             if(!$('#nickName').val()){
             	utils.alert.warn("请录入昵称");
-            	return false;
-            }
-            if(!$('#password').val()){
-            	utils.alert.warn("请录入密码");
             	return false;
             }
             if(!$('#email').val()){
@@ -164,7 +207,13 @@ define(function(require, exports, module) {
 						fontCss : {
 							size:"2em"
 						}
+					},
+					callback : {
+						onCheck : function(event, treeId, treeNode) {
+							
+						}
 					}
+					
 				});
 		},
 		initSourceTree:function(){
@@ -194,7 +243,7 @@ define(function(require, exports, module) {
 				
 			});
 			var treeObj = $.fn.zTree.getZTreeObj("SourceZTree");
-	},
+		},
 		initSourceDataTable:function(){
 			var viewSelf = this;
 			var dt = $("#tbSourceList").dataTable({

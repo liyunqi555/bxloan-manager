@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.coamctech.bxloan.manager.common.DataTablesPage;
 import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.ResultCode;
+import com.coamctech.bxloan.manager.dao.RoleDao;
 import com.coamctech.bxloan.manager.domain.Role;
 import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.service.RoleMngService;
@@ -39,6 +40,9 @@ public class RoleController {
     
     @Autowired
     private RoleMngService roleMngService;
+    
+    @Autowired
+    private RoleDao roleDao;
     
     /**
      * 角色管理主页面初始化
@@ -128,6 +132,13 @@ public class RoleController {
 			return new JsonResult(ResultCode.ERROR_CODE,"服务器异常");
 		}
     	
+    	
+    }
+    
+    @RequestMapping(value="/getAllRoles")
+    @ResponseBody
+    public List<Role> getAllRoles(){
+    	return (List<Role>)roleDao.findAll();
     	
     }
     

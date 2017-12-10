@@ -13,8 +13,8 @@ import com.coamctech.bxloan.manager.domain.User;
 
 public interface RoleUserRelDao extends JpaSpecificationExecutor<RoleUserRel>,PagingAndSortingRepository<RoleUserRel,Long>{
 	//查找某一用户的所有角色
-	@Query(value="select ro.* from role ro,role_user_rel rur where rur.role_id = ro.id and rur.user_id = ?1",nativeQuery=true)
-	public List<Role> getRoleByUserId(Long userId);
+	@Query(value="select ro.id from t_role ro,t_role_user_rel rur where rur.role_id = ro.id and rur.user_id = ?1",nativeQuery=true)
+	public List<Long> getRoleIdsByUserId(Long userId);
 	
 	//根据用户id删除用户角色关联关系
 	@Modifying
