@@ -114,7 +114,10 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         Map<String, Object> param = new HashMap<>();
         StringBuilder sql = new StringBuilder(" from DocInfo where  columnId in (:columnId) ");
         param.put("columnId",columnIds);
-        sql.append(" sourceId in(:sourceId) ");
+        if(canVisitDocSourceIds.size()==0){
+           canVisitDocSourceIds.add(-1L);
+        }
+        sql.append(" and  sourceId in(:sourceId) ");
         param.put("sourceId",canVisitDocSourceIds);
         if(StringUtils.isNotEmpty(keyworld)){
             sql.append(" and title like :title ");

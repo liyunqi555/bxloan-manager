@@ -42,8 +42,12 @@ public class AppDataCenterController extends AppBaseController{
      * @return
      */
     @RequestMapping("home")
-    public JsonResult home(@RequestParam(name="conceptUri")String conceptUri){
-        return dataCenterService.entityList(conceptUri);
+    public JsonResult home(@RequestParam(name="conceptUri")String conceptUri,String propertyUri){
+        if(StringUtils.isBlank(propertyUri)){
+            return dataCenterService.entityList(conceptUri);
+        }else{
+            return dataCenterService.entityList(conceptUri,propertyUri);
+        }
     }
 
     /**

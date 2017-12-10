@@ -18,11 +18,19 @@ public class AppConfig implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String version;
+    private Integer versionNum;
     private String downLoadUrl;
     private String description;
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;
 
+    public Integer getVersionNum() {
+        return versionNum;
+    }
+
+    public void setVersionNum(Integer versionNum) {
+        this.versionNum = versionNum;
+    }
     public Long getId() {
         return id;
     }
