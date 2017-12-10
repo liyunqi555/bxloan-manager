@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.ResultCode;
@@ -34,6 +35,7 @@ import com.coamctech.bxloan.manager.utils.CommonHelper;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
+@Transactional
 @Service
 public class RoleMngServiceImpl implements RoleMngService{
 	
@@ -70,7 +72,6 @@ public class RoleMngServiceImpl implements RoleMngService{
 			sql.append(" AND r.role_name like ?").append(++i);
 			params.add(StringUtils.join("%", roleName, "%"));
 		}
-		sql.append(" ORDER BY r.id asc");
 		Page<Object[]> page = dynamicQuery.nativeQuery(Object[].class,
 				new PageRequest(pageNumber, pageSize), sql.toString(),params.toArray());
 		List<RoleVO> returnList = Lists.newArrayList(Lists.transform(
@@ -91,33 +92,15 @@ public class RoleMngServiceImpl implements RoleMngService{
 		if(role.getType()==1){//管理员
 			return new JsonResult(ResultCode.ERROR_CODE,"该角色为管理员，不可删除",null);
 		}
+		if(CollectionUtils.isNotEmpty(roleUserRelDao.findUserIdsByRoleId(roleId))){
+			return new JsonResult(ResultCode.ERROR_CODE,"该角色下有用户，不可删除",null);
+		}
 		roleDao.delete(role);
-		roleUserRelDao.deleteByRoleId(roleId);
 		roleDocColumnRelDao.deleteRelByRoleId(roleId);
 		roleDocSourceRelDao.deleteRelByRoleId(roleId);
 		return new JsonResult(ResultCode.SUCCESS_CODE,"删除成功");
 	}
 
-	@Override
-	public JsonResult addOrEdit(User curUser, RoleVO vo,String type) throws Exception{
-		if(StringUtils.equals("add", type)){
-			Role role = new Role();
-			BeanUtils.copyProperties(vo, role,"id");
-			role.setCreateTime(CommonHelper.getNow());
-			role.setCreator(curUser.getId());
-			role.setStatus(1);//1:启用
-			roleDao.save(role);
-			return new JsonResult(ResultCode.SUCCESS_CODE,"角色新增成功");
-		}else{
-			Role role = roleDao.findOne(vo.getId());
-			role.setRoleName(vo.getRoleName());
-			role.setEnglishName(vo.getEnglishName());
-			role.setUpdateTime(CommonHelper.getNow());
-			roleDao.save(role);
-			return new JsonResult(ResultCode.SUCCESS_CODE,"角色修改成功");
-		}
-		
-	}
 
 	@Override
 	public JsonResult allocateToRole(User curUser, Long roleId, List<String> columnIds, List<String> sourceIds)
@@ -171,6 +154,48 @@ public class RoleMngServiceImpl implements RoleMngService{
 			}
 		}
 		return new JsonResult(ResultCode.SUCCESS_CODE,"分配成功");
+	}
+
+	@Override
+	public JsonResult addRole(String roleName, String roleType, 
+			String englishName,User curUser) throws Exception{
+		Role role = new Role();
+		role.setRoleName(roleName);
+		role.setEnglishName(englishName);
+		role.setType(Integer.valueOf(roleType));
+		role.setCreateTime(CommonHelper.getNow());
+		role.setCreator(curUser.getId());
+		role.setStatus(1);//1:启用
+		roleDao.save(role);
+		return new JsonResult(ResultCode.SUCCESS_CODE,"角色新增成功");
+	}
+
+	@Override
+	public Role getById(Long id) {
+		return roleDao.findOne(id);
+	}
+
+	@Override
+	public JsonResult editRole(String roleName, String roleType, String englishName, String id, User curUser) {
+		Role role = roleDao.findOne(Long.valueOf(id));
+		role.setRoleName(roleName);
+		role.setEnglishName(englishName);
+		role.setType(Integer.valueOf(roleType));
+		role.setUpdateTime(CommonHelper.getNow());
+		roleDao.save(role);
+		return new JsonResult(ResultCode.SUCCESS_CODE,"角色修改成功");
+	}
+	
+	@Override
+	public JsonResult getCheckedColumn(Long roleId) {
+		List<Long> ll = roleDocColumnRelDao.findColumnIdsByRoleId(roleId);
+		return new JsonResult(ResultCode.SUCCESS_CODE,null,ll);
+	}
+
+	@Override
+	public JsonResult getCheckedSource(Long roleId) {
+		List<Long> ll = roleDocSourceRelDao.findSourceIdsByRoleId(roleId);
+		return new JsonResult(ResultCode.SUCCESS_CODE,null,ll);
 	}
 
 }

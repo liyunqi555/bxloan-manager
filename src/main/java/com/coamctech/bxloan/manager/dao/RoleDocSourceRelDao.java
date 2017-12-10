@@ -1,5 +1,7 @@
 package com.coamctech.bxloan.manager.dao;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,5 +13,8 @@ public interface RoleDocSourceRelDao extends JpaSpecificationExecutor<RoleDocSou
 	@Modifying
 	@Query("delete from RoleDocSourceRel where roleId=?1")
 	public void deleteRelByRoleId(Long roleId);
+	
+	@Query("select docSourceId from RoleDocSourceRel where roleId=?1")
+	public List<Long> findSourceIdsByRoleId(Long roleId);
 	
 }

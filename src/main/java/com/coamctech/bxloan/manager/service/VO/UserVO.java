@@ -1,13 +1,15 @@
 package com.coamctech.bxloan.manager.service.VO;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.coamctech.bxloan.manager.common.BaseEntity;
 import com.coamctech.bxloan.manager.utils.CommonHelper;
 
 
-public class UserVO extends BaseEntity{
+public class UserVO extends BaseEntity implements Serializable{
 	    
+	private static final long serialVersionUID = 854777193056270430L;
 	private Long id;
     private String userName;
     private String nickName;
@@ -16,7 +18,15 @@ public class UserVO extends BaseEntity{
     private String email;
     private String officePhone;
     private String telephone;
+    private String columnIds;
+    private String sourceIds;
+    private String roleIds;
     
+    private String operateType;
+    
+    public UserVO(){
+    	super();
+    }
     
     public UserVO(Object[] objs){
     	super();
@@ -80,6 +90,42 @@ public class UserVO extends BaseEntity{
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public String getColumnIds() {
+		return columnIds;
+	}
+
+	public void setColumnIds(String columnIds) {
+		this.columnIds = columnIds;
+	}
+
+	public String getSourceIds() {
+		return sourceIds;
+	}
+
+	public void setSourceIds(String sourceIds) {
+		this.sourceIds = sourceIds;
+	}
+
+	public String getRoleIds() {
+		return roleIds;
+	}
+
+	public void setRoleIds(String roleIds) {
+		this.roleIds = roleIds;
+	}
+
+	public String getOperateType() {
+		return operateType;
+	}
+
+	public void setOperateType(String operateType) {
+		this.operateType = operateType;
+	}
+	
+	
+	
+	
 	
     
     

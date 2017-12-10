@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.ResultCode;
@@ -21,14 +22,13 @@ import com.coamctech.bxloan.manager.dao.RoleUserRelDao;
 import com.coamctech.bxloan.manager.dao.UserDao;
 import com.coamctech.bxloan.manager.dao.UserDocColumnRelDao;
 import com.coamctech.bxloan.manager.dao.UserDocSourceRelDao;
-import com.coamctech.bxloan.manager.domain.DocColumn;
-import com.coamctech.bxloan.manager.domain.DocSource;
 import com.coamctech.bxloan.manager.domain.Role;
 import com.coamctech.bxloan.manager.domain.RoleUserRel;
 import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.domain.UserDocColumnRel;
 import com.coamctech.bxloan.manager.domain.UserDocSourceRel;
 import com.coamctech.bxloan.manager.service.UserMngService;
+import com.coamctech.bxloan.manager.service.VO.UserTreeVO;
 import com.coamctech.bxloan.manager.service.VO.UserVO;
 import com.coamctech.bxloan.manager.utils.CommonHelper;
 import com.coamctech.bxloan.manager.utils.encrypt.MD5Util;
@@ -36,6 +36,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 
+@Transactional
 @Service
 public class UserMngServiceImpl implements UserMngService{
 	
@@ -69,7 +70,6 @@ public class UserMngServiceImpl implements UserMngService{
 			sql.append(" AND u.user_name like ?").append(++i);
 			params.add(StringUtils.join("%", userName, "%"));
 		}
-		sql.append(" ORDER BY u.id asc");
 		Page<Object[]> page = dynamicQuery.nativeQuery(Object[].class,
 				new PageRequest(pageNumber, pageSize), sql.toString(),params.toArray());
 		List<UserVO> returnList = Lists.newArrayList(Lists.transform(
@@ -94,7 +94,8 @@ public class UserMngServiceImpl implements UserMngService{
 				}
 			}
 		}
-		userDao.delete(userId);
+		User user = userDao.findOne(userId);
+		userDao.delete(user);
 		roleUserRelDao.deleteByUserId(userId);
 		userDocSourceRelDao.deleteRelByUserId(userId);
 		userDocColumnRelDao.deleteRelByUserId(userId);
@@ -102,7 +103,7 @@ public class UserMngServiceImpl implements UserMngService{
 	}
 
 	@Override
-	public JsonResult addOrEdit(User curUser,UserVO vo, List<String> roleIds, List<String> columnIds, List<String> sourceIds,
+	public JsonResult addOrEdit(User curUser,UserVO vo,  List<String> columnIds, List<String> sourceIds,
 			String type) throws Exception{
 		if(StringUtils.equals("add", type)){
 			//新增
@@ -114,14 +115,14 @@ public class UserMngServiceImpl implements UserMngService{
 			user.setStatus(1);//默认为1：启用
 			userDao.save(user);
 			
-			if(CollectionUtils.isNotEmpty(roleIds)){
+			/*if(CollectionUtils.isNotEmpty(roleIds)){
 				for(String roleId:roleIds){
 					RoleUserRel rel = new  RoleUserRel();
 					rel.setRoleId(CommonHelper.toLong(roleId));
 					rel.setUserId(user.getId());
 					roleUserRelDao.save(rel);
 				}
-			}
+			}*/
 			
 			if(CollectionUtils.isNotEmpty(columnIds)){
 				for(String columnId:columnIds){
@@ -149,7 +150,7 @@ public class UserMngServiceImpl implements UserMngService{
 			//修改
 			User user = userDao.findOne(vo.getId());
 			user.setUserName(vo.getUserName());
-			user.setBirthday(CommonHelper.str2Date(vo.getBirthday(), CommonHelper.DF_DATE));
+			user.setBirthday(CommonHelper.toDate(vo.getBirthday()));
 			user.setEmail(vo.getEmail());
 			user.setNickName(vo.getNickName());
 			user.setOfficePhone(vo.getOfficePhone());
@@ -160,14 +161,14 @@ public class UserMngServiceImpl implements UserMngService{
 			roleUserRelDao.deleteByUserId(user.getId());
 			userDocSourceRelDao.deleteRelByUserId(user.getId());
 			userDocColumnRelDao.deleteRelByUserId(user.getId());
-			if(CollectionUtils.isNotEmpty(roleIds)){
+			/*if(CollectionUtils.isNotEmpty(roleIds)){
 				for(String roleId:roleIds){
 					RoleUserRel rel = new  RoleUserRel();
 					rel.setRoleId(CommonHelper.toLong(roleId));
 					rel.setUserId(user.getId());
 					roleUserRelDao.save(rel);
 				}
-			}
+			}*/
 			
 			if(CollectionUtils.isNotEmpty(columnIds)){
 				for(String columnId:columnIds){
@@ -237,5 +238,48 @@ public class UserMngServiceImpl implements UserMngService{
 		}
 		return new JsonResult(ResultCode.SUCCESS_CODE,"分配成功");
 		
+	}
+
+	@Override
+	public List<UserTreeVO> getUserTree() {
+		List<UserTreeVO> ll = new ArrayList<>();
+		List<Role> allRole =(List<Role>) roleDao.findAll();
+		if(CollectionUtils.isNotEmpty(allRole)){
+			for(Role r : allRole){
+				UserTreeVO vo = new UserTreeVO();
+				vo.setId(r.getId()+1000000);
+				vo.setName(r.getRoleName());
+				ll.add(vo);
+				//获取该角色下所有用户
+				List<Long> allUserIds = roleUserRelDao.findUserIdsByRoleId(r.getId());
+				if(CollectionUtils.isNotEmpty(allUserIds)){
+					for(int i = 0;i<allUserIds.size();i++){	
+						Long id = CommonHelper.toLong(allUserIds.get(i));
+						User u = userDao.findOne(id);
+						UserTreeVO vo2 = new UserTreeVO();
+						vo2.setId(u.getId());
+						vo2.setName(u.getUserName());
+						vo2.setParentId(r.getId()+1000000);
+						ll.add(vo2);
+					}
+				}else{
+					ll.remove(vo);
+				}
+			}
+		}
+		
+		return ll;
+	}
+
+	@Override
+	public JsonResult getCheckedColumn(Long userId) {
+		List<Long> ll = userDocColumnRelDao.findColumnIdsByUserId(userId);
+		return new JsonResult(ResultCode.SUCCESS_CODE,null,ll);
+	}
+
+	@Override
+	public JsonResult getCheckedSource(Long userId) {
+		List<Long> ll = userDocSourceRelDao.findSourceIdsByUserId(userId);
+		return new JsonResult(ResultCode.SUCCESS_CODE,null,ll);
 	}
 }

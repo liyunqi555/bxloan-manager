@@ -1,9 +1,9 @@
 package com.coamctech.bxloan.manager.controller;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -12,14 +12,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.coamctech.bxloan.manager.common.DataTablesPage;
 import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.ResultCode;
+import com.coamctech.bxloan.manager.dao.DocColumnDao;
+import com.coamctech.bxloan.manager.dao.DocSourceDao;
+import com.coamctech.bxloan.manager.domain.DocColumn;
+import com.coamctech.bxloan.manager.domain.DocSource;
 import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.service.UserMngService;
 import com.coamctech.bxloan.manager.service.VO.UserVO;
@@ -32,20 +39,30 @@ import com.coamctech.bxloan.manager.service.VO.UserVO;
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     
-    private static final String userMainPage = "userMng";
-    private static final String userAddPage = "userAdd";
-    private static final String userEditPage = "userEdit";
+    private static final String userMainPage = "userMng/userMng";
+    private static final String userAddPage = "userMng/userAdd";
+    private static final String userEditPage = "userMng/userEdit";
     
     @Autowired
     private UserMngService userMngService;
+    @Autowired
+    private DocColumnDao docColumnDao;
+    @Autowired
+    private DocSourceDao docSourceDao;
     
     /**
      * 用户管理主页面
      */
     @RequestMapping
-    public String index(Model model,HttpSession session){
+    public String index(){
     	return userMainPage;
     }
+    
+    @RequestMapping("/addUser")
+    public String addUser(){
+    	return userAddPage;
+    }
+    
     /**
      * type: add-新增 edit-编辑 view-查看
      */
@@ -61,13 +78,6 @@ public class UserController {
     	model.addAttribute("roleIds", userMngService.getAllSourceByUserId(userId));
     	return userEditPage;
     }
-    /**
-    * type: add-新增 edit-编辑 view-查看
-    */
-   @RequestMapping("/add")
-   public String add(){
-	   	return userAddPage;
-   }	
     
     /**
      * 用户管理主页面初始化
@@ -77,14 +87,15 @@ public class UserController {
 	public DataTablesPage findBySearch(@RequestParam("sEcho") Integer sEcho,
 			@RequestParam("iDisplayStart") Integer firstIndex,
 			@RequestParam("iDisplayLength") Integer pageSize,
-			@RequestParam("customerName") String customerName) {
+			@RequestParam("userName") String userName) {
 	    //当前登录用户
  		Page<UserVO> page = null;
 	 		try {
-	 			page = userMngService.findBySearch(firstIndex/pageSize, pageSize,customerName);
+	 			page = userMngService.findBySearch(firstIndex/pageSize, pageSize,userName);
 	 		} catch (ParseException e) {
 	 			e.printStackTrace();
 	 		}
+
 	 		return new DataTablesPage(sEcho, page);
     	
     }
@@ -95,9 +106,8 @@ public class UserController {
      */
     @RequestMapping("/deleteById")
 	@ResponseBody
-	public JsonResult deleteById(HttpServletRequest request) {
+	public JsonResult deleteById(@RequestParam("userId")String userId) {
 		try {
-			String userId = request.getParameter("userId");
 			JsonResult r = userMngService.deleteUserById(Long.valueOf(userId));
 			return r;
 		} catch (Exception e) {
@@ -106,16 +116,27 @@ public class UserController {
 			return new JsonResult(ResultCode.ERROR_CODE,"删除失败");
 		}
 	}
-
+    
     /**
      * 用户新增/编辑
      */
 	@RequestMapping("/editUser")
     @ResponseBody
-    public JsonResult addUser(HttpSession session,UserVO vo,List<String> roleIds,List<String> columnIds,List<String> sourceIds,String type){
+    public JsonResult editUser(UserVO vo,HttpSession session){
     	try {
+    		String sourceIds = vo.getSourceIds();
+    		String columnIds = vo.getColumnIds();
+    		String operateType = vo.getOperateType();
     		User curUser = (User)session.getAttribute("user");
-			JsonResult r = userMngService.addOrEdit(curUser,vo,roleIds,columnIds,sourceIds,type);
+    		List<String> sourceList = new ArrayList<>();
+    		for(int i=0;i<sourceIds.split(",").length;i++){
+    			sourceList.add(sourceIds.split(",")[i]);
+    		}
+    		List<String> columnList = new ArrayList<>();
+    		for(int i=0;i<columnIds.split(",").length;i++){
+    			columnList.add(columnIds.split(",")[i]);
+    		}
+			JsonResult r = userMngService.addOrEdit(curUser,vo,columnList,sourceList,operateType);
 			return r;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -129,10 +150,18 @@ public class UserController {
 	 */
 	@RequestMapping("/allocateToUser")
     @ResponseBody
-    public JsonResult allocateToUser(HttpSession session,Long userId,List<String> columnIds,List<String> sourceIds){
+    public JsonResult allocateToUser(HttpSession session,Long userId,String columnIds,String sourceIds){
     	try {
     		User curUser = (User)session.getAttribute("user");
-			JsonResult r = userMngService.allocateToUser(curUser, userId, columnIds, sourceIds);
+    		List<String> sourceList = new ArrayList<>();
+    		for(int i=0;i<sourceIds.split(",").length;i++){
+    			sourceList.add(sourceIds.split(",")[i]);
+    		}
+    		List<String> columnList = new ArrayList<>();
+    		for(int i=0;i<columnIds.split(",").length;i++){
+    			columnList.add(columnIds.split(",")[i]);
+    		}
+			JsonResult r = userMngService.allocateToUser(curUser, userId, columnList, sourceList);
 			return r;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -140,4 +169,23 @@ public class UserController {
 			return new JsonResult(ResultCode.ERROR_CODE,"分配失败");
 		}
 	}
+	
+	
+    @RequestMapping(value="/getAllColumn", method = RequestMethod.POST)
+    @ResponseBody
+    public List<DocColumn> getAllColumn(){
+    	
+		List<DocColumn> list =  (List<DocColumn>)docColumnDao.findAll();
+		return list;
+    	
+    }
+    
+    @RequestMapping(value="/getAllSource", method = RequestMethod.POST)
+    @ResponseBody
+    public List<DocSource> getAllSource(){
+    	
+		List<DocSource> list =  (List<DocSource>)docSourceDao.findAll();
+		return list;
+    	
+    }
 }

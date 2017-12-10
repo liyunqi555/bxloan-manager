@@ -1,6 +1,7 @@
 package com.coamctech.bxloan.manager.controller;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.coamctech.bxloan.manager.common.DataTablesPage;
 import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.ResultCode;
+import com.coamctech.bxloan.manager.domain.Role;
 import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.service.RoleMngService;
 import com.coamctech.bxloan.manager.service.VO.RoleVO;
@@ -87,12 +89,15 @@ public class RoleController {
     /**
      * 角色新增
      */
-    @RequestMapping(value="editRole")
+    @RequestMapping(value="add")
     @ResponseBody
-    public JsonResult addUser(HttpSession session,RoleVO vo,String type){
+    public JsonResult add(HttpServletRequest request){
     	try {
-    		User curUser = (User)session.getAttribute("user");
-			JsonResult r = roleMngService.addOrEdit(curUser,vo,type);
+    		User curUser = (User)request.getSession().getAttribute("user");
+    		String roleName = request.getParameter("roleName");
+    		String roleType = request.getParameter("roleType");
+    		String englishName = request.getParameter("englishName");
+			JsonResult r = roleMngService.addRole(roleName,roleType,englishName,curUser);
 			return r;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -104,14 +109,60 @@ public class RoleController {
     }
     
     /**
+     * 角色新增
+     */
+    @RequestMapping(value="edit")
+    @ResponseBody
+    public JsonResult edit(HttpServletRequest request){
+    	try {
+    		User curUser = (User)request.getSession().getAttribute("user");
+    		String roleName = request.getParameter("roleName");
+    		String roleType = request.getParameter("roleType");
+    		String englishName = request.getParameter("englishName");
+    		String id = request.getParameter("id");
+			JsonResult r = roleMngService.editRole(roleName,roleType,englishName,id,curUser);
+			return r;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return new JsonResult(ResultCode.ERROR_CODE,"服务器异常");
+		}
+    	
+    	
+    }
+    
+    @RequestMapping("/initModalData")
+    @ResponseBody
+    public JsonResult initModalData(HttpServletRequest request){
+    	try{
+    		String id = request.getParameter("id");
+        	Role role = roleMngService.getById(Long.valueOf(id));
+        	return new JsonResult(ResultCode.SUCCESS_CODE,"初始化弹窗成功",role);
+    	}catch (Exception e) {
+    		e.printStackTrace();
+			logger.error(e.getMessage());
+			return new JsonResult(ResultCode.ERROR_CODE,"初始化弹窗失败");
+    	}
+    	
+    }
+    
+    /**
 	 * 角色栏目来源分配
 	 */
 	@RequestMapping("/allocateToRole")
     @ResponseBody
-    public JsonResult allocateToRole(HttpSession session,Long roleId,List<String> columnIds,List<String> sourceIds){
+    public JsonResult allocateToRole(HttpSession session,Long roleId,String columnIds,String sourceIds){
     	try {
     		User curUser = (User)session.getAttribute("user");
-			JsonResult r = roleMngService.allocateToRole(curUser, roleId, columnIds, sourceIds);
+    		List<String> sourceList = new ArrayList<>();
+    		for(int i=0;i<sourceIds.split(",").length;i++){
+    			sourceList.add(sourceIds.split(",")[i]);
+    		}
+    		List<String> columnList = new ArrayList<>();
+    		for(int i=0;i<columnIds.split(",").length;i++){
+    			columnList.add(columnIds.split(",")[i]);
+    		}
+			JsonResult r = roleMngService.allocateToRole(curUser, roleId, columnList, sourceList);
 			return r;
 		} catch (Exception e) {
 			e.printStackTrace();
