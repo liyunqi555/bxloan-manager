@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+	<head th:include="pre_included">
+		<meta charset="utf-8" />
+		<title>首页</title>
+	</head>
+
+	<body class="no-skin">
+		<div th:include="sidebar"></div> 
+		<div class="main-container" id="main-container">
+			<script type="text/javascript">
+				try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+			</script>
+
+
+			<div class="main-content">
+				<div class="main-content-inner">
+					<div class="breadcrumbs" id="breadcrumbs">
+						<script type="text/javascript">
+							try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+						</script>
+
+						<ul class="breadcrumb">
+							<li>
+								<i class="ace-icon fa fa-home home-icon"></i>
+								<a href="/index">首页</a>
+							</li>
+							<li class="active">文档管理</li>
+						</ul><!-- /.breadcrumb -->
+					</div>
+
+					<div class="page-content">
+						<div class="page-header">
+							<h1>
+		            			文档管理
+            				</h1>
+						</div><!-- /.page-header -->
+						  <form id="docInfoForm" class="form-horizontal">
+						  		<div class="row">
+						  			<div class="form-group col-md-6">
+										<label class="col-md-4 control-label">栏目</label>
+										<div class="col-md-8">
+											<span class="block input-icon input-icon-right">
+												<div class="input-group">
+										      		<input type="text" id="column"  name="column" class="form-control"  readonly="readonly"/>
+										      		<span class="input-group-btn">
+										        		<button id="show-column-tree" class="btn btn-sm btn-yellow" type="button">
+										        			<i class="ace-icon fa fa-eye"></i>
+										        		</button>
+										      		</span>
+										      		<input type="hidden" id="columnId"  name="columnId" />
+										    	</div>
+											</span>
+											<span class="block input-icon input-icon-right">
+							                	<div id="ColumnTreeWarp" style="display:none; ">
+							                		<div class="col-xs-12" style="overflow-y: auto;max-height: 500px;position:absolute;z-index:999;background:#fff;border:1px solid #e3e3e3">
+							                      		<ul id="columnTree" class="ztree"></ul>
+							                  		</div>
+							                	</div>
+											</span>
+										</div>
+										<div class="help-block col-xs-12 col-sm-reset inline"></div>
+									</div> 
+									
+									<div class="form-group col-md-6">
+										<label class="col-md-4 control-label">来源</label>
+										<div class="col-md-8">
+											<span class="block input-icon input-icon-right">
+												<div class="input-group">
+										      		<input type="text" id="source"  name="source" class="form-control"  readonly="readonly"/>
+										      		<span class="input-group-btn">
+										        		<button id="show-source-tree" class="btn btn-sm btn-yellow" type="button">
+										        			<i class="ace-icon fa fa-eye"></i>
+										        		</button>
+										      		</span>
+										      		<input type="hidden" id="sourceId" name="sourceId" />
+										    	</div>
+											</span>
+											<span class="block input-icon input-icon-right">
+							                	<div id="SourceTreeWarp" style="display:none; ">
+							                		<div class="col-xs-12" style="overflow-y: auto;max-height: 500px;position:absolute;z-index:999;background:#fff;border:1px solid #e3e3e3">
+							                      		<ul id="sourceTree" class="ztree"></ul>
+							                  		</div>
+							                	</div>
+											</span>
+										</div>
+										<div class="help-block col-xs-12 col-sm-reset inline"></div>
+									</div> 
+						  		</div>
+						  </form>
+						  <div class="col-md-4 col-md-offset-5">
+						  	<button type="button" class="btn btn-md btn-primary" id="save" data-loading-text="保存中...">
+								<i class="ace-icon fa fa-floppy-o"></i> 保存
+							</button>
+							<button type="button" class="btn btn-md btn-pre" id="back" onclick="javascript:history.go(-1);">
+								<i class="ace-icon fa fa-chevron-left"></i> 返回
+							</button>
+						  </div>
+						
+						
+						
+					</div><!-- /.page-content -->
+				</div>
+			</div><!-- /.main-content -->
+
+		
+		</div><!-- /.main-container -->		
+		<script>
+	      seajs.use('/js/docMng/main');
+	 	</script>
+	</body>
+</html>
