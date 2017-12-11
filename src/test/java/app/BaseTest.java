@@ -19,39 +19,39 @@ import org.slf4j.LoggerFactory;
 
 public class BaseTest {
 	private static Logger logger = LoggerFactory.getLogger(BaseTest.class);
-//	protected static final String base = "http://localhost:8080/";
-    protected static final String base = "http://211.99.230.29:8096/";
+	protected static final String base = "http://localhost:8081/";
+   // protected static final String base = "http://211.99.230.29:8096/";
     //admin
     protected static String token = "ee859669ff48b631da9401687e250c3cv101000000_788fc2920c99964013f1703d99aa7394ba61eada";
     //vip1
 //    protected static String token = "C667EFAA2F3B2D80D1D2184519813E57";
     protected static String sign = "C667EFAA2F3B2D80D1D2184519813E57";
     public static void main(String[] args) {
-      login();
+     login();
         //login_vip1();
 //        topColumns();
 //       banner();
-//        customColumn();
+        //customColumn();
 //
         haveCustomDocColumns();
-//        noCustomDocColumns();
+        //noCustomDocColumns();
 //        switchOrder();
 //        lastVersion();
 //        cancelCustomColumn();
 //        worlds();
-//        docInfos();
+        docInfos();
 //        search();
 //        docInfoDetail();
 //        store();
 //        cancelStore();
 //        myStore();
 //        myHistory();
-        //dataCenter_home();
+//        dataCenter_home();
 //        dataCenter_detail();
         //dataCenter_store();
 //        dataCenter_myStore();
 //        changePassword();
-        //switchViewHistory();
+//        switchViewHistory();
     }
 
     public static void dataCenter_myStore(){
@@ -78,6 +78,7 @@ public class BaseTest {
     public static void dataCenter_home(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new NameValuePair("conceptUri","国家"));
+        nvps.add(new NameValuePair("propertyUri","亚洲"));
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/dataCenter/home");
     }
@@ -122,7 +123,7 @@ public class BaseTest {
     }
     public static void docInfos(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new NameValuePair("pageIndex","0"));
+        nvps.add(new NameValuePair("pageIndex","1"));
         nvps.add(new NameValuePair("columnId","4"));
         nvps.add(new NameValuePair("topLevelColumnId","1"));
         addTokenAndSign(nvps);
@@ -137,7 +138,7 @@ public class BaseTest {
     }
     public static void haveCustomDocColumns(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new NameValuePair("topLevelColumnId","2"));
+        nvps.add(new NameValuePair("topLevelColumnId","1"));
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/home/haveCustomDocColumns");
     }
@@ -155,7 +156,7 @@ public class BaseTest {
     }
     public static void noCustomDocColumns(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new NameValuePair("topLevelColumnId","2"));
+        nvps.add(new NameValuePair("topLevelColumnId","1"));
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/home/noCustomDocColumns");
     }

@@ -88,7 +88,7 @@ public class Page implements Serializable {
 		}
 		
 		//计算偏移
-		this.setStart(this.getPageIndex() > 1? this.getPageSize() * this.getPageIndex() - this.getPageSize() : 0);
+		this.setStart(this.getPageIndex() > 0? this.getPageSize() * this.getPageIndex(): 0);
 		this.setLimit(this.getPageSize());
 	}
 
@@ -189,7 +189,7 @@ public class Page implements Serializable {
 	 * @param pageIndex the pageIndex to set
 	 */
 	public void setPageIndex(int pageIndex) {
-		this.pageIndex = pageIndex <= 0 ? 1: pageIndex;
+		this.pageIndex = pageIndex <= 0 ? 0: pageIndex;
 	}
 	
 }
