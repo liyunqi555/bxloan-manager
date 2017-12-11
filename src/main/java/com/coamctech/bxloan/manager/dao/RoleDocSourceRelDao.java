@@ -13,6 +13,9 @@ public interface RoleDocSourceRelDao extends JpaSpecificationExecutor<RoleDocSou
 	@Modifying
 	@Query("delete from RoleDocSourceRel where roleId=?1")
 	public void deleteRelByRoleId(Long roleId);
+    @Modifying
+    @Query("delete from RoleDocSourceRel where docSourceId=?1")
+    public void deleteRelByDocSourceId(Long docSourceId);
 	
 	@Query("select docSourceId from RoleDocSourceRel where roleId=?1")
 	public List<Long> findSourceIdsByRoleId(Long roleId);

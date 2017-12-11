@@ -43,10 +43,7 @@ define(function(require, exports, module) {
                 utils.alert.warn("请选择语言类型");
                 return false;
             }
-			var url = "/docSourceMng/add";
-			if($('#operateType').val()=='edit'){
-				url = "/docSourceMng/edit";
-			}
+			var url = "/docSourceMng/save";
 			 $.ajax({
 					type : "post",
 					url : url,
@@ -104,7 +101,9 @@ define(function(require, exports, module) {
 							"<button data-id='" + rowdata.id + "' class='btn btn-xs btn-yellow' role='detail' data-toggle='tooltip' data-placement='bottom' title='查看'>" +
 								"<i class='ace-icon fa fa-eye'></i></button>" +
 							"<button data-id='" + rowdata.id + "' class='btn btn-xs btn-danger' role='remove' data-toggle='tooltip' data-placement='bottom' title='删除'>" +
-								"<i class='ace-icon fa fa-trash-o' title='删除'></i>" +
+								"<i class='ace-icon fa fa-trash-o' title='删除'></i></button>" +
+							"<button data-id='" + rowdata.id + "' class='btn btn-xs fa-columns' role='columns' data-toggle='tooltip' data-placement='bottom' title='栏目'>" +
+                                "<i class='ace-icon  fa-columns' title='查看栏目'></i></button>" +
 						"</div>";
 		    	    	return operation;
 		    		}}
@@ -118,7 +117,11 @@ define(function(require, exports, module) {
 		},
 	    add: function() { // 新增按钮事件
 	    	this.initModal();
-            $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 新增角色");
+	    	$("#name").attr("disabled",false);
+            $("#type").attr("disabled",false);
+            $("#ifSpecial").attr("disabled",false);
+            $("#languageType").attr("disabled",false);
+            $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 新增来源");
             $("#add-modal-form").modal("show");
             $('#checkedId').val('');
             $('#operateType').val('');
@@ -128,9 +131,9 @@ define(function(require, exports, module) {
         	viewSelf.initModal();
         	var btnSelf = $(e.currentTarget);
         	var roleId = btnSelf.data("id"); 
-        	$("#addForm").resetForm();
+        	$("#addForm")[0].reset();
         	$("#add-simple-submit").show();
-        	 $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-edit'></i> 编辑角色");
+        	 $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-edit'></i> 编辑来源");
         	 $('#checkedId').val(roleId);
         	 $('#operateType').val('edit');
         	 viewSelf.initModalData(roleId,'edit');
@@ -140,12 +143,12 @@ define(function(require, exports, module) {
         	viewSelf.initModal();
 			var btnSelf = $(e.currentTarget);
 			var roleId = btnSelf.data("id"); 
-        	$("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-eye'></i> 查看角色");
+        	$("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-eye'></i> 查看来源");
         	$('#checkedId').val(roleId);
         	viewSelf.initModalData(roleId,'view');
         },
         initModal:function(){
-        	//$("#addForm").resetForm();
+        	$("#addForm")[0].reset();
         	$("#add-simple-submit").show();
         	$("#addRoleName").attr("disabled",false);
 			$("#englishName").attr("disabled",false);
@@ -154,21 +157,27 @@ define(function(require, exports, module) {
         initModalData:function(id,type){
         	$.ajax({
 				type : "post",
-				url : "/roleMng/initModalData",
+				url : "/docSourceMng/initModalData",
 				data: {
 					id : id
 				},
 				success : function(result){
-					console.log(result);
 					if(result.code=='200'){
-						$('#addRoleName').val(result.body.roleName);
-						$('#englishName').val(result.body.englishName);
-						$('#roleType').val(result.body.type);
+						$('#name').val(result.body.name);
+						$('#type').val(result.body.type);
+						$('#ifSpecial').val(result.body.ifSpecial);
+						$('#languageType').val(result.body.languageType);
 						if(type=='view'){
-							$("#addRoleName").attr("disabled",true);
-							$("#englishName").attr("disabled",true);
-							$("#roleType").attr("disabled",true);
+							$("#name").attr("disabled",true);
+							$("#type").attr("disabled",true);
+							$("#ifSpecial").attr("disabled",true);
+							$("#languageType").attr("disabled",true);
 							$("#add-simple-submit").hide();
+						}else{
+                            $("#name").attr("disabled",false);
+							$("#type").attr("disabled",false);
+							$("#ifSpecial").attr("disabled",false);
+							$("#languageType").attr("disabled",false);
 						}
 						$("#add-modal-form").modal("show");
 					}else{
@@ -185,16 +194,16 @@ define(function(require, exports, module) {
 		remove:function(e){
 			var viewSelf = this;
 			var btnSelf = $(e.currentTarget);
-			var roleId = btnSelf.data("id"); 
+			var docSourceId = btnSelf.data("id");
 			utils.button.confirm(btnSelf,function(result){
 				if(!result){//取消
 					return false;
 				}
 				$.ajax({
 					type : "post",
-					url : "/roleMng/deleteById",
+					url : "/docSourceMng/deleteById",
 					data: {
-						roleId : roleId
+						docSourceId : docSourceId
 					},
 					success : function(result){
 						if(result.code=='200'){

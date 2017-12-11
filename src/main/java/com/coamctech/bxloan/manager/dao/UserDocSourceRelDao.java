@@ -14,6 +14,9 @@ public interface UserDocSourceRelDao extends JpaSpecificationExecutor<UserDocSou
 	@Modifying
 	@Query("delete from UserDocSourceRel where userId=?1")
 	public void deleteRelByUserId(Long userId);
+    @Modifying
+    @Query("delete from UserDocSourceRel where docSourceId=?1")
+    public void deleteRelByDocSourceId(Long docSourceId);
 	
 	@Query("select docSourceId from UserDocSourceRel where userId=?1")
 	public List<Long> findSourceIdsByUserId(Long userId);

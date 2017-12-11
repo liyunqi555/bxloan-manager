@@ -33,9 +33,7 @@ public class DocSourceMngServiceImpl implements DocSourceMngService{
 	@Autowired
 	private DynamicQuery dynamicQuery;
 	
-	@Autowired
-	private RoleDao roleDao;
-	
+
 	@Autowired
 	private RoleUserRelDao roleUserRelDao;
 	
@@ -80,77 +78,16 @@ public class DocSourceMngServiceImpl implements DocSourceMngService{
 	}
 
 	@Override
-	public JsonResult deleteRoleById(Long roleId) {
-		Role role = roleDao.findOne(roleId);
-		if(role.getType()==1){//管理员
-			return new JsonResult(ResultCode.ERROR_CODE,"该角色为管理员，不可删除",null);
-		}
-		if(CollectionUtils.isNotEmpty(roleUserRelDao.findUserIdsByRoleId(roleId))){
-			return new JsonResult(ResultCode.ERROR_CODE,"该角色下有用户，不可删除",null);
-		}
-		roleDao.delete(role);
-		roleDocColumnRelDao.deleteRelByRoleId(roleId);
-		roleDocSourceRelDao.deleteRelByRoleId(roleId);
-		return new JsonResult(ResultCode.SUCCESS_CODE,"删除成功");
-	}
-
-
-	@Override
-	public JsonResult allocateToRole(User curUser, Long roleId, List<String> columnIds, List<String> sourceIds)
-			throws Exception {
-		roleDocColumnRelDao.deleteRelByRoleId(roleId);
-		roleDocSourceRelDao.deleteRelByRoleId(roleId);
-		if(CollectionUtils.isNotEmpty(columnIds)){
-			for(String columnId:columnIds){
-				RoleDocColumnRel rel = new  RoleDocColumnRel();
-				rel.setDocColumnId(CommonHelper.toLong(columnId));
-				rel.setRoleId(roleId);
-				rel.setCreateTime(CommonHelper.getNow());
-				rel.setCreator(curUser.getId());
-				roleDocColumnRelDao.save(rel);
-			}
-		}
-		
-		if(CollectionUtils.isNotEmpty(sourceIds)){
-			for(String sourceId:sourceIds){
-				RoleDocSourceRel rel = new  RoleDocSourceRel();
-				rel.setDocSourceId(CommonHelper.toLong(sourceId));
-				rel.setRoleId(roleId);
-				rel.setCreateTime(CommonHelper.getNow());
-				rel.setCreator(curUser.getId());
-				roleDocSourceRelDao.save(rel);
-			}
-		}
-		
-		List<Long> userIds =  roleUserRelDao.findUserIdsByRoleId(roleId);
-		for(Long userId:userIds){
-			if(CollectionUtils.isNotEmpty(columnIds)){
-				for(String columnId:columnIds){
-					UserDocColumnRel rel = new  UserDocColumnRel();
-					rel.setDocColumnId(CommonHelper.toLong(columnId));
-					rel.setUserId(userId);
-					rel.setCreateTime(CommonHelper.getNow());
-					rel.setCreator(curUser.getId());
-					userDocColumnRelDao.save(rel);
-				}
-			}
-			
-			if(CollectionUtils.isNotEmpty(sourceIds)){
-				for(String sourceId:sourceIds){
-					UserDocSourceRel rel = new  UserDocSourceRel();
-					rel.setDocSourceId(CommonHelper.toLong(sourceId));
-					rel.setUserId(userId);
-					rel.setCreateTime(CommonHelper.getNow());
-					rel.setCreator(curUser.getId());
-					userDocSourceRelDao.save(rel);
-				}
-			}
-		}
-		return new JsonResult(ResultCode.SUCCESS_CODE,"分配成功");
+	public JsonResult deleteById(Long docSourceId) {
+        DocSource docSource = docSourceDao.findOne(docSourceId);
+		docSourceDao.delete(docSource);
+        userDocSourceRelDao.deleteRelByDocSourceId(docSourceId);
+		roleDocSourceRelDao.deleteRelByDocSourceId(docSourceId);
+		return JsonResult.success();
 	}
 
 	@Override
-	public JsonResult addDocSource(DocSourceVO docSourceVO,User curUser) throws Exception{
+	public JsonResult saveDocSource(DocSourceVO docSourceVO,User curUser) throws Exception{
         DocSource docSource = null;
         if(docSourceVO.getId()==null){
             docSource = new DocSource();
@@ -169,31 +106,7 @@ public class DocSourceMngServiceImpl implements DocSourceMngService{
 	}
 
 	@Override
-	public Role getById(Long id) {
-		return roleDao.findOne(id);
+	public DocSource getById(Long id) {
+		return docSourceDao.findOne(id);
 	}
-
-	@Override
-	public JsonResult editRole(String roleName, String roleType, String englishName, String id, User curUser) {
-		Role role = roleDao.findOne(Long.valueOf(id));
-		role.setRoleName(roleName);
-		role.setEnglishName(englishName);
-		role.setType(Integer.valueOf(roleType));
-		role.setUpdateTime(CommonHelper.getNow());
-		roleDao.save(role);
-		return new JsonResult(ResultCode.SUCCESS_CODE,"角色修改成功");
-	}
-	
-	@Override
-	public JsonResult getCheckedColumn(Long roleId) {
-		List<Long> ll = roleDocColumnRelDao.findColumnIdsByRoleId(roleId);
-		return new JsonResult(ResultCode.SUCCESS_CODE,null,ll);
-	}
-
-	@Override
-	public JsonResult getCheckedSource(Long roleId) {
-		List<Long> ll = roleDocSourceRelDao.findSourceIdsByRoleId(roleId);
-		return new JsonResult(ResultCode.SUCCESS_CODE,null,ll);
-	}
-
 }
