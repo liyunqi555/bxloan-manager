@@ -127,7 +127,8 @@ define(function(require, exports, module) {
 									$.each(ids,function(key,value){
 										var node = treeObj.getNodeByParam("id",
 												value, null);
-										treeObj.checkNode(node, true, true);
+										if(!node.isParent)
+											treeObj.checkNode(node, true, true);
 									}); 
 									
 								}else{

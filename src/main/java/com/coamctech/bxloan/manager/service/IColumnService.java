@@ -2,8 +2,11 @@ package com.coamctech.bxloan.manager.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.domain.DocColumn;
+import com.coamctech.bxloan.manager.service.VO.DocColumnVO;
 
 /**   
  * 类名称：IColumnService<br/>
@@ -29,30 +32,31 @@ public interface IColumnService {
     
     /**
      *修改栏目
+     * @param id 
      * @param columnId
      * @return
      *
      * @lastModified zhaoqingwen 2017年12月7日 下午3:53:22  
      */
-    public  JsonResult modifyColumn(DocColumn docColumn);
+    public  JsonResult modifyColumn(DocColumn docColumn, Long id);
     
     /**
      *删除栏目
-     * @param columnId
-     * @return
+     * @param id
      *
      * @lastModified zhaoqingwen 2017年12月7日 下午3:53:22  
      */
-    public  JsonResult deleteColumn(String columnId);
+    public  void deleteColumn(Long id);
     
     /**
      *新增栏目
+     * @param loginId 登陆人ID
      * @param columnId
      * @return
      *
      * @lastModified zhaoqingwen 2017年12月7日 下午3:53:22  
      */
-    public  JsonResult addColumn();
+    public  void addColumn(DocColumn docColumn, Long loginId);
 
 	/**
 	 *获取栏目菜单
@@ -61,4 +65,8 @@ public interface IColumnService {
 	 * @lastModified zhaoqingwen 2017年12月7日 下午4:27:58  
 	 */
 	List<DocColumn> getAllColumnList();
+
+	Page<DocColumnVO> findColumnList(int i, Integer pageSize, String name,Long loginUserId);
+
+	public DocColumn findColumn(Long id);
 }

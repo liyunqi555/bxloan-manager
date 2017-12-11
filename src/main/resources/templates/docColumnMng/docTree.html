@@ -40,7 +40,7 @@
 		<div class="modal-dialog" style="width: 500px; margin: 30px auto\0;">
 			<div class="modal-content">
 				<form id="addColumnForm" name="addColumnForm"
-					action="docColumnMng/addColumn" class="form-horizontal" role="form"
+					action="/docColumnMng/addColumn" class="form-horizontal" role="form"
 					method="post">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">
@@ -66,7 +66,7 @@
 										是否特殊来源：
 									</label>
 									<div class="col-sm-7">
-										<select name="ifSepecial" id="addIfSepecial"
+										<select name="ifSpecial" id="ifSpecial"
 											class="form-control">
 											<option value='1'>是</option>
 											<option value='0'>否</option>
@@ -82,18 +82,17 @@
 											<div class="input-group">
 												<input type="text" id="docColumnCdMask"
 													class="form-control required" readonly="readonly"/>
-												<input type="hidden" name="docColumn"
+												<input type="hidden" name="parentId"
 													id="docColumnCd" readonly="readonly"/> <span
 													class="input-group-btn">
 													<button id="btn-showTree" class="btn btn-sm btn-yellow"
 														type="button">
 														<i class="ace-icon fa fa-eye"></i>
 													</button>
-												</span> <input type="hidden" id="docColumnCdField"
-													 />
+												</span> <input type="hidden" id="docColumnCdField" />
 											</div>
 										</span> <span class="block input-icon input-icon-right">
-											<div id="addControlZTree"    style="display: none;">
+											<div id="addControlZTree"   style="display: display;" >
 												<div class="col-xs-12"
 													style="overflow-y: auto; max-height: 500px; position: absolute; z-index: 999; background: #fff; border: 1px solid #e3e3e3">
 													<ul id="addTree" class="addTree">
