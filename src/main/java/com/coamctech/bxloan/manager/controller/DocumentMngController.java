@@ -157,12 +157,17 @@ public class DocumentMngController {
      * @param contractNum  合同编号
      * @return DataTablesPage DataTablesPage对象
      */
-	@RequestMapping("/findDocInfoList/{columnId}")
-	public String findDocInfoListByColumn(HttpServletRequest request,@PathVariable("columnId") Long columnId ,Model model){
+	@RequestMapping("/findDocInfoList/{id}/{type}")
+	public String findDocInfoListByIdn(HttpServletRequest request,@PathVariable("id") Long id ,@PathVariable("type") String type,Model model){
 		DocInfoConditionVO vo = new DocInfoConditionVO() ;
-		vo.setColumnId(columnId);
-		model.addAttribute("columnId", columnId);
+		if(StringUtils.isNotBlank(type)&&"source".equals(type)){
+			vo.setSourceId(id);
+			model.addAttribute("sourceId", id);
+
+		}else{
+			vo.setColumnId(id);
+			model.addAttribute("columnId", id);
+		}
 		return "/docInfoMng/main";
-	}
-	
+	}	
 }

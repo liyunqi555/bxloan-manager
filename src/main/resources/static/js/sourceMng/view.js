@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 			"click button[role='remove']":"remove",
 			"click button[role='edit']":"edit",
 			"click button[role='detail']":"detail",
+			"click button[role=docInfoList]":"docInfoList",
 			"click #add-simple-submit":"save"
 			
 		},
@@ -104,7 +105,9 @@ define(function(require, exports, module) {
 							"<button data-id='" + rowdata.id + "' class='btn btn-xs btn-yellow' role='detail' data-toggle='tooltip' data-placement='bottom' title='查看'>" +
 								"<i class='ace-icon fa fa-eye'></i></button>" +
 							"<button data-id='" + rowdata.id + "' class='btn btn-xs btn-danger' role='remove' data-toggle='tooltip' data-placement='bottom' title='删除'>" +
-								"<i class='ace-icon fa fa-trash-o' title='删除'></i>" +
+								"<i class='ace-icon fa fa-trash-o' title='删除'></i></button>" +
+		                	" <button type='button' role='docInfoList' data-id='" +rowdata.id + "'  class='btn btn-xs btn-purple' title='文章列表'><i class='ace-icon fa fa-check bigger-120'></i></button> "+
+	
 						"</div>";
 		    	    	return operation;
 		    		}}
@@ -207,8 +210,16 @@ define(function(require, exports, module) {
 				});
 			},'是否确认删除？');
 			
+		},
+		//查看事件
+		docInfoList:function(e){
+			var viewSelf = this;
+			var $this = $(this);
+			var sourceId =  null;
+			id =  $(e.currentTarget).data('id')
+			var type="source"
+			window.location.href ='docInfoMng/findDocInfoList/'+id+"/"+type;
 		}
-
 	});
 	module.exports = view;
 });

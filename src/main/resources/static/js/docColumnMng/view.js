@@ -160,8 +160,9 @@ define(function(require, exports, module) {
 		var viewSelf = this;
 		var $this = $(this);
 		var columnId =  null;
-		columnId =  $(e.currentTarget).data('id')
-		window.location.href ='docInfoMng/findDocInfoList/'+columnId;
+		id =  $(e.currentTarget).data('id')
+		var type ="column";
+		window.location.href ='docInfoMng/findDocInfoList/'+id+"/"type+;
 	},
 	//删除栏目
 	delDetail : function(e) {
