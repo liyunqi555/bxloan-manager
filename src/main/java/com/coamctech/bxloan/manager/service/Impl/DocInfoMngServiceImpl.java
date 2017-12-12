@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.coamctech.bxloan.manager.common.JsonResult;
@@ -30,7 +32,8 @@ import com.google.common.collect.Lists;
  * 修改备注：
  * 版本： V1.0
  */
-
+@Transactional
+@Service
 public class DocInfoMngServiceImpl implements IDocInfoMngService {
 	@Autowired
 	private DocInfoDao docInfoDao;

@@ -41,6 +41,16 @@ public class DocInfo implements Serializable {
     private Date storeTime;//收藏时间
     @Transient
     private String sourceName;//来源名称
+    @Transient
+    private Integer storeFlag;//收藏标识，1：已收藏，0：未收藏
+
+    public Integer getStoreFlag() {
+        return storeFlag;
+    }
+
+    public void setStoreFlag(Integer storeFlag) {
+        this.storeFlag = storeFlag;
+    }
 
     public String getSourceName() {
         return sourceName;
