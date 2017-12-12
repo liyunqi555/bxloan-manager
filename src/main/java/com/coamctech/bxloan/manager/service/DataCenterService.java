@@ -83,7 +83,7 @@ public class DataCenterService {
     }
     public JsonResult detail(String conceptUri,String entityId){
         String sql = "from entity_property_info t1 ,ont_property t2 " +
-                " where t1.entityid=?1 and t2.concept_uri=?2 and t1.property_uri=t2.name";
+                " where t1.entityid=?1 and t2.concept_uri=?2 and t1.property_uri=t2.uri";
         List<String> fields = new ArrayList<>();//,t2.name,t1.v_string,t1.v_datetime
         fields.add("t1.entityid");
         fields.add("t2.name");
@@ -97,6 +97,7 @@ public class DataCenterService {
         fields.add("t1.v_datetime_end");
         fields.add("t1.v_enum");
         fields.add("t1.v_geo");
+        fields.add("t2.dataunit");
         List<Map<String,Object>> data = this.list(fields,sql,entityId,conceptUri);
         return JsonResult.success(getValue(data));
     }
@@ -133,7 +134,8 @@ public class DataCenterService {
                 default:
                     value="";
             }
-            retData.put(key,value);
+            String dataunit = m.get("dataunit")!=null?String.valueOf(m.get("dataunit")):"";
+            retData.put(key,value+dataunit);
         });
         return retData;
     }
@@ -174,7 +176,6 @@ public class DataCenterService {
                 }
             }
             List<Object[]> objecArraytList = query.getResultList();
-//            query.unwrap()
             objecArraytList.forEach(objectArray->{
                 Map<String,Object> m = new HashMap<>();
                 for(int i=0;i<keys.size();i++){
