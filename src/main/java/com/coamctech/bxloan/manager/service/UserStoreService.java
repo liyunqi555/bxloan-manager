@@ -119,4 +119,7 @@ public class UserStoreService extends BaseService<UserStore,Long>{
     public List<UserStore> findByUserIdAndDocInfoIds(Long userId,List<Long> docInfoIds){
         return userStoreDao.findByUserIdAndDocInfoIdIn(userId,docInfoIds);
     }
+    public UserStore findByUserIdAndConceptUriAndEntityId(Long userId,String conceptUri,String entityId){
+        return userStoreDao.findByUserIdAndConceptUriAndEntityId(userId, conceptUri,entityId);
+    }
 }

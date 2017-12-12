@@ -40,13 +40,13 @@ public class BaseTest {
 //        worlds();
 //        docInfos();
         search();
-//        docInfoDetail();
+        docInfoDetail();
 //        store();
 //        cancelStore();
 //        myStore();
 //        myHistory();
 //        dataCenter_home();
-//        dataCenter_detail();
+        dataCenter_detail();
         //dataCenter_store();
 //        dataCenter_myStore();
 //        changePassword();
