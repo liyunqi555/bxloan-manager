@@ -79,9 +79,9 @@ public class DocumentMngController {
      * @author zhaoqingwen
      * @lastModified zhaoqingwen 2017年12月7日 下午3:53:31  
      */
-    @RequestMapping("/deleteColumn/{id}")
+    @RequestMapping("/deleteDocInfo")
     @ResponseBody
-    public  JsonResult deleteDocInfo(@PathVariable("id") Long id) {
+    public  JsonResult deleteDocInfo( Long id) {
     	try{
     		docInfoServiceImpl.deleteDocInfo( id);
     		return new  JsonResult(ResultCode.SUCCESS_CODE,"删除成功");
