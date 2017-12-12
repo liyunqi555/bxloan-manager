@@ -61,11 +61,11 @@ public class DocumentMngController {
      */
     @RequestMapping("/getDocInfoOne")
     @ResponseBody
-    public  JsonResult getDocInfoOne(Long  docInfoId,HttpServletRequest request) {
+    public  JsonResult getDocInfoOne(Long  id,HttpServletRequest request) {
     	try{
     		User curUser = (User)request.getSession().getAttribute("user");
-    		DocInfoVO doc  = docInfoServiceImpl.getDocInfoOne(docInfoId, curUser.getId());
-    		return new  JsonResult(ResultCode.SUCCESS_CODE,"删除成功",doc);
+    		DocInfoVO doc  = docInfoServiceImpl.getDocInfoOne(id, curUser.getId());
+    		return new  JsonResult(ResultCode.SUCCESS_CODE,"",doc);
     	}catch(Exception e){
     		return new  JsonResult(ResultCode.ERROR_CODE,"");
     	}

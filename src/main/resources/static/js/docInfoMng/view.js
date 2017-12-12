@@ -47,9 +47,7 @@ define(function(require, exports, module) {
 	//创建文章
 	addDocInfo: function (){
 		var viewSelf = this;
-	    var form=$("form[role='addDocInfoForm']");
-	    var validator = $(form).validate();
-	    validator.resetForm();
+		$("#add-modal-form").resetForm();
 	    $('#columnId').val($('#sColumnId').val());
 	    $('#docColumnField').val($('#sColumnId').val());
 	    $("#add-modal-form").modal("show");
@@ -132,13 +130,14 @@ define(function(require, exports, module) {
 		        	return data;
 		        }},
 		        {mData: null, mRender: function(data, type, rowdata) {
-		        		var buttons = "";
-		        		var edit = "<button type='button' role='editDocInfo' data-id='" +rowdata.id + "'  class='btn btn-xs btn-info' title='修改' ><i class='ace-icon fa fa-edit'></i></button> ";
-		        		var view = " <button type='button' role='detailDocInfo' data-id='" +rowdata.id + "'  class='btn btn-xs btn-yellow' title='查看'><i class='ace-icon fa fa-eye'></i></button> ";
-		        		var deleteView = "<button type='button' role='btn-delDocInfo' data-id='" +rowdata.id + "'  class='btn btn-xs btn-info' title='删除' ><i class='ace-icon fa fa-trash-o'></i></button> ";
-                		buttons+= edit+view+deleteView;
-                		return buttons;
-	    	}}],	
+	        		var buttons = "";
+	        		var edit = "<button type='button' role='editDocInfo' data-id='" +rowdata.id + "'"+"data-name='"+rowdata.name+ "'data-parentId='"+rowdata.parentId  + "'"+"data-parentName='"+rowdata.parentName +"'"+"data-ifSpecial='"+rowdata.ifSpecial + "'  class='btn btn-xs btn-info' title='修改' ><i class='ace-icon fa fa-edit bigger-120'></i></button> ";
+	        		var view = " <button type='button' role='detailDocInfo' data-id='" +rowdata.id + "'  class='btn btn-xs btn-yellow' title='查看'><i class='ace-icon fa fa-eye bigger-120'></i></button> ";
+	        		var deleteView = "<button type='button' role='btn-delDocInfo' data-id='" +rowdata.id + "'  class='btn btn-xs btn-danger' title='删除' ><i class='ace-icon fa fa-trash-o bigger-120'></i></button> ";
+            		buttons+= edit+view+deleteView;
+            		return buttons;
+	        	
+		        }}],	
 	    	/**传参*/
 			fnServerParams : function(aoData) {
 				var dtSelf=this;
@@ -169,7 +168,7 @@ define(function(require, exports, module) {
 	//删除文章
 	delDocInfo : function(e) {
 		var viewSelf = this;
-		$(document).on("click","button[role='btn-detail-del']",function(e){
+		$(document).on("click","button[role='btn-delDocInfo']",function(e){
 				var $this = $(this);
 				var id = $(this).attr("data-id");
 				bootbox.confirm("确定删除吗？", function(result) {
@@ -179,7 +178,7 @@ define(function(require, exports, module) {
 					if (result) {
 						$.ajax({
 							type : "post",
-							url : "/docColumnMng/deleteColumn",
+							url : "/docInfoMng/deleteDocInfo",
 							data: {
 								id : id
 							},
@@ -206,7 +205,6 @@ define(function(require, exports, module) {
 			$("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 查看文章");
 			var $this = $(this);
 			var id = $(this).attr("data-id");
-			console.log(id);
 			$("input").attr("disabled",true);
 			$("select").attr("disabled",true);
 			$("textarea").attr("disabled",true);
@@ -237,16 +235,15 @@ define(function(require, exports, module) {
 	    var form=$("form[role='addDocInfoForm']");
 	    var validator = $(form).validate();
 		validator.resetForm();
-    	$("#add-modal-form").show();
-    	$("#addName").attr("disabled",false);
-		$("#ifSpecial").attr("disabled",false);
-		$("#docColumnCdMask").attr("disabled",false);
-		$("#btn-showTree").attr("disabled",false);
+		$("input").attr("disabled",false);
+		$("select").attr("disabled",false);
+		$("textarea").attr("disabled",false);
+		$("#add-simple-submit").show();
     },
     initModalData:function(id,type){
     	$.ajax({
 			type : "post",
-			url : "/docColumnMng/getColumnOne",
+			url : "/docInfoMng/getDocInfoOne",
 			data: {
 				id : id
 			},
@@ -255,19 +252,20 @@ define(function(require, exports, module) {
 					  var form=$("form[role='addDocInfoForm']");
 					    var validator = $(form).validate();
 						validator.resetForm();
-			    	 $('#addName').val(result.body.name);
-			    	 $('#docColumnCdMask').val(result.body.parentName);
-			    	 $('#ifSpecial').val(result.body.ifSpecial);
-			    	 $("input[name='id']").val(id);
-			    	 $("input[name='parentId']").val(id);
-			    	 $('#docColumnId').val(result.body.id);
-					if(type=='view'){
-						$("#addName").attr("disabled",true);
-						$("#ifSpecial").attr("disabled",true);
-						$("#docColumnCdMask").attr("disabled",true);
-						$("#add-simple-submit").hide();
+						var obj = result.body;
+						$.each($("#addDocInfoForm").find("input[type='text'], select"), function() {
+							$(this).val(obj[$(this).attr("name")]);
+						});
+						$.each($("#addDocInfoForm").find("textarea"),function(){
+							$(this).html(obj[$(this).attr("name")]);
+						});
+						$("#add-modal-form").modal("show");
+						if(type=='view'){
+							$("input").attr("disabled",true);
+							$("select").attr("disabled",true);
+							$("textarea").attr("disabled",true);
+							$("#add-simple-submit").hide();
 					}
-					$("#add-modal-form").modal("show");
 				}else{
 					utils.alert.warn(result.msg);
 				}

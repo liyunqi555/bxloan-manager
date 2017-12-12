@@ -4,9 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.domain.DocInfo;
-import com.coamctech.bxloan.manager.service.VO.DocColumnVO;
 import com.coamctech.bxloan.manager.service.VO.DocInfoConditionVO;
 import com.coamctech.bxloan.manager.service.VO.DocInfoVO;
 

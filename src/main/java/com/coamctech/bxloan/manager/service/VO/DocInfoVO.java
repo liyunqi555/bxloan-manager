@@ -1,5 +1,6 @@
 package com.coamctech.bxloan.manager.service.VO;
 
+import com.coamctech.bxloan.manager.domain.DocInfo;
 import com.coamctech.bxloan.manager.utils.CommonHelper;
 import com.fasterxml.jackson.annotation.JsonFormat;
 

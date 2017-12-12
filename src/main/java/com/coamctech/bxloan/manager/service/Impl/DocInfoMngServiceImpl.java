@@ -10,14 +10,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.coamctech.bxloan.manager.common.DynamicQuery.DynamicQuery;
 import com.coamctech.bxloan.manager.dao.DocInfoDao;
-import com.coamctech.bxloan.manager.domain.DocColumn;
 import com.coamctech.bxloan.manager.domain.DocInfo;
 import com.coamctech.bxloan.manager.service.IDocInfoMngService;
 import com.coamctech.bxloan.manager.service.VO.DocInfoConditionVO;
+import com.coamctech.bxloan.manager.service.VO.DocInfoFormVO;
 import com.coamctech.bxloan.manager.service.VO.DocInfoVO;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -32,7 +33,7 @@ import com.google.common.collect.Lists;
  * 修改备注：
  * 版本： V1.0
  */
-
+@Transactional
 @Service
 public class DocInfoMngServiceImpl implements IDocInfoMngService {
 	@Autowired
@@ -45,13 +46,14 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 	public DocInfoVO getDocInfoOne(Long id, Long userId) {
 		StringBuffer sql = new StringBuffer();
 		List<Object> params = new ArrayList<Object>();
-		sql.append("select tc.name,tu.user_name,tc.if_special,tc.level,ptu.name parentName,tc.id ,tc.parent_id from t_doc_column tc ,t_user tu,t_doc_column ptu where tc.creator=tu.id and ptu.id=tc.parent_id");
+		sql.append("select ti.id, ti.title,ti.cn_title,ti.source_id,ti.column_id,ti.classification,ti.group_name,ti.website,ti.keyword,ti.summary,ti.body,ti.cn_boty,ts.name sourceName,tc.name columnName from  t_doc_info ti, t_doc_column tc,t_doc_source ts  where  ");
+		sql.append(" ti.column_id=tc.id");
+		sql.append(" and ti.source_id = ts.id");
 		if(null!=id){
 			params.add(id);
-		    sql.append(" and tc.id = ?").append(params.size()); 
+			sql.append(" and ti.id = ?").append(params.size()); 
 		}
-		sql.append("   order by tc.create_time desc ");
-		List<DocInfoVO> v = Lists.transform(
+		List<DocInfoVO> docInfoVOs = Lists.transform(
 				dynamicQuery.nativeQuery(Object[].class, sql.toString(), id),
 				new Function<Object[], DocInfoVO>() {
 					@Override
@@ -59,17 +61,21 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 						return new DocInfoVO(objs);
 					}
 			});
-		if (CollectionUtils.isEmpty(v)) {
+		if (CollectionUtils.isEmpty(docInfoVOs)) {
 			return null;
 		}
-		return v.get(0);
-	
+		DocInfoVO vo= docInfoVOs.get(0);
+		DocInfoFormVO reslutVO = new  DocInfoFormVO(); 
+		DocInfo docInfo = docInfoDao.findOne(id);
+		reslutVO.setDocInfo(docInfo);
+		reslutVO.setSourceName(vo.getSourceName());
+		reslutVO.setColumnName(vo.getColumnName());
+		return vo;
 	}
 
 	@Override
-	public void deleteDocInfo(Long id) {
-		// TODO Auto-generated method stub
-		
+	public void deleteDocInfo(Long id) {	
+		docInfoDao.delete(id);
 	}
 
 	@Override
