@@ -33,7 +33,7 @@ public class FeedBackService extends BaseService<FeedBack,Long> {
 
     public JsonResult save(User user,String content) {
         FeedBack feedBack = new FeedBack();
-        feedBack.setTitle(user.getUserName()+"的意见反馈");
+        feedBack.setTitle(user.getNickName()+"的意见反馈");
         feedBack.setUserId(user.getId());
         feedBack.setContent(content);
         feedBack.setUpdateTime(new Date());

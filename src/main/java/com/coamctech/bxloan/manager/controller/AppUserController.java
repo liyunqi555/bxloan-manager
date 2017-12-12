@@ -75,7 +75,7 @@ public class AppUserController extends AppBaseController{
      * @return
      */
     @RequestMapping("saveFeedBack")
-    public JsonResult saveFeedBack(@RequestParam(name="oldPassword") String content){
+    public JsonResult saveFeedBack(@RequestParam(name="content") String content){
         if(StringUtils.isBlank(content)){
             return new JsonResult(ResultCode.PARAM_ERROR_CODE,"意见反馈内容不能为空");
         }else{

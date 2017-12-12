@@ -52,8 +52,14 @@ public class BaseTest {
 //        dataCenter_myStore();
 //        changePassword();
 //        switchViewHistory();
+        saveFeedBack();
     }
-
+    public static void saveFeedBack(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("content","首页轮播图点击进去为什么不能收藏？"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/user/saveFeedBack");
+    }
     public static void dataCenter_myStore(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new NameValuePair("pageIndex","0"));
