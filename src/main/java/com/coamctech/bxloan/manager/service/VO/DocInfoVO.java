@@ -1,8 +1,10 @@
-package com.coamctech.bxloan.manager.domain;
+package com.coamctech.bxloan.manager.service.VO;
 
+import com.coamctech.bxloan.manager.utils.CommonHelper;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -10,12 +12,8 @@ import java.util.Date;
  *
  * Created by Administrator on 2017/11/11.
  */
-@Entity
-public class DocInfo implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class DocInfoVO implements Serializable {
     private Long id;
-
     private String title;//标题
     private String cnTitle;//中文标题
     private Long sourceId;//来源id
@@ -28,32 +26,40 @@ public class DocInfo implements Serializable {
     private String body;//原文正文
     private String cnBoty;//中文正文
     private Long creator;//创建人id
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date updateTime;
     private Integer ifTop;//是否置顶，数字大小代表置顶的顺序
-    @Transient
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date viewTime;//浏览时间
-    @Transient
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date storeTime;//收藏时间
-    @Transient
     private String sourceName;//来源名称
-    @Transient
-    private Integer storeFlag;//收藏标识，1：已收藏，0：未收藏
-
-    public Integer getStoreFlag() {
-        return storeFlag;
+    private String columnName;//栏目名称
+    
+    public DocInfoVO(){
+    	
     }
-
-    public void setStoreFlag(Integer storeFlag) {
-        this.storeFlag = storeFlag;
+    public DocInfoVO(Object[] objs){
+    	int i=0;
+    	this.id= CommonHelper.toLong(objs[i++]);
+    	this.title= CommonHelper.toStr(objs[i++]);//标题
+		this.cnTitle= CommonHelper.toStr(objs[i++]);//中文标题
+		this.sourceId= CommonHelper.toLong(objs[i++]);//来源id
+		this.columnId= CommonHelper.toLong(objs[i++]);//栏目id
+	    this.classification= CommonHelper.toStr(objs[i++]);//分类
+		this. groupName= CommonHelper.toStr(objs[i++]);//分组
+		this. website= CommonHelper.toStr(objs[i++]);//网址
+		this. keyword= CommonHelper.toStr(objs[i++]);//关键字
+		this. summary= CommonHelper.toStr(objs[i++]);//摘要
+		this. body= CommonHelper.toStr(objs[i++]);//原文正文
+		this.cnBoty= CommonHelper.toStr(objs[i++]);//中文正文
+		this. sourceName= CommonHelper.toStr(objs[i++]);//来源名称
+	/*	this.createTime= CommonHelper.toDate(objs[i++]);
+		this.updateTime= CommonHelper.toDate(objs[i++]);
+		this.storeTime= CommonHelper.toDate(objs[i++]);*/
+		this.columnName= CommonHelper.toStr(objs[i++]);
     }
-
+    
     public String getSourceName() {
-        return sourceName;
+        return sourceName= sourceName;
     }
 
     public void setSourceName(String sourceName) {
@@ -214,4 +220,10 @@ public class DocInfo implements Serializable {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+	public String getColumnName() {
+		return columnName;
+	}
+	public void setColumnName(String columnName) {
+		this.columnName = columnName;
+	}
 }

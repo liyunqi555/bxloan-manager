@@ -8,7 +8,7 @@
     <artifactId>bxloan-manager</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
-        <java.version>1.8</java.version>
+        <jdk.version>1.8</jdk.version>
         <servlet.version>3.0.1</servlet.version>
         <jstl.version>1.2</jstl.version>
         <jsp.version>2.0</jsp.version>
@@ -187,7 +187,16 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+					<showWarnings>true</showWarnings>
+				</configuration>
+			</plugin>
         </plugins>
     </build>
 </project>
