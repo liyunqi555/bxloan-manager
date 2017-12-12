@@ -102,8 +102,8 @@ define(function(require, exports, module) {
 								"<i class='ace-icon fa fa-eye'></i></button>" +
 							"<button data-id='" + rowdata.id + "' class='btn btn-xs btn-danger' role='remove' data-toggle='tooltip' data-placement='bottom' title='删除'>" +
 								"<i class='ace-icon fa fa-trash-o' title='删除'></i></button>" +
-							"<button data-id='" + rowdata.id + "' class='btn btn-xs fa-columns' role='columns' data-toggle='tooltip' data-placement='bottom' title='栏目'>" +
-                                "<i class='ace-icon  fa-columns' title='查看栏目'></i></button>" +
+							"<button data-id='" + rowdata.id + "' class='btn btn-xs btn-purple' role='docInfoList' data-toggle='tooltip' data-placement='bottom' title='文章列表'>" +
+                                "<i class='ace-icon fa fa-check bigger-120' title='文章列表'></i></button>" +
 						"</div>";
 		    	    	return operation;
 		    		}}
@@ -215,8 +215,16 @@ define(function(require, exports, module) {
 					}
 				});
 			},'是否确认删除？');
-			
-		}
+		},
+		//查看事件
+        docInfoList:function(e){
+            var viewSelf = this;
+            $(document).on("click","button[role=docInfoList]",function(e){
+                var $this = $(this);
+                var id = $(this).attr("data-id");
+                window.location.href ='docInfoMng/main'+"/"+id;
+            });
+        }
 
 	});
 	module.exports = view;

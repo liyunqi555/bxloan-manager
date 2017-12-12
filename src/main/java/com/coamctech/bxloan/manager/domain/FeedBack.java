@@ -1,9 +1,8 @@
 package com.coamctech.bxloan.manager.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.coamctech.bxloan.manager.utils.CommonHelper;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -20,7 +19,23 @@ public class FeedBack implements Serializable {
     private Long userId;
     private Date createTime;
     private Date updateTime;
+    @Transient
+    private String createTimeStr;
+    @Transient
+    private String userName;
 
+    public FeedBack(){}
+    public FeedBack(Object[] objs){
+        super();
+        int i=0;
+        this.id= CommonHelper.toLong(objs[i++]);
+        this.title=CommonHelper.toStr(objs[i++]);
+        this.content=CommonHelper.toStr(objs[i++]);
+        this.userId = CommonHelper.toLong(objs[i++]);
+        this.createTime =CommonHelper.str2Date(String.valueOf(objs[i++]), CommonHelper.DF_DATE_TIME);
+        this.createTimeStr = CommonHelper.date2Str(this.createTime,CommonHelper.DF_DATE_TIME);
+        this.userName = CommonHelper.toStr(objs[i++]);
+    }
     public Long getId() {
         return id;
     }
@@ -67,5 +82,21 @@ public class FeedBack implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getCreateTimeStr() {
+        return createTimeStr;
+    }
+
+    public void setCreateTimeStr(String createTimeStr) {
+        this.createTimeStr = createTimeStr;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
