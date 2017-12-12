@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 
 
 
+
+import org.springframework.util.CollectionUtils;
+
 import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.DynamicQuery.DynamicQuery;
 import com.coamctech.bxloan.manager.dao.DocColumnDao;
@@ -90,7 +93,7 @@ public class ColumnServiceImpl implements IColumnService{
 	public Page<DocColumnVO> findColumnList(int pageNumber, Integer pageSize, String name,Long loginUserId) {
 		StringBuffer sql = new StringBuffer();
 		List<Object> params = new ArrayList<Object>();
-		sql.append("select tc.name,tu.user_name,tc.if_special,tc.level,ptu.name parentName,tc.id from t_doc_column tc ,t_user tu,t_doc_column ptu where tc.creator=tu.id and ptu.id=tc.parent_id");
+		sql.append("select tc.name,tu.user_name,tc.if_special,tc.level,ptu.name parentName,tc.id ,tc.parent_id  from t_doc_column tc ,t_user tu,t_doc_column ptu where tc.creator=tu.id and ptu.id=tc.parent_id");
 		if(StringUtils.isNotBlank(name)){
 			params.add("%"+String.valueOf(name)+"%");
 		    sql.append(" and tc.name like ?").append(params.size()); 
@@ -117,9 +120,27 @@ public class ColumnServiceImpl implements IColumnService{
 	}
 
 	@Override
-	public DocColumn findColumn(Long id) {
-		DocColumn doc =docColumnDao.findOne(id);
-		return doc;
+	public DocColumnVO findColumn(Long id) {
+		StringBuffer sql = new StringBuffer();
+		List<Object> params = new ArrayList<Object>();
+		sql.append("select tc.name,tu.user_name,tc.if_special,tc.level,ptu.name parentName,tc.id ,tc.parent_id from t_doc_column tc ,t_user tu,t_doc_column ptu where tc.creator=tu.id and ptu.id=tc.parent_id");
+		if(null!=id){
+			params.add(id);
+		    sql.append(" and tc.id = ?").append(params.size()); 
+		}
+		sql.append("   order by tc.create_time desc ");
+		List<DocColumnVO> v = Lists.transform(
+				dynamicQuery.nativeQuery(Object[].class, sql.toString(), id),
+				new Function<Object[], DocColumnVO>() {
+					@Override
+					public DocColumnVO apply(Object[] objs) {
+						return new DocColumnVO(objs);
+					}
+			});
+		if (CollectionUtils.isEmpty(v)) {
+			return null;
+		}
+		return v.get(0);
 	}
    
 }	

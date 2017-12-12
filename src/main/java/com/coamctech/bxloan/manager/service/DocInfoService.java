@@ -9,6 +9,7 @@ import com.coamctech.bxloan.manager.dao.UserDocColumnRelDao;
 import com.coamctech.bxloan.manager.domain.*;
 import com.coamctech.bxloan.manager.utils.StringUtils;
 import com.coamctech.bxloan.manager.utils.TokenUtils;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
@@ -25,6 +26,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+
 import java.sql.Array;
 import java.util.*;
 import java.util.function.Consumer;

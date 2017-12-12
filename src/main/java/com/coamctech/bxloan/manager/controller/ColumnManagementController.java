@@ -76,12 +76,12 @@ public class ColumnManagementController {
      */
     @RequestMapping("/getColumnOne")
     @ResponseBody
-    public  JsonResult getColumnOne(@RequestParam("id")Long  id) {
+    public  JsonResult getColumnOne(Long  id) {
     	try{
-    		DocColumn doc  = columnServiceImpl.findColumn(id);
-    		return null;
+    		DocColumnVO doc  = columnServiceImpl.findColumn(id);
+    		return new  JsonResult(ResultCode.SUCCESS_CODE,"",doc);
     	}catch(Exception e){
-    		return new  JsonResult(ResultCode.ERROR_CODE,"修改失败");
+    		return new  JsonResult(ResultCode.ERROR_CODE,"");
     	}
      
     }
@@ -92,19 +92,19 @@ public class ColumnManagementController {
      *
      * @author zhaoqingwen
      * @lastModified zhaoqingwen 2017年12月7日 下午3:53:22  
-     */
-    @RequestMapping("/editColumn")
+     *//*
+    @RequestMapping("/editColumn/{id}")
     @ResponseBody
-    public  JsonResult editColumn(@ModelAttribute DocColumn docColumn,@RequestParam Long id) {
+    public  JsonResult editColumn(@ModelAttribute DocColumn docColumn,@PathVariable("id") Long id) {
     	try{
-    		columnServiceImpl.modifyColumn(docColumn, id);
+    		 DocColumn docColumn = columnServiceImpl.modifyColumn(, id);
     		return new  JsonResult(ResultCode.SUCCESS_CODE,"修改成功");
 
     	}catch(Exception e){
     		return new  JsonResult(ResultCode.ERROR_CODE,"修改失败");
     	}
      
-    }
+    }*/
     /**
      *删除栏目
      * @param columnId
@@ -139,7 +139,7 @@ public class ColumnManagementController {
     	try{
     		User curUser = (User)request.getSession().getAttribute("user");
     		columnServiceImpl.addColumn(docColumn,curUser.getId());
-    		return null;
+    		return new  JsonResult(ResultCode.SUCCESS_CODE,"保存成功");
 
     	}catch(Exception e){
     		return new  JsonResult(ResultCode.ERROR_CODE,"保存失败");
@@ -160,10 +160,10 @@ public class ColumnManagementController {
 	@ResponseBody
 	public DataTablesPage findColumnList(@RequestParam("sEcho") Integer sEcho,
 			@RequestParam("iDisplayStart") Integer pageNumber,
-			@RequestParam("iDisplayLength") Integer pageSize,@RequestParam("name") String name
+			@RequestParam("iDisplayLength") Integer pageSize,@RequestParam( value="docColumName",required=false) String docColumName 
 			){
 		/**查询导入的记录信息*/
-		Page<DocColumnVO> page = columnServiceImpl.findColumnList(pageNumber / pageSize, pageSize, name,null);
+		Page<DocColumnVO> page = columnServiceImpl.findColumnList(pageNumber / pageSize, pageSize, docColumName,null);
 		/**处理并返回查询结果*/
 		return new DataTablesPage(sEcho, page);
 	}

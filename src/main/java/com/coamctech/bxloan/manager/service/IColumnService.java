@@ -68,5 +68,5 @@ public interface IColumnService {
 
 	Page<DocColumnVO> findColumnList(int i, Integer pageSize, String name,Long loginUserId);
 
-	public DocColumn findColumn(Long id);
+	public DocColumnVO findColumn(Long id);
 }

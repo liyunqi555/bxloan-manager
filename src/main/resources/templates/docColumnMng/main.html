@@ -62,10 +62,15 @@
 		                      </i>
 		                      	重置
 		                    </button>
-		                    <button id="btn-add" class="btn btn-sm btn-primary">
-		                      <i class="ace-icon fa fa-floppy-o">
+		                    <button id="btn-add" class="btn btn-sm btn-success">
+		                      <i class="ace-icon fa fa-plus">
 		                      </i>
 		                      	新增栏目
+		                    </button>
+		                    <button id="btn-docInfoView" class="btn btn-sm btn-primary">
+		                      <i class="ace-icon fa fa-floppy-plus">
+		                      </i>
+		                      	进入文章管理
 		                    </button>
 	            		</span>
             		</h1>
@@ -74,11 +79,11 @@
             	<!-- 搜索域start -->
             <div style="height: 0px;" class="row">
 			<div class="col-xs-12">
-            	<form id="searchForm" role="searchForm" class="form-horizontal">
+            	<form role="searchForm" class="form-horizontal">
 						<div class="form-group">
 							<label for="name" class="control-label col-sm-1">栏目名称：</label>
 							<div class="col-sm-3">
-								<input type="text" id="name" class="form-control col-sm-4 input-sm" placeholder="请输入栏目名称" name="docColum"/>
+								<input type="text" id="docColumName" class="form-control col-sm-4 input-sm" placeholder="请输入栏目名称" name="docColumName"/>
 							</div>
 						</div>
 					</form>
@@ -131,8 +136,8 @@
 		<div class="modal-dialog" style="width: 500px; margin: 30px auto\0;">
 			<div class="modal-content">
 				<form id="addColumnForm" name="addColumnForm"
-					action="/docColumnMng/addColumn" class="form-horizontal" role="form"
-					method="post">
+					action="/docColumnMng/addColumn" class="form-horizontal" role="addColumnForm"
+					method="post" onsubmit="return false;">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">
 							&times;</button>
@@ -147,7 +152,7 @@
 										for="addName"> <font color='red'> * </font> 栏目将名称：
 									</label>
 									<div class="col-sm-7">
-										<input type="text" id="addName" name="name"
+										<input type="text" id="addName" name="name" 
 											class="form-control" placeholder="输入栏目名称" />
 									</div>
 								</div>
@@ -193,12 +198,13 @@
 										</span>
 									</div>
 								</div>
+								<input name='id'  type="hidden" ></input>
 							</div>
 						</div>
 					</div>
 					<div class="modal-footer">
 						<button id="add-simple-submit" class="btn btn-sm btn-primary"
-							type="submit" data-loading-text="正在保存中...">
+							type="submit" data-loading-text="正在保存中..." >
 							<i class="ace-icon fa fa-save"> </i> 保存
 						</button>
 						<button class="btn btn-sm btn-default" data-dismiss="modal"
@@ -212,6 +218,9 @@
 	</div>
 		<!-- 底部说明 -->
 	</div>
+	<!-- 隐藏域 -->
+	<input type="hidden" id="docColumnId"/>
+    <input type="hidden" id="operate"/>
  <script>
 	seajs.use('/js/docColumnMng/main');
 </script>

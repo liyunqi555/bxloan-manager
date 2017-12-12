@@ -41,6 +41,7 @@ public class DocColumnVO {
 		this.level= CommonHelper.toInt(objs[i++]);
 		this.parentName = CommonHelper.toStr(objs[i++]);
 		this.id = CommonHelper.toLong(objs[i++]);
+		this.parentId = CommonHelper.toLong(objs[i++]);
     }
 	public String getName() {
 		return name;
