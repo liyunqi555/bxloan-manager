@@ -162,7 +162,7 @@ define(function(require, exports, module) {
 		var columnId =  null;
 		id =  $(e.currentTarget).data('id')
 		var type ="column";
-		window.location.href ='docInfoMng/findDocInfoList/'+id+"/"type+;
+		window.location.href ='docInfoMng/findDocInfoList/'+id+"/"+type;
 	},
 	//删除栏目
 	delDetail : function(e) {
