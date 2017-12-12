@@ -3,6 +3,7 @@ package com.coamctech.bxloan.manager.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -19,7 +20,7 @@ import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.domain.DocInfo;
 import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.service.IDocInfoMngService;
-import com.coamctech.bxloan.manager.service.VO.DocColumnVO;
+import com.coamctech.bxloan.manager.service.VO.DocInfoConditionVO;
 import com.coamctech.bxloan.manager.service.VO.DocInfoVO;
 
 /**   
@@ -33,7 +34,7 @@ import com.coamctech.bxloan.manager.service.VO.DocInfoVO;
  * 版本： V1.0
  */
 @Controller
-@RequestMapping("/documentMngr")
+@RequestMapping("/docInfoMng")
 public class DocumentMngController {
 	@Autowired
 	private IDocInfoMngService  docInfoServiceImpl;
@@ -97,9 +98,9 @@ public class DocumentMngController {
      * @author zhaoqingwen
      * @lastModified zhaoqingwen 2017年12月7日 下午3:53:39  
      */
-    @RequestMapping("/addColumn")
+    @RequestMapping("/addDocInfo")
     @ResponseBody
-    public  JsonResult addColumn(@ModelAttribute DocInfo docInfo,HttpServletRequest request) {
+    public  JsonResult addDocInfo(@ModelAttribute DocInfo docInfo,HttpServletRequest request) {
     	JsonResult result = new JsonResult();
     	try{
     		User curUser = (User)request.getSession().getAttribute("user");
@@ -115,23 +116,53 @@ public class DocumentMngController {
      * @param sEcho  datatables的被请求次数
      * @param pageNumber  起始页数
      * @param pageSize  每页多少条记录
+     * @param projectType 单据业务类型(002 逾期 003还款  004结息)
+     * @param customerName 客户姓名
+     * @param contractNum  合同编号
+     * @return DataTablesPage DataTablesPage对象
+     */
+	@RequestMapping("/findDocInfoList")
+	@ResponseBody
+	public DataTablesPage findDocInfoList(@RequestParam("sEcho") Integer sEcho,
+			@RequestParam("iDisplayStart") Integer pageNumber,
+			@RequestParam("iDisplayLength") Integer pageSize,
+			@RequestParam( value="columnId",required=false) String columnId,
+			@RequestParam( value="columnName",required=false) String columnName,
+			@RequestParam( value="sourceId",required=false) String sourceId,
+			@RequestParam( value="keyword",required=false) String keyword
+			){
+		DocInfoConditionVO vo = new DocInfoConditionVO() ;
+		vo.setColumnName(columnName);
+		vo.setKeyword(keyword);
+		if(StringUtils.isNotBlank(columnId)){
+			vo.setColumnId(Long.valueOf(columnId));
+		}
+		if(StringUtils.isNotBlank(sourceId)){
+			vo.setSourceId(Long.valueOf(sourceId));
+		}
+		/**查询导入的记录信息*/
+		Page<DocInfoVO> page = docInfoServiceImpl.findDocInfoList(pageNumber / pageSize, pageSize, vo);
+		/**处理并返回查询结果*/
+		return new DataTablesPage(sEcho, page);
+	}
+	
+    /**
+     *栏目管理跳转到文章列表
+     * @param sEcho  datatables的被请求次数
+     * @param pageNumber  起始页数
+     * @param pageSize  每页多少条记录
      * @param orgId		机构Id
      * @param projectType 单据业务类型(002 逾期 003还款  004结息)
      * @param customerName 客户姓名
      * @param contractNum  合同编号
      * @return DataTablesPage DataTablesPage对象
      */
-	@RequestMapping("/findColumnList")
-	@ResponseBody
-	public DataTablesPage findColumnList(@RequestParam("sEcho") Integer sEcho,
-			@RequestParam("iDisplayStart") Integer pageNumber,
-			@RequestParam("iDisplayLength") Integer pageSize,@RequestParam( value="docColumName",required=false) String docColumName 
-			){
-		/**查询导入的记录信息*/
-		//Page<DocColumnVO> page = docInfoServiceImpl.findDocInfoList(pageNumber / pageSize, pageSize, docColumName,null);
-		/**处理并返回查询结果*/
-		//return new DataTablesPage(sEcho, page);
-		return null;
+	@RequestMapping("/findDocInfoList/{columnId}")
+	public String findDocInfoListByColumn(HttpServletRequest request,@PathVariable("columnId") Long columnId ,Model model){
+		DocInfoConditionVO vo = new DocInfoConditionVO() ;
+		vo.setColumnId(columnId);
+		model.addAttribute("columnId", columnId);
+		return "/docInfoMng/main";
 	}
-
+	
 }

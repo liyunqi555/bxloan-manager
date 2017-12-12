@@ -1,20 +1,22 @@
 package com.coamctech.bxloan.manager.service.Impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.DynamicQuery.DynamicQuery;
-import com.coamctech.bxloan.manager.dao.DocColumnDao;
 import com.coamctech.bxloan.manager.dao.DocInfoDao;
+import com.coamctech.bxloan.manager.domain.DocColumn;
 import com.coamctech.bxloan.manager.domain.DocInfo;
 import com.coamctech.bxloan.manager.service.IDocInfoMngService;
-import com.coamctech.bxloan.manager.service.VO.DocColumnVO;
 import com.coamctech.bxloan.manager.service.VO.DocInfoConditionVO;
 import com.coamctech.bxloan.manager.service.VO.DocInfoVO;
 import com.google.common.base.Function;
@@ -31,6 +33,7 @@ import com.google.common.collect.Lists;
  * 版本： V1.0
  */
 
+@Service
 public class DocInfoMngServiceImpl implements IDocInfoMngService {
 	@Autowired
 	private DocInfoDao docInfoDao;
@@ -71,15 +74,17 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 
 	@Override
 	public void addDocInfo(DocInfo docInfo, Long id) {
-		// TODO Auto-generated method stub
-		
+		docInfo.setCreateTime(new Date());
+		docInfo.setUpdateTime(new Date());
+		docInfo.setCreator(id);
+		docInfoDao.save(docInfo);
 	}
 
 	@Override
-	public Page<DocColumnVO> findDocInfoList(int pageNumber, Integer pageSize, DocInfoConditionVO docInfoConditionVO) {
+	public Page<DocInfoVO> findDocInfoList(int pageNumber, Integer pageSize, DocInfoConditionVO docInfoConditionVO) {
 		StringBuffer sql = new StringBuffer();
 		List<Object> params = new ArrayList<Object>();
-		sql.append("select ti.id, ti.title,ti.cn_title,ti.source_id,ti.column_id,ti.classification,ti.group_name,ti.website,ti.summary,ti.body,ti.cn_boty,ts.name sourceName,tc.name columnName from  t_doc_info ti, t_doc_column tc,t_doc_source ts  where  ");
+		sql.append("select ti.id, ti.title,ti.cn_title,ti.source_id,ti.column_id,ti.classification,ti.group_name,ti.website,ti.keyword,ti.summary,ti.body,ti.cn_boty,ts.name sourceName,tc.name columnName from  t_doc_info ti, t_doc_column tc,t_doc_source ts  where  ");
 		sql.append(" ti.column_id=tc.id");
 		sql.append(" and ti.source_id = ts.id");
 		if(null!=docInfoConditionVO){
@@ -99,15 +104,23 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 				params.add("%"+String.valueOf(docInfoConditionVO.getSourceName())+"%");
 			    sql.append(" and ts.name like ?").append(params.size()); 
 			}
-			if(StringUtils.isNotBlank(docInfoConditionVO.getKeyWord())){
+			if(StringUtils.isNotBlank(docInfoConditionVO.getKeyword())){
 				//and (ti.body  like '%%'or ti.cn_boty like '%%' or ti.cn_title like '%%'  or ti.title like '%%' or ti.summary like '')
-				params.add("%"+String.valueOf(docInfoConditionVO.getKeyWord())+"%");
+				params.add("%"+String.valueOf(docInfoConditionVO.getKeyword())+"%");
 			    sql.append(" and ti.keyword like ?").append(params.size()); 
 			}
 			
 		}
-		
-		return null;
+		Page<Object[]> page = dynamicQuery.nativeQuery(Object[].class,	new PageRequest(pageNumber, pageSize), sql.toString(), params.toArray());
+        List<DocInfoVO> docInfoVOList = Lists.newArrayList(Lists.transform(page.getContent(),
+    			new Function<Object[], DocInfoVO>() {
+    				@Override
+    				public DocInfoVO apply(Object[] objs) {
+    					return new DocInfoVO(objs);
+    				}
+    			}));
+ 		Page<DocInfoVO> resultPage = new PageImpl<DocInfoVO>(docInfoVOList, new PageRequest(pageNumber, pageSize),page.getTotalElements());
+		return resultPage;
 	}
 
 	@Override

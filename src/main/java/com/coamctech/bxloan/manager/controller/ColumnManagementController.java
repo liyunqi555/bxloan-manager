@@ -86,26 +86,6 @@ public class ColumnManagementController {
      
     }
     /**
-     *修改栏目
-     * @param columnId
-     * @return
-     *
-     * @author zhaoqingwen
-     * @lastModified zhaoqingwen 2017年12月7日 下午3:53:22  
-     *//*
-    @RequestMapping("/editColumn/{id}")
-    @ResponseBody
-    public  JsonResult editColumn(@ModelAttribute DocColumn docColumn,@PathVariable("id") Long id) {
-    	try{
-    		 DocColumn docColumn = columnServiceImpl.modifyColumn(, id);
-    		return new  JsonResult(ResultCode.SUCCESS_CODE,"修改成功");
-
-    	}catch(Exception e){
-    		return new  JsonResult(ResultCode.ERROR_CODE,"修改失败");
-    	}
-     
-    }*/
-    /**
      *删除栏目
      * @param columnId
      * @return
@@ -113,9 +93,9 @@ public class ColumnManagementController {
      * @author zhaoqingwen
      * @lastModified zhaoqingwen 2017年12月7日 下午3:53:31  
      */
-    @RequestMapping("/deleteColumn/{id}")
+    @RequestMapping("/deleteColumn")
     @ResponseBody
-    public  JsonResult deleteColumn(@PathVariable("id") Long id) {
+    public  JsonResult deleteColumn(Long  id) {
     	try{
     		columnServiceImpl.deleteColumn(id);
     		return new  JsonResult(ResultCode.SUCCESS_CODE,"删除成功");

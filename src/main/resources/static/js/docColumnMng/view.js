@@ -1,7 +1,7 @@
 define(function(require, exports, module) {
 	var model = require("./model");
 	var utils = require("common/utils");
-	var mergedBillView = require('docInfoMng/view');
+	//var mergedBillView = require('docInfoMng/view');
 	var view = Backbone.View.extend({
 	el: "body",
 	events: {  
@@ -9,16 +9,14 @@ define(function(require, exports, module) {
 		"click #button-reset":"resetBills",//重置
 		"click #btn-add" : "addColumn",//增加栏目弹出框
 		"click #btn-showTree": "ToggleTree",//初始化树菜单
-		"click button[role=btn-detail-del]" : "delDetail",//删除
-		"click button[role=edit]" : "edit",//编辑
+/*		"click button[role=btn-detail-del]" : "delDetail",//删除
+*/		"click button[role=edit]" : "edit",//编辑
 		"click button[role=detail]" : "detail",//查看
 		"click button[role=docInfoList]":"docInfoList",//查看
 		"click #btn-docInfoView":"initdocInfoView" //进入文章列表
-			
-			
 	},
 	initialize: function() {
-		this.model = new model();''
+		this.model = new model();
 		this.render();
 	},
 	//渲染
@@ -33,15 +31,16 @@ define(function(require, exports, module) {
       	var seachData=[];
 			var $form=$("form[role='searchForm']");
 			seachData.push({name:"docColumName",value:$form.find(":text[name='docColumName']").val()});
-			console.log($form.find(":text[name='docColumName']").val());
 			viewSelf.dt.oSearchData=seachData;
 			viewSelf.dt.fnPageChange(0);//执行查询
 	},
 	//重置
 	resetBills:function(){
 		var viewSelf = this;
-		var $form=$("form[role='searchForm']");
-		$form.resetForm();
+		$("form[role='searchForm']").resetForm();
+		viewSelf.dt.oSearchData = null;
+		//执行查询
+		viewSelf.dt.fnPageChange(0);
 	},
 	initdocInfoView : function (){
 		
@@ -49,9 +48,8 @@ define(function(require, exports, module) {
 	//新增栏目
 	addColumn: function (){
 		var viewSelf = this;
-	    var form=$("form[role='addColumnForm']");
-	    var validator = $(form).validate();
-		validator.resetForm();
+		var $form=$("form[role='addColumnForm']");
+		$form.resetForm();
 	    $("#add-modal-form").modal("show");
 	    $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 新增栏目");
 	    return false;
@@ -63,7 +61,6 @@ define(function(require, exports, module) {
 			  submitHandler: function(form) {
 				var formSelf = $(form);
 				viewSelf.model.submitForm($form, function(result) {
-					console.log(result.code);
 						if (result.code=='200') {
 							$("#add-modal-form").modal("hide");
 							formSelf.resetForm();
@@ -77,7 +74,6 @@ define(function(require, exports, module) {
 	},
 	initDtTable: function() {  //查询导入的记录
 		var viewSelf = this;
-		var init= true;
 		var dt = $("#tb_columnList").dataTable({
 			bFilter:false,
 			bSort:false,
@@ -124,13 +120,14 @@ define(function(require, exports, module) {
 		        {mData: null, mRender: function(data, type, rowdata) {
 		        	if( rowdata.id == '0') {
 			        		var buttons = "";
-			        		var edit = "<button type='button' role='edit' data-id='" +rowdata.id + "'"+"date-name='"+rowdata.name + "'"+"date-parentName='"+rowdata.parentName +"'"+"date-ifSpecial='"+rowdata.ifSpecial + "'  class='btn btn-xs btn-info' title='修改' ><i class='ace-icon fa fa-edit bigger-120' ></i></button> ";
+			        		var edit = "<button type='button' role='edit' data-id='" +rowdata.id + "'"+"data-name='"+rowdata.name + "'"+"date-parentId='"+rowdata.parentId +"date-parentName='"+rowdata.parentName +"'"+"date-ifSpecial='"+rowdata.ifSpecial + "'  class='btn btn-xs btn-info' title='修改' ><i class='ace-icon fa fa-edit bigger-120' ></i></button> ";
                     		var view = " <button type='button' role='detail' data-id='" +rowdata.id + "'  class='btn btn-xs btn-yellow' title='查看'><i class='ace-icon fa fa-eye bigger-120'></i></button> ";
                     		buttons+= edit+view;
                        		return buttons;
 		        	}else{
+		        		console.log(rowdata);
 		        		var buttons = "";
-		        		var edit = "<button type='button' role='edit' data-id='" +rowdata.id + "'"+"date-name='"+rowdata.name + "'"+"date-parentName='"+rowdata.parentName +"'"+"date-ifSpecial='"+rowdata.ifSpecial + "'  class='btn btn-xs btn-info' title='修改' ><i class='ace-icon fa fa-edit bigger-120'></i></button> ";
+		        		var edit = "<button type='button' role='edit' data-id='" +rowdata.id + "'"+"data-name='"+rowdata.name+ "'data-parentId='"+rowdata.parentId  + "'"+"data-parentName='"+rowdata.parentName +"'"+"data-ifSpecial='"+rowdata.ifSpecial + "'  class='btn btn-xs btn-info' title='修改' ><i class='ace-icon fa fa-edit bigger-120'></i></button> ";
 		        		var view = " <button type='button' role='detail' data-id='" +rowdata.id + "'  class='btn btn-xs btn-yellow' title='查看'><i class='ace-icon fa fa-eye bigger-120'></i></button> ";
 		        		var deleteView = "<button type='button' role='btn-detail-del' data-id='" +rowdata.id + "'  class='btn btn-xs btn-danger' title='删除' ><i class='ace-icon fa fa-trash-o bigger-120'></i></button> ";
                 		var list = " <button type='button' role='docInfoList' data-id='" +rowdata.id + "'  class='btn btn-xs btn-purple' title='文章列表'><i class='ace-icon fa fa-check bigger-120'></i></button> ";
@@ -161,28 +158,40 @@ define(function(require, exports, module) {
 	//查看事件
 	docInfoList:function(e){
 		var viewSelf = this;
-		$(document).on("click","button[role=docInfoList]",function(e){
-		    var $this = $(this);
-			var id = $(this).attr("data-id");
-			window.location.href ='docInfoMng/main'+"/"+id;
-		});
+		var $this = $(this);
+		var columnId =  null;
+		columnId =  $(e.currentTarget).data('id')
+		window.location.href ='docInfoMng/findDocInfoList/'+columnId;
 	},
 	//删除栏目
 	delDetail : function(e) {
 		var viewSelf = this;
 		$(document).on("click","button[role='btn-detail-del']",function(e){
-    		var $this = $(this);
-			var id = $(this).attr("data-id");
-			console.log(id);
-				if (result) {
-					$.get( "docColumnMng/deleteColumn/" + id, function(result) {
-						if (result.success=='500') {
-							return bootbox.alert(result.msg || "删除失败，请刷新页面后再试");
-						}
-						viewSelf.dt.fnPageChange(0);
-					});
-				}
-		});
+				var $this = $(this);
+				var id = $(this).attr("data-id");
+				bootbox.confirm("确定删除吗？", function(result) {
+					if(!result){//取消
+						return false;
+					}
+					if (result) {
+						$.ajax({
+							type : "post",
+							url : "/docColumnMng/deleteColumn",
+							data: {
+								id : id
+							},
+							success : function(result){
+								if(result.code=='200'){
+									utils.alert.suc(result.msg);
+									viewSelf.dt.fnPageChange(0);
+								}else{
+									utils.alert.warn(result.msg);
+								}
+							}
+						});
+					}
+				});
+			});
 	},
 	//查看事件
 	detail:function(e){
@@ -209,15 +218,17 @@ define(function(require, exports, module) {
 			var id = $(this).attr("data-id");
 	    	var name = $(this).attr("data-name");
 	    	var parentName = $(this).attr("data-parentName");
+	    	var parentId = $(this).attr("data-parentId");
 	    	var ifSpecial = $(this).attr("data-ifSpecial");
-			$("#add-simple-submit").hide();
 		    $("#add-modal-form").modal("show");
 		    $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 编辑栏目");
 	    	 $('#addName').val(name);
 	    	 $('#docColumnCdMask').val(parentName);
+	    	 console.log(parentId);
 	    	 $('#ifSpecial').val(ifSpecial);
-	    	 $('#docColumnId').val(id);
+	    	 $('#docColumnId').val(parentId);
 	    	 $("input[name='id']").val(id);
+	    	 $("input[name='parentId']").val(parentId);
 	    	 $('#operate').val('edit');
 	    	 viewSelf.initModal();
 	    	 viewSelf.initModalData(id,'edit');
@@ -227,11 +238,11 @@ define(function(require, exports, module) {
 	    var form=$("form[role='addColumnForm']");
 	    var validator = $(form).validate();
 		validator.resetForm();
-    	$("#add-modal-form").show();
-    	$("#addName").attr("disabled",false);
-		$("#ifSpecial").attr("disabled",false);
-		$("#docColumnCdMask").attr("disabled",false);
+		$("input").attr("disabled",false);
+		$("select").attr("disabled",false);
+		$("textarea").attr("disabled",false);
 		$("#btn-showTree").attr("disabled",false);
+		$("#add-simple-submit").show();
     },
     initModalData:function(id,type){
     	$.ajax({
@@ -249,7 +260,7 @@ define(function(require, exports, module) {
 			    	 $('#docColumnCdMask').val(result.body.parentName);
 			    	 $('#ifSpecial').val(result.body.ifSpecial);
 			    	 $("input[name='id']").val(id);
-			    	 $("input[name='parentId']").val(id);
+			    	 $("input[name='parentId']").val(result.body.parentId);
 			    	 $('#docColumnId').val(result.body.id);
 					if(type=='view'){
 						$("#addName").attr("disabled",true);
@@ -288,17 +299,11 @@ define(function(require, exports, module) {
              },
              check: {
                  enable: true,
-                 chkStyle: "checkbox",
+                 chkStyle: "radio",
                  radioType: "level"
              },
              callback: {
-                 onClick: function(event, treeId, treeNode) {
-                /* 	if(treeNode!=null&&treeNode.children!=null&&treeNode.children.length!=null&&treeNode.children.length>0){
-                 		$("#docColumnCdField").val("");
-                         $("#docColumnCdMask").val("");
-                         $("#docColumnCd").val("");
-                 		return false;
-                 	}else{*/
+                 onCheck: function(event, treeId, treeNode) {
                  		var id = treeNode.id;
                      	var treeObj = $.fn.zTree.getZTreeObj(treeId);
                      	var node = treeObj.getNodeByParam("id", id, null);
