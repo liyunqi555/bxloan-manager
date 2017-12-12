@@ -62,9 +62,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         List<Long> columnIds = docColumnService.getChildColumnIdsByParentId(parentColumnId);
         //List<DocInfo> docInfos = docInfoDao.findByColumnIdInOrderByIfTopDescUpdateTimeDesc(columnIds, topCount);
         List<DocInfo> docInfos = docInfoDao.findFirst6ByColumnIdInOrderByIfTopDescUpdateTimeDesc(columnIds);
-        docInfos.forEach(docInfo -> {
-            parseImgUrlOfDocInfo(docInfo);
-        });
+        parseImgUrl(docInfos);
         return docInfos;
     }
 
@@ -128,13 +126,30 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         sql.append(" order by updateTime desc ");
 
         PageList<DocInfo> pageList = this.pageList(page,sql.toString(),param);
+
+        parseImgUrl(pageList.getList());
+        addDocSourceName(pageList.getList());
+        addStoreFlag(pageList.getList(),userId);
+        return pageList;
+    }
+    private void parseImgUrl(Iterable<DocInfo> docInfos){
+        if(docInfos==null){
+            return;
+        }
+        docInfos.forEach(docInfo ->{
+            parseImgUrl(docInfo);
+        });
+    }
+    private void addDocSourceName(List<DocInfo> docInfos){
+        if(docInfos==null || docInfos.size()==0){
+            return;
+        }
         List<Long> sourceIds = new ArrayList<>();
-        pageList.getList().forEach(docInfo -> {
+        docInfos.forEach(docInfo -> {
             sourceIds.add(docInfo.getSourceId());
-            parseImgUrlOfDocInfo(docInfo);
         });
         Iterable<DocSource> docSources = docSourceService.findAll(sourceIds);
-        pageList.getList().forEach(docInfo->{
+        docInfos.forEach(docInfo->{
             if(docInfo.getSourceId()!=null){
                 docSources.forEach(docSource->{
                     if(docInfo.getSourceId().equals(docSource.getId())){
@@ -143,10 +158,29 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
                 });
             }
         });
-        return pageList;
     }
-
-    private void parseImgUrlOfDocInfo(DocInfo docInfo){
+    private void addStoreFlag(List<DocInfo> docInfos,Long userId){
+        if(docInfos==null || docInfos.size()==0){
+            return;
+        }
+        List<Long> docInfoIds = new ArrayList<>();
+        docInfos.forEach(docInfo -> {
+            docInfoIds.add(docInfo.getId());
+        });
+        List<UserStore> userStores = userStoreService.findByUserIdAndDocInfoIds(userId, docInfoIds);
+        docInfos.forEach(docInfo -> {
+            Long id = docInfo.getId();
+            boolean flag = false;
+            for(UserStore userStore : userStores){
+                if (id.equals(userStore.getDocInfoId())) {
+                    flag = true;
+                    break;
+                }
+            }
+            docInfo.setStoreFlag(flag?1:0);
+        });
+    }
+    private void parseImgUrl(DocInfo docInfo){
         String body = docInfo.getBody();
         Elements elements = Jsoup.parse(body, "UTF-8").select("img[src]");
         String imgUrl = elements.attr("src");
@@ -187,8 +221,8 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         });
         Iterable<DocInfo> docInfos = docInfoDao.findAll(docInfoIds);
         List<DocInfo> docInfosList = new ArrayList<>();
+        parseImgUrl(docInfos);
         docInfos.forEach(docInfo->{
-            parseImgUrlOfDocInfo(docInfo);
             for(UserViewHistory userViewHistory:userViewHistories) {
                 if (userViewHistory.getDocInfoId().equals(docInfo.getId())) {
                     docInfo.setViewTime(userViewHistory.getUpdateTime());
@@ -216,9 +250,11 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
             docInfoIds.add(userStore.getDocInfoId());
         });
         Iterable<DocInfo> docInfos = docInfoDao.findAll(docInfoIds);
+
+        parseImgUrl(docInfos);
+
         List<DocInfo> docInfosList = new ArrayList<>();
         docInfos.forEach(docInfo->{
-            parseImgUrlOfDocInfo(docInfo);
             for(UserStore userStore:userStores) {
                 if (userStore.getDocInfoId().equals(docInfo.getId())) {
                     docInfo.setViewTime(userStore.getCreateTime());
