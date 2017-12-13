@@ -253,12 +253,12 @@ define(function(require, exports, module) {
 					    var validator = $(form).validate();
 						validator.resetForm();
 						var obj = result.body;
-						$.each($("#addDocInfoForm").find("input[type='text'], select"), function() {
+						$.each($("#addDocInfoForm").find("input[type='text'], select,textarea"), function() {
 							$(this).val(obj[$(this).attr("name")]);
 						});
-						$.each($("#addDocInfoForm").find("textarea"),function(){
+/*						$.each($("#addDocInfoForm").find("textarea"),function(){
 							$(this).html(obj[$(this).attr("name")]);
-						});
+						});*/
 						$("#add-modal-form").modal("show");
 						if(type=='view'){
 							$("input").attr("disabled",true);

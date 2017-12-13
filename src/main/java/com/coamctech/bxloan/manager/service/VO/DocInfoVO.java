@@ -57,6 +57,7 @@ public class DocInfoVO implements Serializable {
 		this.updateTime= CommonHelper.toDate(objs[i++]);
 		this.storeTime= CommonHelper.toDate(objs[i++]);*/
 		this.columnName= CommonHelper.toStr(objs[i++]);
+		this.ifTop = CommonHelper.toInt(objs[i++]);//来源id
     }
     
     public String getSourceName() {
