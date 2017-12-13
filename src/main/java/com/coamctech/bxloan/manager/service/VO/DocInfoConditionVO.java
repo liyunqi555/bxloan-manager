@@ -17,7 +17,7 @@ public class DocInfoConditionVO {
 	  	private String columnName;//栏目名称
 	    private Long sourceId;//来源id
 	    private Long columnId;//栏目id
-	    private String keyWord;//关键字
+	    private String keyword;//关键字
 	    
 		public String getSourceName() {
 			return sourceName;
@@ -49,11 +49,12 @@ public class DocInfoConditionVO {
 		public void setDocInfoId(Long docInfoId) {
 			this.docInfoId = docInfoId;
 		}
-		public String getKeyWord() {
-			return keyWord;
+		public String getKeyword() {
+			return keyword;
 		}
-		public void setKeyWord(String keyWord) {
-			this.keyWord = keyWord;
+		public void setKeyword(String keyword) {
+			this.keyword = keyword;
 		}
+
 
 }

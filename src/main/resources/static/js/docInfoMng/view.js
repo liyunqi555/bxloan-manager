@@ -4,13 +4,14 @@ define(function(require, exports, module) {
 	var view = Backbone.View.extend({
 	el: "body",
 	events: {  
-		"click #button-query": "query",//查询
-		"click #button-reset":"resetBills",//重置
-		"click #btn-add" : "addColumn",//增加栏目弹出框
-		"click #btn-showTree": "ToggleTree",//初始化树菜单
-		"click button[role=btn-detail-del]" : "delDetail",//删除
-		"click button[role=edit]" : "edit",//编辑
-		"click button[role=detail]" : "detail"//查看
+		"click button[role=btn-Query]": "query",//查询
+		"click button[role=btn-Reset]":"resetBills",//重置
+		"click button[role=btn-Add]" : "addDocInfo",//新增
+		"click #btn-columnTree": "initColumnTree",//初始化树菜单
+		"click #btn-sourceTree": "initSourceTree",//初始化树菜单
+		"click button[role=btn-delDocInfo]" : "delDocInfo",//删除
+		"click button[role=editDocInfo]" : "editDocInfo",//编辑
+		"click button[role=detailDocInfo]" : "detailDocInfo"//查看
 			
 	},
 	initialize: function() {
@@ -21,42 +22,45 @@ define(function(require, exports, module) {
 	render: function() {
 		var viewSelf = this;
 		this.initDtTable();
-		this.saveColumn();
+		this.saveDocInfo();
 	},
 	//查询
 	query : function(){
 		var viewSelf = this;
       	var seachData=[];
-			var $form=$("form[role='searchForm']");
-			seachData.push({name:"docColumName",value:$form.find(":text[name='docColumName']").val()});
-			console.log($form.find(":text[name='docColumName']").val());
-			viewSelf.dt.oSearchData=seachData;
-			viewSelf.dt.fnPageChange(0);//执行查询
+		var $form=$("form[role='searchForm']");
+		seachData.push({name:"columnId",value:$form.find(":text[name='sColumnId']").val()});
+		seachData.push({name:"columnName",value:$form.find(":text[name='sColumnName']").val()});
+		seachData.push({name:"keyword",value:$form.find(":text[name='keyword']").val()});
+		viewSelf.dt.oSearchData=seachData;
+		viewSelf.dt.fnPageChange(0);//执行查询
 	},
 	//重置
 	resetBills:function(){
 		var viewSelf = this;
 		var $form=$("form[role='searchForm']");
 		$form.resetForm();
+		viewSelf.dt.oSearchData = null;	
+		//执行查询
+		viewSelf.dt.fnPageChange(0);
 	},
-	//新增栏目
-	addColumn: function (){
+	//创建文章
+	addDocInfo: function (){
 		var viewSelf = this;
-	    var form=$("form[role='addColumnForm']");
-	    var validator = $(form).validate();
-		validator.resetForm();
+		$("#add-modal-form").resetForm();
+	    $('#columnId').val($('#sColumnId').val());
+	    $('#docColumnField').val($('#sColumnId').val());
 	    $("#add-modal-form").modal("show");
-	    $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 新增栏目");
+	    $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 创建文档");
 	    return false;
 	},
-	saveColumn:function(){
+	saveDocInfo:function(){
 		var viewSelf = this;
-		var $form=$("form[role='addColumnForm']");
+		var $form=$("form[role='addDocInfoForm']");
 		  $form.validate({
 			  submitHandler: function(form) {
 				var formSelf = $(form);
 				viewSelf.model.submitForm($form, function(result) {
-					console.log(result.code);
 						if (result.code=='200') {
 							$("#add-modal-form").modal("hide");
 							formSelf.resetForm();
@@ -68,69 +72,72 @@ define(function(require, exports, module) {
 			  	}
 			});
 	},
-	initDtTable: function() {  //查询导入的记录
+	//初始化列表
+	initDtTable: function() {
 		var viewSelf = this;
-		var init= true;
-		var dt = $("#tb_columnList").dataTable({
+		var columnId = $('#sColumnId').val();
+		var columnName = $('#sColumnName').val();
+		var keyword = $('#keyword').val();
+		var sourceId = $('#sourceId').val();
+		var init= false;
+		var dt = $("#tb-list").dataTable({
 			bFilter:false,
 			bSort:false,
 			sPaginationType: "full_numbers",  
-			sAjaxSource : "/docColumnMng/findColumnList",
+			data : {
+      			"columnId":columnId,
+      			"columnName":columnName,
+      			"keyword":keyword,
+      			"sourceId":sourceId
+      			
+      		},
+			sAjaxSource : "/docInfoMng/findDocInfoList",
 			aoColumns : [
-		        {mData: "order", mRender: function(data, type, rowdata) {
+		        {mData: "title", mRender: function(data, type, rowdata) {
 		        	if ($.trim(data) == '') {
 		                 return "";
 		            }
 		        	return data;
 		        }},
-		        {mData: "name", mRender: function(data, type, rowdata) {
+		        {mData: "classification", mRender: function(data, type, rowdata) {
 		        	if ($.trim(data) == '') {
 		                 return "";
 		            }
 		        	return data;
 		        }},
-		        {mData: "creatorName", mRender: function(data, type, rowdata) {
+		        {mData: "groupName", mRender: function(data, type, rowdata) {
 		        	if ($.trim(data) == '') {
 		                 return "";
 		            }
 		        	return data;
 		        }},
-		        {mData: "ifSpecial", mRender: function(data, type, rowdata) {
-		        		if(rowdata.ifSpecial == '1'){
-		        			return "是";
-		        		}else{
-		        			return "否";
-		        		}
-		        }},
-		        {mData: "level", mRender: function(data, type, rowdata) {
+		        {mData: "website", mRender: function(data, type, rowdata) {
 		        	if ($.trim(data) == '') {
 		                 return "";
 		            }
 		        	return data;
 		        }},
-		        {mData: "parentName", mRender: function(data, type, rowdata) {
+		        {mData: "keyword", mRender: function(data, type, rowdata) {
+		        	if ($.trim(data) == '') {
+		                 return "";
+		            }
+		        	return data;
+		        }},
+		        {mData: "summary", mRender: function(data, type, rowdata) {
 		        	if ($.trim(data) == '') {
 		                 return "";
 		            }
 		        	return data;
 		        }},
 		        {mData: null, mRender: function(data, type, rowdata) {
-		        	if( rowdata.id == '0') {
-			        		var buttons = "";
-			        		var edit = "<button type='button' role='edit' data-id='" + rowdata.id + "'  class='btn btn-xs btn-info' title='修改' ><i class='ace-icon fa fa-edit'></i></button> ";
-                    		var view = " <button type='button' role='detail' data-id='" +rowdata.id + "'  class='btn btn-xs btn-yellow' title='查看'><i class='ace-icon fa fa-eye'></i></button> ";
-                    		buttons+= edit+view;
-                       		return buttons;
-		        	}else{
-		        		var buttons = "";
-		        		var edit = "<button type='button' role='edit' data-id='" +rowdata.id + "'"+"date-name='"+rowdata.name + "'"+"date-parentName='"+rowdata.parentName +"'"+"date-ifSpecial='"+rowdata.ifSpecial + "'  class='btn btn-xs btn-info' title='修改' ><i class='ace-icon fa fa-edit'></i></button> ";
-		        		var view = " <button type='button' role='detail' data-id='" +rowdata.id + "'  class='btn btn-xs btn-yellow' title='查看'><i class='ace-icon fa fa-eye'></i></button> ";
-		        		var deleteView = "<button type='button' role='btn-detail-del' data-id='" +rowdata.id + "'  class='btn btn-xs btn-info' title='删除' ><i class='ace-icon fa fa-trash-o'></i></button> ";
-                		buttons+= edit+view+deleteView;
-                		return buttons;
-		        	}
-		        	
-	    	}}],	
+	        		var buttons = "";
+	        		var edit = "<button type='button' role='editDocInfo' data-id='" +rowdata.id + "'"+"data-name='"+rowdata.name+ "'data-parentId='"+rowdata.parentId  + "'"+"data-parentName='"+rowdata.parentName +"'"+"data-ifSpecial='"+rowdata.ifSpecial + "'  class='btn btn-xs btn-info' title='修改' ><i class='ace-icon fa fa-edit bigger-120'></i></button> ";
+	        		var view = " <button type='button' role='detailDocInfo' data-id='" +rowdata.id + "'  class='btn btn-xs btn-yellow' title='查看'><i class='ace-icon fa fa-eye bigger-120'></i></button> ";
+	        		var deleteView = "<button type='button' role='btn-delDocInfo' data-id='" +rowdata.id + "'  class='btn btn-xs btn-danger' title='删除' ><i class='ace-icon fa fa-trash-o bigger-120'></i></button> ";
+            		buttons+= edit+view+deleteView;
+            		return buttons;
+	        	
+		        }}],	
 	    	/**传参*/
 			fnServerParams : function(aoData) {
 				var dtSelf=this;
@@ -142,64 +149,82 @@ define(function(require, exports, module) {
 	    		//默认的查询参数
 	    		else{
 	    			aoData.push({
-						name : "docColumName",
-						value : $("form[role='searchForm']").find(":text[name='docColumName']").val()
+						name : "columnId",
+						value :  columnId
+					});
+	    			aoData.push({
+						name : "columnName",
+						value :  $('#sColumnName').val()
+					});
+	    			aoData.push({
+						name : "keyword",
+						value :  $('#keyword').val()
 					});
 	    		}
 			}
 		});
 		viewSelf.dt = dt;
 	},	
-	//删除栏目
-	delDetail : function(e) {
+	//删除文章
+	delDocInfo : function(e) {
 		var viewSelf = this;
-		$(document).on("click","button[role='btn-detail-del']",function(e){
-    		var $this = $(this);
-			var id = $(this).attr("data-id");
-			console.log(id);
-				if (result) {
-					$.get( "docColumnMng/deleteColumn/" + id, function(result) {
-						if (result.success=='500') {
-							return bootbox.alert(result.msg || "删除失败，请刷新页面后再试");
-						}
-						viewSelf.dt.fnPageChange(0);
-					});
-				}
-		});
+		$(document).on("click","button[role='btn-delDocInfo']",function(e){
+				var $this = $(this);
+				var id = $(this).attr("data-id");
+				bootbox.confirm("确定删除吗？", function(result) {
+					if(!result){//取消
+						return false;
+					}
+					if (result) {
+						$.ajax({
+							type : "post",
+							url : "/docInfoMng/deleteDocInfo",
+							data: {
+								id : id
+							},
+							success : function(result){
+								if(result.code=='200'){
+									utils.alert.suc(result.msg);
+									viewSelf.dt.fnPageChange(0);
+								}else{
+									utils.alert.warn(result.msg);
+								}
+							}
+						});
+					}
+				});
+			});
 	},
 	//查看事件
-	detail:function(e){
+	detailDocInfo:function(e){
+		 var $form=$("form[role='addDocInfoForm']");
 		var viewSelf = this;
-		viewSelf.initModal();
-			$(document).on("click","button[role=detail]",function(e){
+		$(document).on("click","button[role=detailDocInfo]",function(e){
 			$("#add-modal-form").resetForm();
-		    $("#add-modal-form").modal("show");
-		    $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 查看栏目");
-		    var $this = $(this);
+			$("#add-modal-form").modal("show");
+			$("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 查看文章");
+			var $this = $(this);
 			var id = $(this).attr("data-id");
-			$("#btn-showTree").attr("disabled",true);
-	    	viewSelf.initModalData(id,'view');
+			$("input").attr("disabled",true);
+			$("select").attr("disabled",true);
+			$("textarea").attr("disabled",true);
+			$("#add-simple-submit").hide();
+		    viewSelf.initModalData(id,'view');
 		});
 	},
 	 //编辑按钮事件
-	edit:function(e){
+	editDocInfo:function(e){
     	var viewSelf = this;
     	$("#add-modal-form").resetForm();
-    	$(document).on("click","button[role=edit]",function(e){
+    	$(document).on("click","button[role=editDocInfo]",function(e){
     		$ ("select").unbind ("change");
 	    	var btnSelf = $(e.currentTarget);
 	    	var $this = $(this);
 			var id = $(this).attr("data-id");
-	    	var name = $(this).attr("data-name");
-	    	var parentName = $(this).attr("data-parentName");
-	    	var ifSpecial = $(this).attr("data-ifSpecial");
 			$("#add-simple-submit").hide();
 		    $("#add-modal-form").modal("show");
-		    $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 编辑栏目");
+		    $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 编辑文章");
 	    	 $('#addName').val(name);
-	    	 $('#docColumnCdMask').val(parentName);
-	    	 $('#ifSpecial').val(ifSpecial);
-	    	 $('#docColumnId').val(id);
 	    	 $("input[name='id']").val(id);
 	    	 $('#operate').val('edit');
 	    	 viewSelf.initModal();
@@ -207,138 +232,183 @@ define(function(require, exports, module) {
     	});
 	},
     initModal:function(){
-	    var form=$("form[role='addColumnForm']");
+	    var form=$("form[role='addDocInfoForm']");
 	    var validator = $(form).validate();
 		validator.resetForm();
-    	$("#add-modal-form").show();
-    	$("#addName").attr("disabled",false);
-		$("#ifSpecial").attr("disabled",false);
-		$("#docColumnCdMask").attr("disabled",false);
-		$("#btn-showTree").attr("disabled",false);
+		$("input").attr("disabled",false);
+		$("select").attr("disabled",false);
+		$("textarea").attr("disabled",false);
+		$("#add-simple-submit").show();
     },
     initModalData:function(id,type){
     	$.ajax({
 			type : "post",
-			url : "/docColumnMng/getColumnOne",
+			url : "/docInfoMng/getDocInfoOne",
 			data: {
 				id : id
 			},
 			success : function(result){
 				if(result.code=='200'){
-					  var form=$("form[role='addColumnForm']");
+					  var form=$("form[role='addDocInfoForm']");
 					    var validator = $(form).validate();
 						validator.resetForm();
-			    	 $('#addName').val(result.body.name);
-			    	 $('#docColumnCdMask').val(result.body.parentName);
-			    	 $('#ifSpecial').val(result.body.ifSpecial);
-			    	 $("input[name='id']").val(id);
-			    	 $("input[name='parentId']").val(id);
-			    	 $('#docColumnId').val(result.body.id);
-					if(type=='view'){
-						$("#addName").attr("disabled",true);
-						$("#ifSpecial").attr("disabled",true);
-						$("#docColumnCdMask").attr("disabled",true);
-						$("#add-simple-submit").hide();
+						var obj = result.body;
+						$.each($("#addDocInfoForm").find("input[type='text'], select"), function() {
+							$(this).val(obj[$(this).attr("name")]);
+						});
+						$.each($("#addDocInfoForm").find("textarea"),function(){
+							$(this).html(obj[$(this).attr("name")]);
+						});
+						$("#add-modal-form").modal("show");
+						if(type=='view'){
+							$("input").attr("disabled",true);
+							$("select").attr("disabled",true);
+							$("textarea").attr("disabled",true);
+							$("#add-simple-submit").hide();
 					}
-					$("#add-modal-form").modal("show");
 				}else{
 					utils.alert.warn(result.msg);
 				}
 			}
 		});
     },
-		//加载树菜单
-     ToggleTree: function() {
-			/** 初始化树 */
-         var viewSelf = this;
-         $.fn.zTree.init($("#addTree"), {
-             async: {
-                 enable: true,
-                 url: "/docColumnMng/getAllColumn"
-             },
-             view:{//表示tree的显示状态
-                 selectMulti:true//表示多选
-             },
-             data: {
-                 simpleData: {
-                     enable: true,
-                     idKey: "id",
-                     pIdKey: "parentId"
-                 },
-                 key: {
-                     name: "name"
-                 }
-             },
-             check: {
-                 enable: true,
-                 chkStyle: "checkbox",
-                 radioType: "level"
-             },
-             callback: {
-                 onClick: function(event, treeId, treeNode) {
-                /* 	if(treeNode!=null&&treeNode.children!=null&&treeNode.children.length!=null&&treeNode.children.length>0){
-                 		$("#docColumnCdField").val("");
-                         $("#docColumnCdMask").val("");
-                         $("#docColumnCd").val("");
-                 		return false;
-                 	}else{*/
-                 		var id = treeNode.id;
+	initColumnTree:function(){
+			var viewSelf = this;
+			$.fn.zTree.init($("#columnTree"), {
+				async : {
+					enable : true,
+					url : "/userColumnSourceAssign/getAllColumn"
+				},
+	             view:{//表示tree的显示状态
+	                 selectMulti:false//表示多选
+	             },
+				check: {
+					enable: true,
+					chkStyle : "radio",
+					radioType : "level"
+				},
+				data : {
+					simpleData : {
+						enable : true,
+						idKey : "id",
+						pIdKey : "parentId"
+					},
+					key : {
+						name : "name"
+					}
+				},
+				callback : {
+					onCheck : function(event, treeId, treeNode) {
+						var id = treeNode.id;
+						if(0==id){
+							return false ;
+						}
                      	var treeObj = $.fn.zTree.getZTreeObj(treeId);
                      	var node = treeObj.getNodeByParam("id", id, null);
                      	var parentNode = node.getParentNode();
-                         treeObj.expandNode(parentNode, true, false);
-                 		$("#docColumnCdField").val(treeNode.id);
-                         $("#docColumnCdMask").val(treeNode.name);
-                         $("#docColumnCd").val(treeNode.id);
-                         $("#addControlZTree").toggle(300,
-                         function() {
-                            if (($("#addControlZTree").attr("style")) == "<i class='ace-icon fa fa-eye'></i>") {
-                             	
-                             } else if (($("#addControlZTree").attr("style")) == "display: none;") {
-                                 $("#btn-showTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
-                             } else {
-                                 $("#btn-showTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
-                             }
-                         });
-                 	}
-                 },
-                 onCheck: function(event, treeId, treeNode) {
-                 	$("#docColumnCdField").val(treeNode.id);
-                     $("#docColumnCdMask").val(treeNode.name);
-                     $("#docColumnCd").val(treeNode.id);
-                 },
-                 beforeCheck: function(treeId, treeNode) {
-                 	//点击radio时赋值
-                 	$("#docColumnCdField").val(treeNode.id);
-                     $("#docColumnCd").val(treeNode.id);
-                     return ! treeNode.isParent;
-                 },
-                 onAsyncSuccess: function(event, treeId, treeNode, msg) {
+                     	var columnName = node.name; 
+                        treeObj.expandNode(parentNode, true, false);
+                        $('#docColumnField').val(id);
+						$('#columnId').val(id);
+						$('#columnName').val(columnName);
+					    $("#addcolumnZTree").toggle(300,
+					    		function() {
+		                            if (($("#addcolumnZTree").attr("style")) == "<i class='ace-icon fa fa-eye'></i>") {
+		                             	
+		                             } else if (($("#addcolumnZTree").attr("style")) == "display: none;") {
+		                                 $("#btn-columnTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
+		                             } else {
+		                                 $("#btn-columnTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
+		                             }
+		                         });
+					}
+				},
+                onAsyncSuccess: function(event, treeId, treeNode, msg) {
                  	var treeObj = $.fn.zTree.getZTreeObj(treeId);
-                 	var docColumnCdField = $("#docColumnCdField").val();
-                     if (docColumnCdField !== ""&&docColumnCdField !==null) {
-                     	var node = treeObj.getNodeByParam("id", docColumnCdField, null);
-/*                        	treeObj.checkNode(node,null,true,true);
-*/                        	var parentNode = node.getParentNode();
-                         treeObj.expandNode( node.id , true, false); 
-                         $("#docColumnCdMask").val(node.name);
-                         $("#docColumnCd").val(node.id);
+                 	var docColumnField = $("#docColumnField").val(); 
+                 	console.log(docColumnField);
+                     if (docColumnField !== ""&&docColumnField !==null) {
+                    	var node = treeObj.getNodeByParam("id", docColumnCdField, null);
+                       	var parentNode = node.getParentNode();
+                        treeObj.expandNode( parentNode , true, false); 
+                        this.$('#columnId').val(node.id);
+ 						$('.columnName').val(node.name);
                      }
                      
                  }
-             //}
-         });
-         $("#addControlZTree").toggle(300,
-                 function() {
-		                if (($("#addControlZTree").attr("style")) == "<i class='ace-icon fa fa-eye'></i>") {
-		                	
-		                } else if (($("#addControlZTree").attr("style")) == "display: none;") {
-		                    $("#btn-showTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
-		                } else {
-		                    $("#btn-showTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
-		                }
-         });
-     }
+			});
+		    $("#addcolumnZTree").toggle(300,
+		    		function() {
+                        if (($("#addcolumnZTree").attr("style")) == "<i class='ace-icon fa fa-eye'></i>") {
+                         	
+                         } else if (($("#addcolumnZTree").attr("style")) == "display: none;") {
+                             $("#btn-columnTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
+                         } else {
+                             $("#btn-columnTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
+                        }
+           });
+	},
+	
+	initSourceTree:function(){
+		var viewSelf = this;
+		$.fn.zTree.init($("#sourceTree"), {
+			async : {
+				enable : true,
+				url : "/userColumnSourceAssign/getAllSource"
+			},
+			check: {
+				enable: true,
+				chkStyle : "radio",
+				radioType : "all"
+			},
+			data : {
+				simpleData : {
+					enable : true,
+					idKey : "id"
+				},
+				key : {
+					name : "name"
+				}
+			},
+			view: {
+				fontCss : {
+					size:"2em"
+				}
+			},
+			callback : {
+				onCheck : function(event, treeId, treeNode) {
+					var sourceId = treeNode.id;
+					var sourceName = treeNode.name;
+					$('#sourceId').val(sourceId);
+					$('#sourceName').val(sourceName);
+					$('#docSourceField').val(sourceName);
+				    $("#addsourceZTree").toggle(300,
+				    		function() {
+	                            if (($("#addsourceZTree").attr("style")) == "<i class='ace-icon fa fa-eye'></i>") {
+	                             	
+	                             } else if (($("#addsourceZTree").attr("style")) == "display: none;") {
+	                                 $("#btn-sourceTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
+	                             } else {
+	                                 $("#btn-sourceTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
+	                             }
+	                         });
+				}
+			}
+			
+		});
+	    $("#addsourceZTree").toggle(300,
+	    		function() {
+                    if (($("#addsourceZTree").attr("style")) == "<i class='ace-icon fa fa-eye'></i>") {
+                     	
+                     } else if (($("#addsourceZTree").attr("style")) == "display: none;") {
+                         $("#btn-sourceTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
+                     } else {
+                         $("#btn-sourceTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
+                     }
+                 });
+}
+	
+	
 
 });
 	module.exports = view;	

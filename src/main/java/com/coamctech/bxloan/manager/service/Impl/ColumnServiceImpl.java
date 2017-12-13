@@ -116,7 +116,6 @@ public class ColumnServiceImpl implements IColumnService{
          }
  		Page<DocColumnVO> resultPage = new PageImpl<DocColumnVO>(docColumnVOList, new PageRequest(pageNumber, pageSize),page.getTotalElements());
 		return resultPage;
-
 	}
 
 	@Override
