@@ -1,0 +1,234 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:include="pre_included">
+    <meta charset="utf-8"/>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"     />
+	</head>
+<body class="no-skin">
+	<!-- 工作面板 -->
+		<div th:include="sidebar"></div> 
+	<!-- bootstrap容器start -->
+	<div class="main-container" id="main-container">
+		<script type="text/javascript">
+          try {
+            ace.settings.check('main-container', 'fixed')
+          } catch(e) {}
+        </script>
+        <!-- bootstrap容器start -->
+        <div class="main-content">
+        	<!-- 页面头信息，显示页面当前目录 -->
+            <div class="breadcrumbs" id="breadcrumbs">
+            	<script type="text/javascript">
+                try {
+                  ace.settings.check('breadcrumbs', 'fixed')
+                } catch(e) {}
+              </script>
+              <ul class="breadcrumb">
+                <li>
+                  <i class="ace-icon fa fa-home home-icon">
+                  </i>
+                  <a href="/bxloan">
+                    	首页	
+                  </a>
+                </li>
+                 <li class="active">
+                  	栏目管理
+                </li>
+              </ul>
+            </div>
+            <!-- 页面内容start -->
+            <div class="page-content">
+            	<!-- 用作隐藏域start -->
+            	<div>
+            		<!-- <input type="hidden" id="orgId" name="orgId" value="${orgId}"> -->
+            	</div>
+            	<!-- 用作隐藏域end -->
+            	<!-- 功能按钮start -->
+            	<div class="page-header">
+            		<h1>
+            				栏目管理
+            			<small>
+		                    <i class="ace-icon fa fa-angle-double-right">
+		                    </i>
+	                    	栏目列表
+	                  	</small>
+	                  	<span style="float:right;">
+	            			<button id="button-query" class="btn btn-sm btn-purple" type="button">
+		                      <i class="ace-icon fa fa-search">
+		                      </i>
+		                                                查询
+		                    </button>
+		                    <button id="button-reset" class="btn btn-sm btn-default">
+		                      <i class="ace-icon fa fa-undo">
+		                      </i>
+		                      	重置
+		                    </button>
+		                    <button id="btn-add" class="btn btn-sm btn-success">
+		                      <i class="ace-icon fa fa-plus">
+		                      </i>
+		                      	新增栏目
+		                    </button>
+<!-- 		                    <button id="btn-docInfoView" class="btn btn-sm btn-primary">
+		                      <i class="ace-icon fa fa-floppy-plus">
+		                      </i>
+		                      	进入文章管理
+		                    </button> -->
+	            		</span>
+            		</h1>
+            	</div>
+            	<!-- 功能按钮end -->
+            	<!-- 搜索域start -->
+            <div style="height: 0px;" class="row">
+			<div class="col-xs-12">
+            	<form role="searchForm" class="form-horizontal">
+						<div class="form-group">
+							<label for="name" class="control-label col-sm-1">栏目名称：</label>
+							<div class="col-sm-3">
+								<input type="text" id="docColumName" class="form-control col-sm-4 input-sm" placeholder="请输入栏目名称" name="docColumName"/>
+							</div>
+						</div>
+					</form>
+				</div>
+				</div>
+            	<!-- 搜索域end -->
+            	<!-- 表单内容start -->
+            	<div class="row">
+            		<div class="col-xs-12">
+                					<table id="tb_columnList" role="tb_bills" class="table table-striped table-hover">
+            						<thead>
+            							<tr>
+				                            <th>
+				                            	序列号
+				                            </th>
+				                            <th>
+				                            	栏目名称
+				                            </th>
+				                            <th>
+				                            	创建人
+				                            </th>
+				                            <th>
+				                            	是否特殊来源
+				                            </th>
+				                            <th>
+				                            	菜单级别
+				                            </th>
+				                            <th>
+												 上一级目录
+				                            </th>
+				                             <th>
+				                            	操作
+				                            </th>
+            							</tr>
+            						</thead>
+            					</table>
+            		</div>
+            	</div>
+            	<!-- 表单内容end -->
+            </div>
+            <!-- 功能按钮end -->
+        </div>
+        <!-- 页面内容end -->
+        	<div id="add-modal-form" class="modal fade" tabindex="-1" role="basic"
+		aria-hidden="true" style="" data-backdrop="static">
+		<div class="modal-dialog" style="width: 500px; margin: 30px auto\0;">
+			<div class="modal-content">
+				<form id="addColumnForm" name="addColumnForm"
+					action="/docColumnMng/addColumn" class="form-horizontal" role="addColumnForm"
+					method="post" onsubmit="return false;">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							&times;</button>
+						<h4 class="blue bigger"></h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-xs-12">
+								<input type="hidden" id="form-field-0" name="id" />
+								<div class="form-group">
+									<label class="col-sm-3 control-label no-padding-right"
+										for="addName"> <font color='red'> * </font> 栏目将名称：
+									</label>
+									<div class="col-sm-7">
+										<input type="text" id="addName" name="name" 
+											class="form-control" placeholder="输入栏目名称" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3 control-label no-padding-right"
+										for="addIfSepecial"> <font color='red'> * </font>
+										是否特殊来源：
+									</label>
+									<div class="col-sm-7">
+										<select name="ifSpecial" id="ifSpecial"
+											class="form-control">
+											<option value='1'>是</option>
+											<option value='0'>否</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group ">
+									<label class="col-sm-3 control-label  no-padding-right" > <font
+										color='red'> * </font>上级目录：
+									</label>
+									<div class="col-sm-7">
+										<span class="block input-icon input-icon-right">
+											<div class="input-group">
+												<input type="text" id="docColumnCdMask"
+													class="form-control required" readonly="readonly"/>
+												<input type="hidden" name="parentId"
+													id="docColumnCd" readonly="readonly"/> <span
+													class="input-group-btn">
+													<button id="btn-showTree" class="btn btn-sm btn-yellow"
+														type="button">
+														<i class="ace-icon fa fa-eye"></i>
+													</button>
+												</span> <input type="hidden" id="docColumnCdField" />
+											</div>
+										</span> <span class="block input-icon input-icon-right">
+											<div id="addControlZTree"   style="display: none;" >
+												<div class="col-xs-12"
+													style="overflow-y: auto; max-height: 500px; position: absolute; z-index: 999; background: #fff; border: 1px solid #e3e3e3">
+													<ul id="addTree" class="addTree ztree">
+													</ul>
+												</div>
+											</div>
+										</span>
+									</div>
+								</div>
+								<input name='id'  type="hidden" ></input>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button id="add-simple-submit" class="btn btn-sm btn-primary"
+							type="submit" data-loading-text="正在保存中..." >
+							<i class="ace-icon fa fa-save"> </i> 保存
+						</button>
+						<button class="btn btn-sm btn-default" data-dismiss="modal"
+							type="button">
+							<i class="ace-icon fa fa-times"> </i> 取消
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+		<!-- 底部说明 -->
+	</div>
+	<!-- 隐藏域 -->
+	<input type="hidden" id="docColumnId"/>
+    <input type="hidden" id="operate"/>
+ <script>
+	seajs.use('/js/docColumnMng/main');
+</script>
+	<script type="x-tmpl-mustache" id="dt-row-operation">
+
+			<button id="btn-edit" class="btn btn-sm btn-success">
+				<i class="ace-icon fa fa-edit"></i>修改
+			</button>
+			<button id="btn-delete" class="btn btn-sm btn-success">
+				<i class="ace-icon fa fa-trash-o"></i>删除
+			</button>
+	
+	</script>
+</body>
+</html>
