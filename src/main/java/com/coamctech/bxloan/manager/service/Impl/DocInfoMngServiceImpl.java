@@ -46,7 +46,7 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 	public DocInfoVO getDocInfoOne(Long id, Long userId) {
 		StringBuffer sql = new StringBuffer();
 		List<Object> params = new ArrayList<Object>();
-		sql.append("select ti.id, ti.title,ti.cn_title,ti.source_id,ti.column_id,ti.classification,ti.group_name,ti.website,ti.keyword,ti.summary,ti.body,ti.cn_boty,ts.name sourceName,tc.name columnName from  t_doc_info ti, t_doc_column tc,t_doc_source ts  where  ");
+		sql.append("select ti.id, ti.title,ti.cn_title,ti.source_id,ti.column_id,ti.classification,ti.group_name,ti.website,ti.keyword,ti.summary,ti.body,ti.cn_boty,ts.name sourceName,tc.name columnName ,ti.if_top  from  t_doc_info ti, t_doc_column tc,t_doc_source ts  where  ");
 		sql.append(" ti.column_id=tc.id");
 		sql.append(" and ti.source_id = ts.id");
 		if(null!=id){
@@ -90,7 +90,7 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 	public Page<DocInfoVO> findDocInfoList(int pageNumber, Integer pageSize, DocInfoConditionVO docInfoConditionVO) {
 		StringBuffer sql = new StringBuffer();
 		List<Object> params = new ArrayList<Object>();
-		sql.append("select ti.id, ti.title,ti.cn_title,ti.source_id,ti.column_id,ti.classification,ti.group_name,ti.website,ti.keyword,ti.summary,ti.body,ti.cn_boty,ts.name sourceName,tc.name columnName from  t_doc_info ti, t_doc_column tc,t_doc_source ts  where  ");
+		sql.append("select ti.id, ti.title,ti.cn_title,ti.source_id,ti.column_id,ti.classification,ti.group_name,ti.website,ti.keyword,ti.summary,ti.body,ti.cn_boty,ts.name sourceName,tc.name columnName ,ti.if_top from  t_doc_info ti, t_doc_column tc,t_doc_source ts  where  ");
 		sql.append(" ti.column_id=tc.id");
 		sql.append(" and ti.source_id = ts.id");
 		if(null!=docInfoConditionVO){

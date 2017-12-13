@@ -9,8 +9,8 @@ define(function(require, exports, module) {
 		"click #button-reset":"resetBills",//重置
 		"click #btn-add" : "addColumn",//增加栏目弹出框
 		"click #btn-showTree": "ToggleTree",//初始化树菜单
-/*		"click button[role=btn-detail-del]" : "delDetail",//删除
-*/		"click button[role=edit]" : "edit",//编辑
+		"click button[role=btn-detail-del]" : "delDetail",//删除
+		"click button[role=edit]" : "edit",//编辑
 		"click button[role=detail]" : "detail",//查看
 		"click button[role=docInfoList]":"docInfoList",//查看
 		"click #btn-docInfoView":"initdocInfoView" //进入文章列表
