@@ -66,20 +66,48 @@ public class DocSourceController {
     /**
      * 角色新增
      */
-    @RequestMapping(value="add")
+    @RequestMapping(value="save")
     @ResponseBody
-    public JsonResult add(DocSourceVO docSourceVO,HttpServletRequest request){
+    public JsonResult save(DocSourceVO docSourceVO,HttpServletRequest request){
         try {
             User curUser = (User)request.getSession().getAttribute("user");
-            JsonResult r = docSourceMngService.addDocSource(docSourceVO, curUser);
+            JsonResult r = docSourceMngService.saveDocSource(docSourceVO, curUser);
             return r;
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
             return new JsonResult(ResultCode.ERROR_CODE,"服务器异常");
         }
-
-
     }
 
+    /**
+     * 删除来源
+     * @param docSourceId
+     * @return
+     */
+    @RequestMapping("/deleteById")
+    @ResponseBody
+    public JsonResult deleteById(@RequestParam("docSourceId") Long docSourceId) {
+        try {
+            return docSourceMngService.deleteById(docSourceId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            return new JsonResult(ResultCode.ERROR_CODE,"删除失败");
+        }
+    }
+    @RequestMapping("/initModalData")
+    @ResponseBody
+    public JsonResult initModalData(HttpServletRequest request){
+        try{
+            String id = request.getParameter("id");
+            DocSource docSource = docSourceMngService.getById(Long.valueOf(id));
+            return new JsonResult(ResultCode.SUCCESS_CODE,"初始化弹窗成功",docSource);
+        }catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            return new JsonResult(ResultCode.ERROR_CODE,"初始化弹窗失败");
+        }
+
+    }
 }

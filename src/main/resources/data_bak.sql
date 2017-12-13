@@ -19,19 +19,19 @@ insert into t_doc_column (create_time,creator,if_special,level,name,parent_id,up
 values(getdate(),'1','1','1','专题跟踪','0',getdate());
 
 insert into t_doc_column (create_time,creator,if_special,level,name,parent_id,update_time)
-values(getdate(),'1','1','1','半岛','1',getdate());
+values(getdate(),'1','1','2','半岛','1',getdate());
 insert into t_doc_column (create_time,creator,if_special,level,name,parent_id,update_time)
-values(getdate(),'1','1','1','半岛','1',getdate());
+values(getdate(),'1','1','2','核武器','1',getdate());
 
 insert into t_doc_column (create_time,creator,if_special,level,name,parent_id,update_time)
-values(getdate(),'1','1','1','政治','2',getdate());
+values(getdate(),'1','1','2','政治','2',getdate());
 insert into t_doc_column (create_time,creator,if_special,level,name,parent_id,update_time)
-values(getdate(),'1','1','1','经济','2',getdate());
+values(getdate(),'1','1','2','经济','2',getdate());
 
 insert into t_doc_column (create_time,creator,if_special,level,name,parent_id,update_time)
-values(getdate(),'1','1','1','一带一路','3',getdate());
+values(getdate(),'1','1','2','一带一路','3',getdate());
 insert into t_doc_column (create_time,creator,if_special,level,name,parent_id,update_time)
-values(getdate(),'1','1','1','2017恐袭','3',getdate());
+values(getdate(),'1','1','2','2017恐袭','3',getdate());
 
 
 delete from t_doc_info;
@@ -135,7 +135,3 @@ values('埃及','所属洲','非洲',1,0,1,getDate(),getDate());
 insert into entity_property_info (entityid,property_uri,v_string,ver_main,ver_second,status,insert_time,update_time)
 values('新西兰','所属洲','大洋洲',1,0,1,getDate(),getDate());
 
---国家查询方法
-select e.concept_uri,e.entityid,ep.v_string ,ep.property_uri
-from entity_info e ,  entity_property_info ep
-where e.concept_uri='国家'   and e.entityid=ep.entityid and ep.property_uri='所属洲'  ;

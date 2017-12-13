@@ -27,21 +27,21 @@
                         <i class="ace-icon fa fa-home home-icon"></i>
                         <a href="/index">首页</a>
                     </li>
-                    <li class="active">来源管理</li>
+                    <li class="active">反馈意见管理</li>
                 </ul><!-- /.breadcrumb -->
             </div>
 
             <div class="page-content">
                 <div class="page-header">
                     <h1>
-                        来源管理
+                        反馈意见管理
                     </h1>
                 </div><!-- /.page-header -->
                 <form id="searchForm">
                     <div class="form-group">
-                        <label for="roleName" class="control-label col-sm-2">来源名称：</label>
+                        <label for="roleName" class="control-label col-sm-2">反馈意见名称：</label>
                         <div class="col-sm-2">
-                            <input type="text" id="roleName" class="form-control col-sm-5 input-sm" placeholder="请输入来源名称" name="roleName" />
+                            <input type="text" id="roleName" class="form-control col-sm-5 input-sm" placeholder="请输入反馈意见名称" name="roleName" />
                         </div>
                     </div>
                 </form>
@@ -56,11 +56,6 @@
                                 </i>
                                 重置
                             </button>
-		                    <button role="btn-Add" type="button" class="btn btn-sm btn-success" >
-                                <i class="ace-icon fa fa-plus">
-                                </i>
-                                新增
-                            </button>
 						</span>
 
                 <br/><br/><br/>
@@ -74,20 +69,20 @@
                                     序号
                                 </th>
                                 <th>
-                                    来源名称
+                                    标题
                                 </th>
                                 <th>
-                                    来源类型
+                                    内容
                                 </th>
                                 <th>
-                                    是否特殊来源
+                                    反馈人
                                 </th>
                                 <th>
-                                    语言
+                                    创建时间
                                 </th>
-                                <th width="20%">
+                              <!--  <th width="20%">
                                     操作
-                                </th>
+                                </th>-->
                             </tr>
                             </thead>
                         </table>
@@ -122,7 +117,7 @@
                                     <font color='red'>
                                         *
                                     </font>
-                                    来源名称：
+                                    反馈意见名称：
                                 </label>
                                 <div class="col-sm-7">
                                     <input type="text" id="name" name="name" class="form-control"
@@ -134,7 +129,7 @@
                                     <font color='red'>
                                         *
                                     </font>
-                                    来源类型：
+                                    反馈意见类型：
                                 </label>
                                 <div class="col-sm-7">
                                     <select name="type" id="type" class="form-control">
@@ -148,7 +143,7 @@
                                     <font color='red'>
                                         *
                                     </font>
-                                    是否特殊来源：
+                                    是否特殊反馈意见：
                                 </label>
                                 <div class="col-sm-7">
                                     <select name="ifSpecial" id="ifSpecial" class="form-control">
@@ -197,7 +192,7 @@
 <input type="hidden" id="checkedId"/>
 <input type="hidden" id="operateType"/>
 <script>
-	      seajs.use('/js/sourceMng/main');
+	      seajs.use('/js/feedBackMng/main');
 	 </script>
 </body>
 </html>

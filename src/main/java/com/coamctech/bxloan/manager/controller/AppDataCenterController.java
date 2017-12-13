@@ -59,7 +59,8 @@ public class AppDataCenterController extends AppBaseController{
     @RequestMapping("detail")
     public JsonResult detail(@RequestParam(name="conceptUri")String conceptUri
             ,@RequestParam(name="entityid") String entityid){
-        return dataCenterService.detail(conceptUri, entityid);
+        long userId = TokenUtils.sessionUser().getId();
+        return dataCenterService.detail(userId,conceptUri, entityid);
     }
 
     /**

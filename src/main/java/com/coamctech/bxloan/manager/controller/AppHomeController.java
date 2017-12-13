@@ -98,7 +98,7 @@ public class AppHomeController extends AppBaseController{
      */
     @RequestMapping("search")
     public JsonResult search(@RequestParam(name="pageIndex",defaultValue ="0") Integer pageIndex
-            ,@RequestParam(name="keyword",defaultValue = "天赋") String keyword
+            ,@RequestParam(name="keyword") String keyword
             ,@RequestParam(name="topLevelColumnId",required = false) Long topLevelColumnId){
         JsonResult jsonResult = JsonResult.success();
         Long userId = TokenUtils.sessionUser().getId();
