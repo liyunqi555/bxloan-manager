@@ -95,16 +95,16 @@ define(function(require, exports, module) {
             	utils.alert.warn("请录入邮箱");
             	return false;
             }
-            if(!$('#officePhone').val()){
-            	utils.alert.warn("请录入办公电话");
+            if(!(/^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/.test($('#email').val()))){
+            	utils.alert.warn("请录入正确的邮箱格式，如:zhangsan@163.com");
             	return false;
             }
-            if(!$('#telephone').val()){
-            	utils.alert.warn("请录入联系电话");
+            if(!$('#telephone').val()||!(/^1[2|3|5|7|8|9]\d{9}$/.test($('#telephone').val()))){
+            	utils.alert.warn("请录入正确的联系电话");
             	return false;
             }
             if(!$('#birthday').val()){
-            	utils.alert.warn("请录入生日");
+            	utils.alert.warn("请录入出生日期");
             	return false;
             }
             if(!$('#roleIds').val()){

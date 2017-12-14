@@ -16,10 +16,10 @@ import com.coamctech.bxloan.manager.service.VO.UserVO;
 public interface UserMngService {
 	
 	//主页面dataTable查询
-	Page<UserVO> findBySearch(Integer pageNumber, Integer pageSize,String userName) throws ParseException;
+	Page<UserVO> findBySearch(Integer pageNumber, Integer pageSize,String userName,User curUser) throws ParseException;
 	
 	//删除用户
-	JsonResult deleteUserById(Long userId) throws Exception;
+	JsonResult deleteUserById(Long userId,User curUser) throws Exception;
 	
 	//新增查询用户
 	JsonResult addOrEdit(User curUser,UserVO vo,
@@ -45,4 +45,7 @@ public interface UserMngService {
 	
 	//查询用户已选来源列表
 	JsonResult getCheckedSource(Long userId);
+	
+	//修改密码
+	JsonResult updatePassword(Long valueOf, String newPassword) throws RuntimeException;
 }

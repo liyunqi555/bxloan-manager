@@ -8,6 +8,7 @@ import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.dao.UserDao;
 import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.service.UserService;
+import com.coamctech.bxloan.manager.utils.CommonHelper;
 import com.coamctech.bxloan.manager.utils.encrypt.MD5Util;
 
 
@@ -27,6 +28,16 @@ public class UserServiceImpl implements UserService{
 		String md5Password = MD5Util.md5Hex(password);
 		if(!user.getPassword().equals(md5Password)){
 			return new JsonResult(ResultCode.ERROR_CODE,"密码不正确",null);
+		}
+		if(user.getStartTime()!=null){
+			if(CommonHelper.getNow().compareTo(user.getCreateTime())<0){
+				return new JsonResult(ResultCode.ERROR_CODE,"用户尚未生效，请联系管理员",null);
+			}
+		}
+		if(user.getEndTime()!=null){
+			if(CommonHelper.getNow().compareTo(user.getEndTime())>0){
+				return new JsonResult(ResultCode.ERROR_CODE,"用户已失效，请联系管理员",null);
+			}
 		}
 		return new JsonResult<User>(ResultCode.SUCCESS_CODE, "登陆成功", user);
 		
