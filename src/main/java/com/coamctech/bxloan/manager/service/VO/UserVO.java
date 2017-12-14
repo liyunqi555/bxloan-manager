@@ -23,6 +23,8 @@ public class UserVO extends BaseEntity implements Serializable{
     private String roleIds;
     private String startTime;
     private String endTime;
+    private Long creator;
+    private String creatorStr;
     
     private String operateType;
     
@@ -40,6 +42,7 @@ public class UserVO extends BaseEntity implements Serializable{
     	this.email=CommonHelper.toStr(objs[i++]);
     	this.officePhone=CommonHelper.toStr(objs[i++]);
     	this.telephone=CommonHelper.toStr(objs[i++]);
+    	this.creator=CommonHelper.toLong(objs[i++]);
     }
     
 	public Long getId() {
@@ -140,6 +143,24 @@ public class UserVO extends BaseEntity implements Serializable{
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
 	}
+
+	public Long getCreator() {
+		return creator;
+	}
+
+	public void setCreator(Long creator) {
+		this.creator = creator;
+	}
+
+	public String getCreatorStr() {
+		return creatorStr;
+	}
+
+	public void setCreatorStr(String creatorStr) {
+		this.creatorStr = creatorStr;
+	}
+	
+	
 	
 	
 	

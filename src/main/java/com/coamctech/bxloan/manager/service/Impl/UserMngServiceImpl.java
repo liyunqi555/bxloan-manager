@@ -60,15 +60,18 @@ public class UserMngServiceImpl implements UserMngService{
 
 	@Override
 	public Page<UserVO> findBySearch(Integer pageNumber, Integer pageSize,
-			String userName) throws ParseException{
+			String userName,User curUser) throws ParseException{
 		List<Object> params = new ArrayList<Object>();
 		StringBuffer sql = new StringBuffer();
-		sql.append(" SELECT u.id,u.user_name,u.nick_name,u.birthday,u.email,u.office_phone,u.telephone ");
+		sql.append(" SELECT u.id,u.user_name,u.nick_name,u.birthday,u.email,u.office_phone,u.telephone,u.creator ");
 		sql.append(" FROM t_user u WHERE 1=1");
 		int i = 0;
 		if(StringUtils.isNotBlank(userName)){
 			sql.append(" AND u.user_name like ?").append(++i);
 			params.add(StringUtils.join("%", userName, "%"));
+		}
+		if(!curUser.getUserName().equals("admin")){
+			sql.append(" AND u.user_name != 'admin'");
 		}
 		Page<Object[]> page = dynamicQuery.nativeQuery(Object[].class,
 				new PageRequest(pageNumber, pageSize), sql.toString(),params.toArray());
@@ -77,6 +80,13 @@ public class UserMngServiceImpl implements UserMngService{
 					@Override
 					public UserVO apply(Object[] objs) {
 						UserVO vo =  new UserVO(objs);
+						if(vo.getCreator()!=null){
+							if(userDao.findOne(vo.getCreator())!=null){
+								vo.setCreatorStr(userDao.findOne(vo.getCreator()).getUserName());
+							}else{
+								vo.setCreatorStr("");
+							}
+						}
 						return vo;
 					}
 				}));
@@ -85,17 +95,15 @@ public class UserMngServiceImpl implements UserMngService{
 	}
 
 	@Override
-	public JsonResult deleteUserById(Long userId) throws Exception{
-		List<Long> ll = roleUserRelDao.getRoleIdsByUserId(userId);
-		if(CollectionUtils.isNotEmpty(ll)){
-			for(Long id:ll){
-				Role r = roleDao.findOne(id);
-				if(r.getType()==1){//管理员
-					return new JsonResult(ResultCode.ERROR_CODE,"该用户为管理员，不可删除",null);
-				}
+	public JsonResult deleteUserById(Long userId,User curUser) throws Exception{
+		User user = userDao.findOne(userId);
+		if(curUser.getUserName().equals("admin")){
+			
+		}else{
+			if(isManager(userId)){
+				return new JsonResult(ResultCode.ERROR_CODE,"该用户为其他管理员，您无删除权限，请确认！");
 			}
 		}
-		User user = userDao.findOne(userId);
 		userDao.delete(user);
 		roleUserRelDao.deleteByUserId(userId);
 		userDocSourceRelDao.deleteRelByUserId(userId);
@@ -289,5 +297,27 @@ public class UserMngServiceImpl implements UserMngService{
 	public JsonResult getCheckedSource(Long userId) {
 		List<Long> ll = userDocSourceRelDao.findSourceIdsByUserId(userId);
 		return new JsonResult(ResultCode.SUCCESS_CODE,null,ll);
+	}
+
+	@Override
+	public JsonResult updatePassword(Long userId, String newPassword) throws RuntimeException{
+		User user = userDao.findOne(userId);
+		user.setPassword(MD5Util.md5Hex(newPassword));
+		return new JsonResult(ResultCode.SUCCESS_CODE,"密码修改成功",null);
+	}
+	
+	//判断是否为管理员
+	private boolean isManager(Long userId){
+		List<Long> ll = roleUserRelDao.getRoleIdsByUserId(userId);
+		if(CollectionUtils.isNotEmpty(ll)){
+			for(int i=0;i<ll.size();i++){
+				Long id = CommonHelper.toLong(ll.get(i));
+				Role r = roleDao.findOne(id);
+				if(r.getType()==1){//管理员
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

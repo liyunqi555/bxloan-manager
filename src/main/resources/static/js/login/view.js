@@ -1,4 +1,5 @@
 define(function(require, exports, module) {
+	var utils = require("../common/utils.js");
 	var view = Backbone.View.extend({
 		el: "body",
 		events: {
@@ -32,7 +33,7 @@ define(function(require, exports, module) {
         			if(result.code==200){
         				window.location.href="index";
         			}else{
-        				alert(result.msg);
+        				utils.alert.warn(result.msg);
         			}
         		}
         	});

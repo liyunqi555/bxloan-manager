@@ -29,7 +29,6 @@ import com.coamctech.bxloan.manager.dao.RoleUserRelDao;
 import com.coamctech.bxloan.manager.dao.UserDao;
 import com.coamctech.bxloan.manager.domain.DocColumn;
 import com.coamctech.bxloan.manager.domain.DocSource;
-import com.coamctech.bxloan.manager.domain.Role;
 import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.service.UserMngService;
 import com.coamctech.bxloan.manager.service.VO.UserVO;
@@ -100,11 +99,12 @@ public class UserController {
 	public DataTablesPage findBySearch(@RequestParam("sEcho") Integer sEcho,
 			@RequestParam("iDisplayStart") Integer firstIndex,
 			@RequestParam("iDisplayLength") Integer pageSize,
-			@RequestParam("userName") String userName) {
+			@RequestParam("userName") String userName,HttpSession session) {
+    	User curUser = (User)session.getAttribute("user");
 	    //当前登录用户
  		Page<UserVO> page = null;
 	 		try {
-	 			page = userMngService.findBySearch(firstIndex/pageSize, pageSize,userName);
+	 			page = userMngService.findBySearch(firstIndex/pageSize, pageSize,userName,curUser);
 	 		} catch (ParseException e) {
 	 			e.printStackTrace();
 	 		}
@@ -119,14 +119,31 @@ public class UserController {
      */
     @RequestMapping("/deleteById")
 	@ResponseBody
-	public JsonResult deleteById(@RequestParam("userId")String userId) {
+	public JsonResult deleteById(@RequestParam("userId")String userId,HttpSession session) {
 		try {
-			JsonResult r = userMngService.deleteUserById(Long.valueOf(userId));
+			User curUser = (User)session.getAttribute("user");
+			JsonResult r = userMngService.deleteUserById(Long.valueOf(userId),curUser);
 			return r;
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			return new JsonResult(ResultCode.ERROR_CODE,"删除失败");
+		}
+	}
+    
+    /**
+     * 用户密码修改
+     */
+    @RequestMapping("/updatePassword")
+	@ResponseBody
+	public JsonResult updatePassword(@RequestParam("userId")String userId,@RequestParam("newPassword")String newPassword) {
+		try {
+			JsonResult r = userMngService.updatePassword(Long.valueOf(userId),newPassword);
+			return r;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return new JsonResult(ResultCode.ERROR_CODE,"密码修改失败");
 		}
 	}
     
