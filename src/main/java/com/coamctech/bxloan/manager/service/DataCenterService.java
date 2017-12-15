@@ -32,9 +32,32 @@ public class DataCenterService {
     @Autowired
     private UserStoreService userStoreService;
 
-    public JsonResult entityList(String conceptUri){
-
-        List<Map<String,Object>> list = this.list("entityid,name,多媒体ID", " from entity_info t where t.concept_uri=?1 ", conceptUri);
+    public JsonResult entityList(Integer pageIndex,Integer pageSize,String conceptUri){
+        String sql = " select * " +
+                " from ( " +
+                " select row_number()over(order by tempcolumn)temprownumber,* " +
+                " from (select top "+(pageSize*pageIndex+pageSize)+" tempcolumn=0,e.entityid,e.name,e.多媒体ID  " +
+                " from entity_info e where e.concept_uri=?1 )t " +
+                " )tt " +
+                " where temprownumber>?2 ";
+        EntityManager entityManager = null;
+        List<Map<String,Object>> list = new ArrayList<>();
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            Query query = entityManager.createNativeQuery(sql);
+            query.setParameter(1,conceptUri);
+            query.setParameter(2,pageSize*pageIndex);
+            List<Object[]> objecArraytList = query.getResultList();
+            objecArraytList.forEach(objectArray->{
+                Map<String,Object> m = new HashMap<>();
+                m.put("entityid", objectArray[2]);
+                m.put("name",objectArray[3]);
+                m.put("多媒体ID",objectArray[4]);
+                list.add(m);
+            });
+        }finally {
+            closeEntityManager(entityManager);
+        }
         list.forEach(map->{
             map.put("mediaId", map.get("多媒体ID"));
             map.put("namePinYin", ChineseToPinYin.getPingYin(String.valueOf(map.get("name"))));
@@ -47,10 +70,34 @@ public class DataCenterService {
         });
         return JsonResult.success(list);
     }
-    public JsonResult entityList(String conceptUri,String propertyUri){
 
-        List<Map<String,Object>> list = this.list("e.entityid,e.name,e.多媒体ID"," from entity_info e ,  entity_property_info ep " +
-                " where e.concept_uri=?1   and e.entityid=ep.entityid and ep.property_uri='所属洲' and ep.v_string=?2  ", conceptUri,propertyUri);
+    public JsonResult entityList(Integer pageIndex,Integer pageSize,String conceptUri,String propertyUri){
+        String sql = "select * " +
+                " from ( " +
+                " select row_number()over(order by tempcolumn)temprownumber,* " +
+                " from (select top "+(pageIndex*pageSize+pageSize)+" tempcolumn=0,e.entityid,e.name,e.多媒体ID from entity_info e ,  entity_property_info ep  " +
+                " where e.concept_uri=?1   and e.entityid=ep.entityid and ep.property_uri='所属洲' and ep.v_string=?2)t " +
+                " )tt " +
+                " where temprownumber>?3 ";
+        EntityManager entityManager = null;
+        List<Map<String,Object>> list = new ArrayList<>();
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            Query query = entityManager.createNativeQuery(sql);
+            query.setParameter(1,conceptUri);
+            query.setParameter(2,propertyUri);
+            query.setParameter(3,pageSize*pageIndex);
+            List<Object[]> objecArraytList = query.getResultList();
+            objecArraytList.forEach(objectArray->{
+                Map<String,Object> m = new HashMap<>();
+                m.put("entityid", objectArray[2]);
+                m.put("name",objectArray[3]);
+                m.put("多媒体ID",objectArray[4]);
+                list.add(m);
+            });
+        }finally {
+            closeEntityManager(entityManager);
+        }
         list.forEach(map->{
             map.put("mediaId", map.get("多媒体ID"));
             map.put("namePinYin", ChineseToPinYin.getPingYin(String.valueOf(map.get("name"))));
@@ -65,17 +112,37 @@ public class DataCenterService {
     }
     public JsonResult myStore(Page page,Long userId){
 //        List<UserStore> userStores = userStoreService.pageUserStoreData(page, userId);
-        String sql = " from t_user_store ts " +
-                " left join entity_info t on t.concept_uri=ts.concept_uri and t.entityid=ts.entity_id " +
+        String sql = " select *  from ( " +
+                " select row_number()over(order by tempcolumn)temprownumber,*  from " +
+                " ( " +
+                " select top "+(page.getPageIndex()*page.getPageSize()+page.getPageSize())+" tempcolumn=0," +
+                " ts.id, ts.user_id,ts.concept_uri,ts.entity_id,e.多媒体ID " +
+                " from t_user_store ts " +
+                " left join entity_info e on e.concept_uri=ts.concept_uri and e.entityid=ts.entity_id " +
                 " where ts.user_id=?1 and ts.doc_column_parent_id is null " +
-                " order by ts.create_time desc ";
-        List<String> fields = new ArrayList<>();//,t2.name,t1.v_string,t1.v_datetime
-        fields.add("ts.id");
-        fields.add("ts.user_id");
-        fields.add("ts.concept_uri");
-        fields.add("ts.entity_id");
-        fields.add("t.多媒体ID");
-        List<Map<String,Object>> list = this.list(fields,sql,userId);
+                " order by ts.create_time desc " +
+                " )t " +
+                " )tt  where temprownumber >?2 ";
+        EntityManager entityManager = null;
+        List<Map<String,Object>> list = new ArrayList<>();
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            Query query = entityManager.createNativeQuery(sql);
+            query.setParameter(1,userId);
+            query.setParameter(2,page.getPageIndex()*page.getPageIndex());
+            List<Object[]> objecArraytList = query.getResultList();
+            objecArraytList.forEach(objectArray->{
+                Map<String,Object> m = new HashMap<>();
+                m.put("id", objectArray[2]);
+                m.put("user_id",objectArray[3]);
+                m.put("concept_uri",objectArray[4]);
+                m.put("entity_id",objectArray[5]);
+                m.put("多媒体ID",objectArray[6]);
+                list.add(m);
+            });
+        }finally {
+            closeEntityManager(entityManager);
+        }
         list.forEach(m->{
             m.put("mediaId", m.get("多媒体ID"));
         });

@@ -26,7 +26,9 @@ public class ChineseToPinYin {
                 if (java.lang.Character.toString(t1[i]).matches(
                         "[\\u4E00-\\u9FA5]+")) {
                     t2 = PinyinHelper.toHanyuPinyinStringArray(t1[i], t3);
-                    t4 += t2[0];
+                    if(t2.length>0){
+                        t4 += t2[0];
+                    }
                 } else
                     t4 += java.lang.Character.toString(t1[i]);
             }
