@@ -169,6 +169,7 @@ public class DataCenterService {
         Map<String,Object> retData = getValue(data);
         UserStore userStore = userStoreService.findByUserIdAndConceptUriAndEntityId(userId, conceptUri, entityId);
         retData.put("storeFlag",userStore==null?0:1);
+        retData.put("storeId",userStore==null?null:userStore.getId());
         return JsonResult.success(retData);
     }
     private Map<String,Object> getValue(List<Map<String,Object>> list){

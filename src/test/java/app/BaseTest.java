@@ -43,9 +43,9 @@ public class BaseTest {
 //        docInfoDetail();
 //        store();
 //        cancelStore();
-//        myStore();
+        myStore();
 //        myHistory();
-        dataCenter_home();
+//        dataCenter_home();
 //        dataCenter_store();
 //        dataCenter_detail();
 //        dataCenter_myStore();
@@ -88,7 +88,8 @@ public class BaseTest {
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         //nvps.add(new NameValuePair("conceptUri","国家"));
         //nvps.add(new NameValuePair("propertyUri","亚洲"));
-                nvps.add(new NameValuePair("conceptUri","组织"));
+//                nvps.add(new NameValuePair("conceptUri","组织"));
+        nvps.add(new NameValuePair("conceptUri","事件"));
         nvps.add(new NameValuePair("pageIndex","0"));
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/dataCenter/home");

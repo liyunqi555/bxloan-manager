@@ -43,6 +43,16 @@ public class DocInfo implements Serializable {
     private String sourceName;//来源名称
     @Transient
     private Integer storeFlag;//收藏标识，1：已收藏，0：未收藏
+    @Transient
+    private Long storeId;//收藏ID，未收藏，收藏id为null
+
+    public Long getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(Long storeId) {
+        this.storeId = storeId;
+    }
 
     public Integer getStoreFlag() {
         return storeFlag;
