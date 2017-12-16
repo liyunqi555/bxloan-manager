@@ -61,6 +61,7 @@ define(function(require, exports, module) {
 			  submitHandler: function(form) {
 				var formSelf = $(form);
 				viewSelf.model.submitForm($form, function(result) {
+						console.log($form);
 						if (result.code=='200') {
 							$("#add-modal-form").modal("hide");
 							formSelf.resetForm();
@@ -253,7 +254,7 @@ define(function(require, exports, module) {
 					    var validator = $(form).validate();
 						validator.resetForm();
 						var obj = result.body;
-						$.each($("#addDocInfoForm").find("input[type='text'], select,textarea"), function() {
+						$.each($("#addDocInfoForm").find("input[type='text'],input[type='hidden'], select,textarea"), function() {
 							$(this).val(obj[$(this).attr("name")]);
 						});
 /*						$.each($("#addDocInfoForm").find("textarea"),function(){
