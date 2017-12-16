@@ -1,5 +1,6 @@
 define(function(require, exports, module) {
 	var model = require("./model");
+	var rm = require("./rm");
 	var utils = require("common/utils");
 	var view = Backbone.View.extend({
 	el: "body",
@@ -58,6 +59,8 @@ define(function(require, exports, module) {
 		var viewSelf = this;
 		var $form=$("form[role='addDocInfoForm']");
 		  $form.validate({
+				rules: rm.rules,
+	            messages: rm.messages,
 			  submitHandler: function(form) {
 				var formSelf = $(form);
 				viewSelf.model.submitForm($form, function(result) {
