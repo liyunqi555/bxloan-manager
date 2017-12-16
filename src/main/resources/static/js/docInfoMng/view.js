@@ -1,5 +1,6 @@
 define(function(require, exports, module) {
 	var model = require("./model");
+	var rm = require("./rm");
 	var utils = require("common/utils");
 	var view = Backbone.View.extend({
 	el: "body",
@@ -58,9 +59,12 @@ define(function(require, exports, module) {
 		var viewSelf = this;
 		var $form=$("form[role='addDocInfoForm']");
 		  $form.validate({
+				rules: rm.rules,
+	            messages: rm.messages,
 			  submitHandler: function(form) {
 				var formSelf = $(form);
 				viewSelf.model.submitForm($form, function(result) {
+						console.log($form);
 						if (result.code=='200') {
 							$("#add-modal-form").modal("hide");
 							formSelf.resetForm();
@@ -253,7 +257,7 @@ define(function(require, exports, module) {
 					    var validator = $(form).validate();
 						validator.resetForm();
 						var obj = result.body;
-						$.each($("#addDocInfoForm").find("input[type='text'], select,textarea"), function() {
+						$.each($("#addDocInfoForm").find("input[type='text'],input[type='hidden'], select,textarea"), function() {
 							$(this).val(obj[$(this).attr("name")]);
 						});
 /*						$.each($("#addDocInfoForm").find("textarea"),function(){

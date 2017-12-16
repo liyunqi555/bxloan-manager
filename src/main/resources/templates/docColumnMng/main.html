@@ -1,8 +1,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head th:include="pre_included">
     <meta charset="utf-8"/>
+    <title>首页</title>
    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"     />
-	</head>
+</head>
 <body class="no-skin">
 	<!-- 工作面板 -->
 		<div th:include="sidebar"></div> 
@@ -14,9 +15,10 @@
           } catch(e) {}
         </script>
         <!-- bootstrap容器start -->
-        <div class="main-content">
-        	<!-- 页面头信息，显示页面当前目录 -->
-            <div class="breadcrumbs" id="breadcrumbs">
+	<div class="main-content">
+		<div class="main-content-inner">
+			<!-- 页面头信息，显示页面当前目录 -->
+         	<div class="breadcrumbs" id="breadcrumbs">
             	<script type="text/javascript">
                 try {
                   ace.settings.check('breadcrumbs', 'fixed')
@@ -34,9 +36,9 @@
                   	栏目管理
                 </li>
               </ul>
-            </div>
-            <!-- 页面内容start -->
-            <div class="page-content">
+            </div><!-- /. breadcrumbs -->		
+           	<!-- 页面内容start -->
+           	<div class="page-content">
             	<!-- 用作隐藏域start -->
             	<div>
             		<!-- <input type="hidden" id="orgId" name="orgId" value="${orgId}"> -->
@@ -77,19 +79,19 @@
             	</div>
             	<!-- 功能按钮end -->
             	<!-- 搜索域start -->
-            <div style="height: 0px;" class="row">
-			<div class="col-xs-12">
-            	<form role="searchForm" class="form-horizontal">
-						<div class="form-group">
-							<label for="name" class="control-label col-sm-1">栏目名称：</label>
-							<div class="col-sm-3">
-								<input type="text" id="docColumName" class="form-control col-sm-4 input-sm" placeholder="请输入栏目名称" name="docColumName"/>
+            	<div style="height: 0px;" class="row">
+					<div class="col-xs-12">
+	            		<form role="searchForm" class="form-horizontal">
+							<div class="form-group">
+								<label for="name" class="control-label col-sm-1">栏目名称：</label>
+								<div class="col-sm-3">
+									<input type="text" id="docColumName" class="form-control col-sm-4 input-sm" placeholder="请输入栏目名称" name="docColumName"/>
+								</div>
 							</div>
-						</div>
-					</form>
+						</form>
+					</div>
 				</div>
-				</div>
-            	<!-- 搜索域end -->
+            <!-- 搜索域end -->
             	<!-- 表单内容start -->
             	<div class="row">
             		<div class="col-xs-12">
@@ -124,6 +126,12 @@
             	</div>
             	<!-- 表单内容end -->
             </div>
+        </div>
+        </div><!-- /.main-container -->		
+        	
+
+            
+
             <!-- 功能按钮end -->
         </div>
         <!-- 页面内容end -->
@@ -148,7 +156,7 @@
 										for="addName"> <font color='red'> * </font> 栏目将名称：
 									</label>
 									<div class="col-sm-7">
-										<input type="text" id="addName" name="name" 
+										<input type="text" id="addName" name="name"   
 											class="form-control" placeholder="输入栏目名称" />
 									</div>
 								</div>
@@ -158,8 +166,8 @@
 										是否特殊来源：
 									</label>
 									<div class="col-sm-7">
-										<select name="ifSpecial" id="ifSpecial"
-											class="form-control">
+										<select name="ifSpecial" id="ifSpecial" 
+											class="form-control required">
 											<option value='1'>是</option>
 											<option value='0'>否</option>
 										</select>
@@ -172,8 +180,8 @@
 									<div class="col-sm-7">
 										<span class="block input-icon input-icon-right">
 											<div class="input-group">
-												<input type="text" id="docColumnCdMask"
-													class="form-control required" readonly="readonly"/>
+												<input type="text" id="docColumnCdMask" name="docColumnCdMask"
+													class="form-control" readonly="readonly"/>
 												<input type="hidden" name="parentId"
 													id="docColumnCd" readonly="readonly"/> <span
 													class="input-group-btn">
@@ -213,7 +221,6 @@
 		</div>
 	</div>
 		<!-- 底部说明 -->
-	</div>
 	<!-- 隐藏域 -->
 	<input type="hidden" id="docColumnId"/>
     <input type="hidden" id="operate"/>
