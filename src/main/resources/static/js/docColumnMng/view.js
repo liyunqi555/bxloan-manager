@@ -1,5 +1,6 @@
 define(function(require, exports, module) {
 	var model = require("./model");
+	var rm = require("./rm");
 	var utils = require("common/utils");
 	//var mergedBillView = require('docInfoMng/view');
 	var view = Backbone.View.extend({
@@ -54,11 +55,13 @@ define(function(require, exports, module) {
 	    $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 新增栏目");
 	    return false;
 	},
-	saveColumn:function(){
+	saveColumn:function(){ 
 		var viewSelf = this;
 		var $form=$("form[role='addColumnForm']");
 		  $form.validate({
-			  submitHandler: function(form) {
+			rules: rm.rules,
+            messages: rm.messages,
+            submitHandler: function(form) {
 				var formSelf = $(form);
 				viewSelf.model.submitForm($form, function(result) {
 						if (result.code=='200') {
@@ -125,7 +128,6 @@ define(function(require, exports, module) {
                     		buttons+= edit+view;
                        		return buttons;
 		        	}else{
-		        		console.log(rowdata);
 		        		var buttons = "";
 		        		var edit = "<button type='button' role='edit' data-id='" +rowdata.id + "'"+"data-name='"+rowdata.name+ "'data-parentId='"+rowdata.parentId  + "'"+"data-parentName='"+rowdata.parentName +"'"+"data-ifSpecial='"+rowdata.ifSpecial + "'  class='btn btn-xs btn-info' title='修改' ><i class='ace-icon fa fa-edit bigger-120'></i></button> ";
 		        		var view = " <button type='button' role='detail' data-id='" +rowdata.id + "'  class='btn btn-xs btn-yellow' title='查看'><i class='ace-icon fa fa-eye bigger-120'></i></button> ";
