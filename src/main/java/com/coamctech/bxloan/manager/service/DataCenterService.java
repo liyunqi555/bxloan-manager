@@ -37,7 +37,7 @@ public class DataCenterService {
                 " from ( " +
                 " select row_number()over(order by tempcolumn)temprownumber,* " +
                 " from (select top "+(pageSize*pageIndex+pageSize)+" tempcolumn=0,e.entityid,e.name,e.多媒体ID  " +
-                " from entity_info e where e.concept_uri=?1 )t " +
+                " from entity_info e where e.concept_uri=?1 and e.status=2 )t " +
                 " )tt " +
                 " where temprownumber>?2 ";
         EntityManager entityManager = null;
@@ -76,7 +76,7 @@ public class DataCenterService {
                 " from ( " +
                 " select row_number()over(order by tempcolumn)temprownumber,* " +
                 " from (select top "+(pageIndex*pageSize+pageSize)+" tempcolumn=0,e.entityid,e.name,e.多媒体ID from entity_info e ,  entity_property_info ep  " +
-                " where e.concept_uri=?1   and e.entityid=ep.entityid and ep.property_uri='所属洲' and ep.v_string=?2)t " +
+                " where e.concept_uri=?1 and e.status=2  and e.entityid=ep.entityid and ep.property_uri='所属洲' and ep.v_string=?2)t " +
                 " )tt " +
                 " where temprownumber>?3 ";
         EntityManager entityManager = null;

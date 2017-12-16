@@ -44,9 +44,9 @@ public class AppDataCenterController extends AppBaseController{
     @RequestMapping("home")
     public JsonResult home(@RequestParam(name="pageIndex")Integer pageIndex,@RequestParam(name="conceptUri")String conceptUri,String propertyUri){
         if(StringUtils.isBlank(propertyUri)){
-            return dataCenterService.entityList(pageIndex,this.DEFAULT_PAGE_SIZE,conceptUri);
+            return dataCenterService.entityList(pageIndex,1000,conceptUri);
         }else{
-            return dataCenterService.entityList(pageIndex,this.DEFAULT_PAGE_SIZE,conceptUri,propertyUri);
+            return dataCenterService.entityList(pageIndex,1000,conceptUri,propertyUri);
         }
     }
 

@@ -45,10 +45,10 @@ public class BaseTest {
 //        cancelStore();
 //        myStore();
 //        myHistory();
-//        dataCenter_home();
+        dataCenter_home();
 //        dataCenter_store();
 //        dataCenter_detail();
-        dataCenter_myStore();
+//        dataCenter_myStore();
 //        changePassword();
 //        switchViewHistory();
 //        saveFeedBack();
@@ -89,7 +89,7 @@ public class BaseTest {
         //nvps.add(new NameValuePair("conceptUri","国家"));
         //nvps.add(new NameValuePair("propertyUri","亚洲"));
                 nvps.add(new NameValuePair("conceptUri","组织"));
-        nvps.add(new NameValuePair("pageIndex","5000"));
+        nvps.add(new NameValuePair("pageIndex","0"));
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/dataCenter/home");
     }
