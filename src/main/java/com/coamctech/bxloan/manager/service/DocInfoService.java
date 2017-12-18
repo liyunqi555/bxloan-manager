@@ -199,6 +199,10 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
     public JsonResult articleDetail(Long docInfoId,Long userId){
         DocInfo docInfo = docInfoDao.findOne(docInfoId);
         User user = appUserService.findOne(userId);
+        if(user.getIfStoreViewHitory()==null){
+            user.setIfStoreViewHitory(1);
+            appUserService.save(user);
+        }
         if(user.getIfStoreViewHitory()==1){
             userViewHistoryService.save(docInfo,userId);
         }

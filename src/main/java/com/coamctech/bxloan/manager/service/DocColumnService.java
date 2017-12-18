@@ -86,7 +86,7 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
         EntityManager entityManager = null;
         try{
             entityManager = this.entityManagerFactory.createEntityManager();
-            Query query = entityManager.createNativeQuery(" select t2.id,t2.name,t2.parent_id,t1.custom_order,t1.id " +
+            Query query = entityManager.createNativeQuery(" select t2.id,t2.name,t2.parent_id,t1.custom_order,t1.id as customDocColumnId " +
                     " from t_user_custom_doc_column t1  " +
                     " left join t_doc_column t2 on t1.doc_column_id=t2.id " +
                     " where t1.user_id=?1 and t1.doc_column_parent_id in ?2 order by t1.custom_order asc ");
