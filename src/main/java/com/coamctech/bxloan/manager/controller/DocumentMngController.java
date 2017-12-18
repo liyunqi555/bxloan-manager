@@ -1,5 +1,8 @@
 package com.coamctech.bxloan.manager.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -156,17 +159,26 @@ public class DocumentMngController {
      * @param customerName 客户姓名
      * @param contractNum  合同编号
      * @return DataTablesPage DataTablesPage对象
+     * /findDocInfoList/{id}/{name}/{type}
+     * @PathVariable("id") Long id ,@PathVariable("name") String name ,@PathVariable("type") String type,
+     * @throws UnsupportedEncodingException 
      */
-	@RequestMapping("/findDocInfoList/{id}/{type}")
-	public String findDocInfoListByIdn(HttpServletRequest request,@PathVariable("id") Long id ,@PathVariable("type") String type,Model model){
+	@RequestMapping("/findDocInfoListById")
+	public String findDocInfoListById(HttpServletRequest request, Long id ,String name , String type,Model model) throws UnsupportedEncodingException{
 		DocInfoConditionVO vo = new DocInfoConditionVO() ;
 		if(StringUtils.isNotBlank(type)&&"source".equals(type)){
 			vo.setSourceId(id);
+			vo.setSourceName(name);
 			model.addAttribute("sourceId", id);
+			model.addAttribute("sSourceId", id);
+			model.addAttribute("sourceName", name);
 
 		}else{
 			vo.setColumnId(id);
+			vo.setColumnName(name);
 			model.addAttribute("columnId", id);
+			model.addAttribute("sColumnId", id);
+			model.addAttribute("columnName",  name);
 		}
 		return "/docInfoMng/main";
 	}	
