@@ -14,6 +14,7 @@ import com.coamctech.bxloan.manager.domain.DocColumn;
 import com.coamctech.bxloan.manager.domain.DocInfo;
 import com.coamctech.bxloan.manager.domain.UserCustomDocColumn;
 import com.coamctech.bxloan.manager.domain.UserDocColumnRel;
+import com.coamctech.bxloan.manager.utils.CommonHelper;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
@@ -58,13 +59,20 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
         List<DocColumn> docColumnList = docColumnDao.findByParentIdInAndIdIn(parentDocCulumnIds, canVisitColumnIds);
         return docColumnList;
     }
-    public List<Long> getCanVisitColumnIds(Long userId,List<Long> parentDocCulumnIds){
-        List<Long> childColumnIds = getChildColumnIdsByParentId(parentDocCulumnIds);
+    public List<Long> getCanVisitColumnIds(Long userId,List<Long> parentDocColumnIds){
+        List<Long> reportChildIds = new ArrayList<>();
+        parentDocColumnIds.forEach(pid->{
+            if(pid.equals(this.topLevelColumnIdReport)){
+                reportChildIds.addAll(getChildColumnIdsByParentId(this.topLevelColumnIdReport));
+            }
+        });
+        List<Long> childColumnIds = getChildColumnIdsByParentId(parentDocColumnIds);
         List<UserDocColumnRel> userDocColumnRels = userDocColumnRelDao.findByUserIdAndDocColumnIdIn(userId, childColumnIds);
         List<Long> ids = new ArrayList<>();
         userDocColumnRels.forEach(u->{
             ids.add(u.getDocColumnId());
         });
+        ids.addAll(reportChildIds);
         return ids;
     }
     /**
@@ -78,7 +86,7 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
         EntityManager entityManager = null;
         try{
             entityManager = this.entityManagerFactory.createEntityManager();
-            Query query = entityManager.createNativeQuery(" select t2.id,t2.name,t2.parent_id,t1.custom_order " +
+            Query query = entityManager.createNativeQuery(" select t2.id,t2.name,t2.parent_id,t1.custom_order,t1.id " +
                     " from t_user_custom_doc_column t1  " +
                     " left join t_doc_column t2 on t1.doc_column_id=t2.id " +
                     " where t1.user_id=?1 and t1.doc_column_parent_id in ?2 order by t1.custom_order asc ");
@@ -92,7 +100,11 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
                 jo.put("name",arr[1]);
                 jo.put("parentId",arr[2]);
                 jo.put("customOrder",arr[3]);
-                ja.add(jo);
+                if(arr[0]!=null){//如果栏目已经被删除，则删除已定制的栏目
+                    ja.add(jo);
+                }else{
+                    userCustomDocColumnService.delete(CommonHelper.toLong(arr[4]));
+                }
             });
             return ja;
         }finally {

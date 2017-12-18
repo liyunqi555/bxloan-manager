@@ -74,8 +74,10 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
      * @return
      */
     public List<DocInfo> docInfos(Page page,Long userId,Long columnId,Long topLevelColumnId){
-        if(!userCustomDocColumnService.ifCustomColumnId(userId, columnId, topLevelColumnId)){
-            return Collections.EMPTY_LIST;
+        if(topLevelColumnId!=this.topLevelColumnIdReport){
+            if(!userCustomDocColumnService.ifCustomColumnId(userId, columnId, topLevelColumnId)){
+                return Collections.EMPTY_LIST;
+            }
         }
 
         PageList<DocInfo> pageList =   this.getDocInfos(userId,page, Arrays.asList(columnId), null);
