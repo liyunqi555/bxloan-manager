@@ -42,11 +42,11 @@ public class AppDataCenterController extends AppBaseController{
      * @return
      */
     @RequestMapping("home")
-    public JsonResult home(@RequestParam(name="conceptUri")String conceptUri,String propertyUri){
+    public JsonResult home(@RequestParam(name="pageIndex")Integer pageIndex,@RequestParam(name="conceptUri")String conceptUri,String propertyUri){
         if(StringUtils.isBlank(propertyUri)){
-            return dataCenterService.entityList(conceptUri);
+            return dataCenterService.entityList(pageIndex,1000,conceptUri);
         }else{
-            return dataCenterService.entityList(conceptUri,propertyUri);
+            return dataCenterService.entityList(pageIndex,1000,conceptUri,propertyUri);
         }
     }
 

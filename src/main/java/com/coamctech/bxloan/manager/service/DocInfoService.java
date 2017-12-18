@@ -174,6 +174,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
             for(UserStore userStore : userStores){
                 if (id.equals(userStore.getDocInfoId())) {
                     flag = true;
+                    docInfo.setStoreId(userStore.getId());
                     break;
                 }
             }
@@ -258,6 +259,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
             for(UserStore userStore:userStores) {
                 if (userStore.getDocInfoId().equals(docInfo.getId())) {
                     docInfo.setViewTime(userStore.getCreateTime());
+                    docInfo.setStoreId(userStore.getId());
                     break;
                 }
             }

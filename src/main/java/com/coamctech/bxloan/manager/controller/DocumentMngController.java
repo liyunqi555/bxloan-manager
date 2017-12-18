@@ -48,7 +48,7 @@ public class DocumentMngController {
      */
 	@RequestMapping
     public String init(Model model,HttpSession session){
-    	return "/docColumnMng/main";
+    	return "docColumnMng/main";
     }
     
     /**
@@ -168,6 +168,6 @@ public class DocumentMngController {
 			vo.setColumnId(id);
 			model.addAttribute("columnId", id);
 		}
-		return "/docInfoMng/main";
+		return "docInfoMng/main";
 	}	
 }

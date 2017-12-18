@@ -48,7 +48,7 @@ public class ColumnManagementController {
      */
 	@RequestMapping
     public String init(Model model,HttpSession session){
-    	return "/docColumnMng/main";
+    	return "docColumnMng/main";
     }
     
  
