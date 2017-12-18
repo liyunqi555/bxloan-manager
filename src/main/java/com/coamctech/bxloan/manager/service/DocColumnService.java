@@ -106,6 +106,23 @@ public class DocColumnService extends BaseService<DocColumn,Long>{
                     userCustomDocColumnService.delete(CommonHelper.toLong(arr[4]));
                 }
             });
+            //增加专题跟踪的所有二级栏目
+            parentDocCulumnIds.forEach(pid->{
+                if(pid.equals(this.topLevelColumnIdReport)){
+                    List<Long> ids = this.getCanVisitColumnIds(userId,Arrays.asList(this.topLevelColumnIdReport));
+                    if(ids.size()>0){
+                        Iterable<DocColumn> columnIterable = this.findAll(ids);
+                        columnIterable.forEach(it->{
+                            JSONObject jo = new JSONObject();
+                            jo.put("id",it.getId());
+                            jo.put("name",it.getName());
+                            jo.put("parentId",it.getParentId());
+                            jo.put("customOrder",it.getId());
+                            ja.add(jo);
+                        });
+                    }
+                }
+            });
             return ja;
         }finally {
             if(entityManager!=null){
