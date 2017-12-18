@@ -103,7 +103,7 @@ define(function(require, exports, module) {
 								"<i class='ace-icon fa fa-eye'></i></button>" +
 							"<button data-id='" + rowdata.id + "' class='btn btn-xs btn-danger' role='remove' data-toggle='tooltip' data-placement='bottom' title='删除'>" +
 								"<i class='ace-icon fa fa-trash-o' title='删除'></i></button>" +
-		                	" <button type='button' role='docInfoList' data-id='" +rowdata.id + "'  class='btn btn-xs btn-purple' title='文章列表'><i class='ace-icon fa fa-check bigger-120'></i></button> "+
+		                	" <button type='button' role='docInfoList' data-id='" +rowdata.id + "' data-name='"+rowdata.name+ "'  class='btn btn-xs btn-purple' title='文章列表'><i class='ace-icon fa fa-check bigger-120'></i></button> "+
 	
 
 						"</div>";
@@ -223,9 +223,10 @@ define(function(require, exports, module) {
 			var viewSelf = this;
 			var $this = $(this);
 			var sourceId =  null;
-			id =  $(e.currentTarget).data('id')
+			id =  $(e.currentTarget).data('id');
+			name =  $(e.currentTarget).data('name');
 			var type="source"
-			window.location.href ='docInfoMng/findDocInfoList/'+id+"/"+type;
+			window.location.href ="docInfoMng/findDocInfoListById?id="+id+"&name="+name+"&type="+type; 	
 		}
 	});
 	module.exports = view;

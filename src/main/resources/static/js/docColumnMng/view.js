@@ -13,7 +13,7 @@ define(function(require, exports, module) {
 		"click button[role=btn-detail-del]" : "delDetail",//删除
 		"click button[role=edit]" : "edit",//编辑
 		"click button[role=detail]" : "detail",//查看
-		"click button[role=docInfoList]":"docInfoList",//查看
+		"click button[role=docInfoList]":"docInfoList",//进入文章列表
 		"click #btn-docInfoView":"initdocInfoView" //进入文章列表
 	},
 	initialize: function() {
@@ -129,10 +129,10 @@ define(function(require, exports, module) {
                        		return buttons;
 		        	}else{
 		        		var buttons = "";
-		        		var edit = "<button type='button' role='edit' data-id='" +rowdata.id + "'"+"data-name='"+rowdata.name+ "'data-parentId='"+rowdata.parentId  + "'"+"data-parentName='"+rowdata.parentName +"'"+"data-ifSpecial='"+rowdata.ifSpecial + "'  class='btn btn-xs btn-info' title='修改' ><i class='ace-icon fa fa-edit bigger-120'></i></button> ";
+		        		var edit = "<button type='button' role='edit' data-id='" +rowdata.id + "' data-name='"+rowdata.name+ "'data-parentId='"+rowdata.parentId  + "'"+"data-parentName='"+rowdata.parentName +"'"+"data-ifSpecial='"+rowdata.ifSpecial + "'  class='btn btn-xs btn-info' title='修改' ><i class='ace-icon fa fa-edit bigger-120'></i></button> ";
 		        		var view = " <button type='button' role='detail' data-id='" +rowdata.id + "'  class='btn btn-xs btn-yellow' title='查看'><i class='ace-icon fa fa-eye bigger-120'></i></button> ";
 		        		var deleteView = "<button type='button' role='btn-detail-del' data-id='" +rowdata.id + "'  class='btn btn-xs btn-danger' title='删除' ><i class='ace-icon fa fa-trash-o bigger-120'></i></button> ";
-                		var list = " <button type='button' role='docInfoList' data-id='" +rowdata.id + "'  class='btn btn-xs btn-purple' title='文章列表'><i class='ace-icon fa fa-check bigger-120'></i></button> ";
+                		var list = " <button type='button' role='docInfoList' data-id='" +rowdata.id + "' data-name='"+rowdata.name+ "' class='btn btn-xs btn-purple' title='文章列表'><i class='ace-icon fa fa-check bigger-120'></i></button> ";
                 		buttons+= edit+view+deleteView+list;
                 		return buttons;
 		        	}
@@ -162,9 +162,10 @@ define(function(require, exports, module) {
 		var viewSelf = this;
 		var $this = $(this);
 		var columnId =  null;
-		id =  $(e.currentTarget).data('id')
+		var id =  $(e.currentTarget).data('id');
+		var name = $(e.currentTarget).data('name') ;
 		var type ="column";
-		window.location.href ='docInfoMng/findDocInfoList/'+id+"/"+type;
+		window.location.href ="docInfoMng/findDocInfoListById?id="+id+"&name="+name+"&type="+type; 	
 	},
 	//删除栏目
 	delDetail : function(e) {

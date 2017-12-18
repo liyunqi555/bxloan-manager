@@ -30,8 +30,12 @@ define(function(require, exports, module) {
 		var viewSelf = this;
       	var seachData=[];
 		var $form=$("form[role='searchForm']");
-		seachData.push({name:"columnId",value:$form.find(":text[name='sColumnId']").val()});
+		seachData.push({name:"columnId",value:$form.find("#sColumnId").val()});
+		seachData.push({name:"sourceId",value:$form.find("#sSourceId").val()});
+		console.log($form.find("#sSourceId").val());
+		console.log("我有一只小毛驴我崇礼也不骑");
 		seachData.push({name:"columnName",value:$form.find(":text[name='sColumnName']").val()});
+		seachData.push({name:"sourceName",value:$form.find(":text[name='sSourceName']").val()});
 		seachData.push({name:"keyword",value:$form.find(":text[name='keyword']").val()});
 		viewSelf.dt.oSearchData=seachData;
 		viewSelf.dt.fnPageChange(0);//执行查询
@@ -48,10 +52,15 @@ define(function(require, exports, module) {
 	//创建文章
 	addDocInfo: function (){
 		var viewSelf = this;
+		$("#add-modal-form").modal("show");
 		$("#add-modal-form").resetForm();
 	    $('#columnId').val($('#sColumnId').val());
+	    $('#sourceId').val($('#sSourceId').val());
+	    $('#docSourceField').val($('#sSourceId').val());
 	    $('#docColumnField').val($('#sColumnId').val());
-	    $("#add-modal-form").modal("show");
+	    $('#sourceName').val($('#sSourceName').val());
+	    $('#columnName').val($('#sColumnName').val());
+	    console.log($('#sColumnId').val());
 	    $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 创建文档");
 	    return false;
 	},
@@ -64,7 +73,6 @@ define(function(require, exports, module) {
 			  submitHandler: function(form) {
 				var formSelf = $(form);
 				viewSelf.model.submitForm($form, function(result) {
-						console.log($form);
 						if (result.code=='200') {
 							$("#add-modal-form").modal("hide");
 							formSelf.resetForm();
@@ -80,9 +88,10 @@ define(function(require, exports, module) {
 	initDtTable: function() {
 		var viewSelf = this;
 		var columnId = $('#sColumnId').val();
+		var sourceId = $('#sSourceId').val();
+		var sourceName = $('#sSourceName').val();
 		var columnName = $('#sColumnName').val();
 		var keyword = $('#keyword').val();
-		var sourceId = $('#sourceId').val();
 		var init= false;
 		var dt = $("#tb-list").dataTable({
 			bFilter:false,
@@ -157,8 +166,16 @@ define(function(require, exports, module) {
 						value :  columnId
 					});
 	    			aoData.push({
+						name : "sourceId",
+						value :  sourceId
+					});
+	    			aoData.push({
 						name : "columnName",
 						value :  $('#sColumnName').val()
+					});
+	    			aoData.push({
+						name : "sourceName",
+						value :  $('#sSolumnName').val()
 					});
 	    			aoData.push({
 						name : "keyword",
@@ -330,7 +347,6 @@ define(function(require, exports, module) {
                 onAsyncSuccess: function(event, treeId, treeNode, msg) {
                  	var treeObj = $.fn.zTree.getZTreeObj(treeId);
                  	var docColumnField = $("#docColumnField").val(); 
-                 	console.log(docColumnField);
                      if (docColumnField !== ""&&docColumnField !==null) {
                     	var node = treeObj.getNodeByParam("id", docColumnCdField, null);
                        	var parentNode = node.getParentNode();
