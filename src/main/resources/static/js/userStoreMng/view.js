@@ -22,6 +22,11 @@ define(function(require, exports, module) {
 			var viewSelf = this;
 			viewSelf.dt.fnPageChange(0);
 		},
+		reset : function(){
+			var viewSelf = this;
+			$('#userName').val('');
+			viewSelf.dt.fnPageChange(0);
+		},
 		exportExcel:function(){
     		var url='/userStoreMng/checkDownload';
 			$.ajax({

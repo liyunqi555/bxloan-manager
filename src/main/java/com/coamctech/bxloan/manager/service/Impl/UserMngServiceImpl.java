@@ -129,6 +129,11 @@ public class UserMngServiceImpl implements UserMngService{
 			//新增
 			User user = new User();
 			BeanUtils.copyProperties(vo, user,"id","password");
+			//判断用户名是否已经存在
+			User existUser = userDao.findByUserName(vo.getUserName());
+			if(existUser!=null){
+				return new JsonResult(ResultCode.ERROR_CODE,"用户名已存在");
+			}
 			user.setUserName(vo.getUserName());
 			user.setBirthday(CommonHelper.str2Date(vo.getBirthday(), CommonHelper.DF_DATE));
 			user.setEmail(vo.getEmail());
@@ -177,6 +182,12 @@ public class UserMngServiceImpl implements UserMngService{
 		}else{
 			//修改
 			User user = userDao.findOne(vo.getId());
+			if(user.getUserName()!=vo.getUserName()){
+				User existUser = userDao.findByUserName(vo.getUserName());
+				if(existUser!=null){
+					return new JsonResult(ResultCode.ERROR_CODE,"用户名已存在");
+				}
+			}
 			user.setUserName(vo.getUserName());
 			user.setBirthday(CommonHelper.str2Date(vo.getBirthday(), CommonHelper.DF_DATE));
 			user.setEmail(vo.getEmail());
