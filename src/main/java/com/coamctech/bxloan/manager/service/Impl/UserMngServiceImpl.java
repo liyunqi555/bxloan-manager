@@ -184,7 +184,9 @@ public class UserMngServiceImpl implements UserMngService{
 			user.setOfficePhone(vo.getOfficePhone());
 			user.setTelephone(vo.getTelephone());
 			user.setUpdateTime(CommonHelper.getNow());
-			user.setPassword(MD5Util.md5Hex(vo.getPassword()));
+			if(StringUtils.isNotBlank(vo.getPassword())){
+				user.setPassword(MD5Util.md5Hex(vo.getPassword()));
+			}
 			user.setStartTime(CommonHelper.str2Date(vo.getStartTime(), CommonHelper.DF_DATE));
 			user.setEndTime(CommonHelper.str2Date(vo.getEndTime(), CommonHelper.DF_DATE));
 			userDao.save(user);

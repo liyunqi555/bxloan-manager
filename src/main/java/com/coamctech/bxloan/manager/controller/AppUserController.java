@@ -38,7 +38,9 @@ public class AppUserController extends AppBaseController{
     public JsonResult login(@RequestParam(name="userName") String userName,
                             @RequestParam(name="password") String password,
                             @RequestParam(name="deviceCode") String deviceCode){
-        return appUserService.login(userName,password,deviceCode);
+        JsonResult jsonResult = appUserService.login(userName, password, deviceCode);
+        logger.info("jsonResult={}", jsonResult);
+        return jsonResult;
     }
 
     /**
