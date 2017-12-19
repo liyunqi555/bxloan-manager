@@ -130,7 +130,8 @@ public class RoleMngServiceImpl implements RoleMngService{
 		}
 		
 		List<Long> userIds =  roleUserRelDao.findUserIdsByRoleId(roleId);
-		for(Long userId:userIds){
+		for(int i=0;i<userIds.size();i++){
+			Long userId = CommonHelper.toLong(userIds.get(i));
 			if(CollectionUtils.isNotEmpty(columnIds)){
 				for(String columnId:columnIds){
 					UserDocColumnRel rel = new  UserDocColumnRel();

@@ -29,15 +29,15 @@ public class BaseTest {
      login();
         //login_vip1();
 //        topColumns();
-       banner();
+      // banner();
 //        customColumn();
 //
 //       haveCustomDocColumns();
-        noCustomDocColumns();
+       // noCustomDocColumns();
 //        switchOrder();
 //        lastVersion();
 //        cancelCustomColumn();
-        worlds();
+      //  worlds();
 //        docInfos();
 //        search();
 //        docInfoDetail();
