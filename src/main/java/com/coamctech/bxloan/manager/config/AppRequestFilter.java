@@ -68,7 +68,7 @@ public class AppRequestFilter implements Filter {
                 filterChain.doFilter(servletRequest, servletResponse);
             }else{
                 response.setHeader("Content-Type", "application/json; charset=UTF-8");
-                response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(new JsonResult(ResultCode.PARAM_ERROR_CODE, ResultCode.TOKEN_NULL_MSG)));
+                response.getWriter().write(com.alibaba.fastjson.JSON.toJSONString(new JsonResult(ResultCode.NEED_RELOGIN_CODE,ResultCode.NEED_RELOGIN_MSG )));
                 response.getWriter().flush();
                 return;
             }

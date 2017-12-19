@@ -24,6 +24,8 @@ public class ResultCode implements Serializable {
     public static final String USER_NULL_MSG = "用户不存在或密码错误";
     public static final int PASSWORD_ERR_CODE = 605;
     public static final String PASSWORD_ERR_MSG = "用户不存在或密码错误";
+    public static final int NEED_RELOGIN_CODE= 606;
+    public static final String NEED_RELOGIN_MSG = "该账号已在其它设备登录，请重新登录!";
 
     /**业务相关错误码：7xx,记录业务级别具体错误，比如登陆密码错误**/
     public static final int ERROR_CODE_701 = 701;
