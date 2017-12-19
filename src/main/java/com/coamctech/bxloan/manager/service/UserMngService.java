@@ -3,6 +3,9 @@ package com.coamctech.bxloan.manager.service;
 import java.text.ParseException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.data.domain.Page;
 
 import com.coamctech.bxloan.manager.common.JsonResult;
@@ -10,6 +13,7 @@ import com.coamctech.bxloan.manager.domain.DocColumn;
 import com.coamctech.bxloan.manager.domain.DocSource;
 import com.coamctech.bxloan.manager.domain.Role;
 import com.coamctech.bxloan.manager.domain.User;
+import com.coamctech.bxloan.manager.service.VO.UserStoreVO;
 import com.coamctech.bxloan.manager.service.VO.UserTreeVO;
 import com.coamctech.bxloan.manager.service.VO.UserVO;
 
@@ -48,4 +52,14 @@ public interface UserMngService {
 	
 	//修改密码
 	JsonResult updatePassword(Long valueOf, String newPassword) throws RuntimeException;
+	
+	//查询用户收藏列表
+	Page<UserStoreVO> findUserStoreList(Integer pageNumber, Integer pageSize, String userName);
+	
+	//判断当前用户是否为管理员
+	boolean isManager(Long userId);
+	
+	//导出用户收藏列表
+	void exportUserStore(String userName, HttpServletRequest request,
+			HttpServletResponse response) throws Exception ;
 }

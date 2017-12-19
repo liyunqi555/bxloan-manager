@@ -1,13 +1,22 @@
 package com.coamctech.bxloan.manager.service.Impl;
 
+import java.io.File;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -28,9 +37,11 @@ import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.domain.UserDocColumnRel;
 import com.coamctech.bxloan.manager.domain.UserDocSourceRel;
 import com.coamctech.bxloan.manager.service.UserMngService;
+import com.coamctech.bxloan.manager.service.VO.UserStoreVO;
 import com.coamctech.bxloan.manager.service.VO.UserTreeVO;
 import com.coamctech.bxloan.manager.service.VO.UserVO;
 import com.coamctech.bxloan.manager.utils.CommonHelper;
+import com.coamctech.bxloan.manager.utils.ReportExcelUtils;
 import com.coamctech.bxloan.manager.utils.encrypt.MD5Util;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -307,7 +318,8 @@ public class UserMngServiceImpl implements UserMngService{
 	}
 	
 	//判断是否为管理员
-	private boolean isManager(Long userId){
+	@Override
+	public boolean isManager(Long userId){
 		List<Long> ll = roleUserRelDao.getRoleIdsByUserId(userId);
 		if(CollectionUtils.isNotEmpty(ll)){
 			for(int i=0;i<ll.size();i++){
@@ -319,5 +331,60 @@ public class UserMngServiceImpl implements UserMngService{
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public Page<UserStoreVO> findUserStoreList(Integer pageNumber, Integer pageSize,
+			String userName) {
+		List<Object> params = new ArrayList<Object>();
+		StringBuffer sql = new StringBuffer();
+		sql.append(" SELECT u.id,u.user_name,di.title,u.create_time ");
+		sql.append(" FROM t_user_store us,t_user u,t_doc_info di WHERE u.id=us.user_id and us.doc_info_id = di.id");
+		int i = 0;
+		if(StringUtils.isNotBlank(userName)){
+			sql.append(" AND u.user_name like ?").append(++i);
+			params.add(StringUtils.join("%", userName, "%"));
+		}
+		Page<Object[]> page = dynamicQuery.nativeQuery(Object[].class,
+				new PageRequest(pageNumber, pageSize), sql.toString(),params.toArray());
+		List<UserStoreVO> returnList = Lists.newArrayList(Lists.transform(
+				page.getContent(), new Function<Object[], UserStoreVO>() {
+					@Override
+					public UserStoreVO apply(Object[] objs) {
+						UserStoreVO vo = new UserStoreVO(objs);
+						return vo;
+					}
+				}));
+		Page<UserStoreVO> resultPage = new PageImpl<UserStoreVO>(returnList, new PageRequest(pageNumber, pageSize), page.getTotalElements());
+		return resultPage;
+	}
+
+	@Override
+	public void exportUserStore(String userName, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		try{
+			Resource resource = new ClassPathResource("excel/userStore_template.xlsx");
+			InputStream is = resource.getInputStream();
+			//System.out.println("scr.getInputStream()scr.getInputStream()=="+resource.getInputStream());
+			int PAGE_SIZE = 1000000;
+			Map<String, List<UserStoreVO>> map = new HashMap<String, List<UserStoreVO>>();
+			Page<UserStoreVO> page = this.findUserStoreList(0, PAGE_SIZE, userName);
+			List<UserStoreVO> list = page.getContent();
+			map.put("reportList", list);
+			/**导出excel工具类*/
+			ReportExcelUtils reportExcelUtils= new ReportExcelUtils();
+			/**加载模版并且生成导出文件落地*/
+			String fileName = reportExcelUtils.genernateExcelFileName(is, "excel/", "用户收藏", map);
+			/**获取文件路径*/
+			String reportPath = "excel/"; 
+			File file = new File(reportPath+fileName);
+			/**从服务器下载到本地*/
+			ReportExcelUtils.downloadFile(file, fileName, request, response);
+			/**下载后删除服务器文件*/
+			file.delete();
+		}catch(Exception e){
+			throw new Exception("下载失败！");
+		}
+		
 	}
 }
