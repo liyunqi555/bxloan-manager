@@ -176,8 +176,9 @@ define(function(require, exports, module) {
 				data: data,
 				success : function(result){
 					if(result.code=='200'){
-						utils.alert.suc(result.msg);
-						window.location.href="/userMng";
+						utils.alert.suc(result.msg,function(){
+							window.location.href="/userMng";
+						});
 					}else{
 						utils.alert.warn(result.msg);
 					}
