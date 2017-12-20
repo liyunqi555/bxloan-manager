@@ -7,6 +7,7 @@ import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.dao.UserDao;
 import com.coamctech.bxloan.manager.domain.User;
+import com.coamctech.bxloan.manager.service.UserMngService;
 import com.coamctech.bxloan.manager.service.UserService;
 import com.coamctech.bxloan.manager.utils.CommonHelper;
 import com.coamctech.bxloan.manager.utils.encrypt.MD5Util;
@@ -14,9 +15,12 @@ import com.coamctech.bxloan.manager.utils.encrypt.MD5Util;
 
 @Service
 public class UserServiceImpl implements UserService{
-	
+
 	@Autowired
 	private UserDao userDao;
+
+	@Autowired
+	private UserMngService userMngService;
 
 	@Override
 	public JsonResult ifLoginSuccess(String userName, String password) {
@@ -39,8 +43,12 @@ public class UserServiceImpl implements UserService{
 				return new JsonResult(ResultCode.ERROR_CODE,"用户已失效，请联系管理员",null);
 			}
 		}
-		return new JsonResult<User>(ResultCode.SUCCESS_CODE, "登陆成功", user);
-		
-	}
+		if(!user.getUserName().equals("admin")){
+			if(!userMngService.isManager(user.getId())){
+				return new JsonResult(ResultCode.ERROR_CODE,"您不是管理员，无法登陆后台管理系统",null);
+			}
+		}
+		return new JsonResult(ResultCode.SUCCESS_CODE, "登陆成功", user);
 
+	}
 }
