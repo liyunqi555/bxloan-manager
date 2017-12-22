@@ -143,21 +143,23 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 	}
 	//处理文章
 	private String  handleText(String str){
-		StringBuffer newText = new StringBuffer("<p>");
+		StringBuffer newText = new StringBuffer();
 		//文章是否含有P标签
-		if(str.indexOf("<p>")<0||str.indexOf("</p>")<0||str.indexOf("<")<0){
-			List<String> list = CommonHelper.strToList(str,CommonHelper.NEW_LINE);
-			if(null!=list &&list.size()>0){
-				for(int i = 0; i<list.size();i++){
-					String line = list.get(i);
-					newText.append(line).append("</p>\n<p>");
+		List<String> list = CommonHelper.strToList(str,CommonHelper.NEW_LINE);
+		if(null!=list &&list.size()>0){
+			for(int i = 0; i<list.size();i++){
+				String line = list.get(i);
+				if(!line.startsWith("<p>")){
+					line = "<p>"+line;
 				}
+				if(!line.endsWith("</p>")){
+					line = line+"</p>";
+				}
+				newText.append(line).append("\n");
 			}
-			newText = new StringBuffer(newText.substring(0,newText.lastIndexOf("<p>")));
-			return newText.toString();
-		}else{
-			return str;
 		}
+		return newText.toString();
+
 	}
 
 }
