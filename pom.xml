@@ -188,6 +188,23 @@
 		</dependency>  
     </dependencies>
     <build>
+        <resources>
+            <resource>
+                 <directory>src/main/resources</directory>
+                 <filtering>true</filtering>
+                 <excludes>
+                     <exclude>static/css/fonts/**</exclude>
+                 </excludes>
+             </resource>
+         <!-- fonts file cannot use filter as the data structure of byte file will be changed via filter -->
+         <resource>
+             <directory>src/main/resources</directory>
+             <filtering>false</filtering>
+             <includes>
+                 <include>static/css/fonts/**</include>
+             </includes>
+         </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

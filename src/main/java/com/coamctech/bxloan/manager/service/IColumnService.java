@@ -66,7 +66,33 @@ public interface IColumnService {
 	 */
 	List<DocColumn> getAllColumnList();
 
+	/**
+	 *查找所有栏目
+	 * @param i
+	 * @param pageSize
+	 * @param name
+	 * @param loginUserId
+	 * @return
+	 *
+	 * @lastModified zhaoqingwen 2017年12月22日 上午11:18:02  
+	 */
 	Page<DocColumnVO> findColumnList(int i, Integer pageSize, String name,Long loginUserId);
 
+	/**
+	 *根据ID查找栏目
+	 * @param id
+	 * @return
+	 *
+	 * @lastModified zhaoqingwen 2017年12月22日 上午11:18:27  
+	 */
 	public DocColumnVO findColumn(Long id);
+
+	/**
+	 *验证是否可以删除
+	 * @param id
+	 * @return
+	 *
+	 * @lastModified zhaoqingwen 2017年12月22日 上午11:19:11  
+	 */
+	public JsonResult validateDelte(Long id);
 }

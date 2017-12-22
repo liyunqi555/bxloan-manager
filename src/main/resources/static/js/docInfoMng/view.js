@@ -32,8 +32,6 @@ define(function(require, exports, module) {
 		var $form=$("form[role='searchForm']");
 		seachData.push({name:"columnId",value:$form.find("#sColumnId").val()});
 		seachData.push({name:"sourceId",value:$form.find("#sSourceId").val()});
-		console.log($form.find("#sSourceId").val());
-		console.log("我有一只小毛驴我崇礼也不骑");
 		seachData.push({name:"columnName",value:$form.find(":text[name='sColumnName']").val()});
 		seachData.push({name:"sourceName",value:$form.find(":text[name='sSourceName']").val()});
 		seachData.push({name:"keyword",value:$form.find(":text[name='keyword']").val()});
@@ -53,14 +51,14 @@ define(function(require, exports, module) {
 	addDocInfo: function (){
 		var viewSelf = this;
 		$("#add-modal-form").modal("show");
-		$("#add-modal-form").resetForm();
+		$("#addDocInfoForm").resetForm();
+		$("#form-field-0").val("");
 	    $('#columnId').val($('#sColumnId').val());
 	    $('#sourceId').val($('#sSourceId').val());
 	    $('#docSourceField').val($('#sSourceId').val());
 	    $('#docColumnField').val($('#sColumnId').val());
 	    $('#sourceName').val($('#sSourceName').val());
 	    $('#columnName').val($('#sColumnName').val());
-	    console.log($('#sColumnId').val());
 	    $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 创建文档");
 	    return false;
 	},
@@ -187,41 +185,40 @@ define(function(require, exports, module) {
 		viewSelf.dt = dt;
 	},	
 	//删除文章
-	delDocInfo : function(e) {
+	delDocInfo : function(e) {	
 		var viewSelf = this;
-		$(document).on("click","button[role='btn-delDocInfo']",function(e){
-				var $this = $(this);
-				var id = $(this).attr("data-id");
-				bootbox.confirm("确定删除吗？", function(result) {
-					if(!result){//取消
-						return false;
+		var $this = $(this);
+		var btnSelf = $(e.currentTarget);
+		var id = btnSelf.data("id");
+		console.log(id);
+		utils.button.confirm(btnSelf,function(result){
+			if(!result){//取消
+				return false;
+			}
+			$.ajax({
+				type : "post",
+				url : "/docInfoMng/deleteDocInfo",
+				data: {
+					id : id
+				},
+				success : function(result){
+					if(result.code=='200'){
+						utils.alert.suc(result.msg);
+						viewSelf.dt.fnPageChange(0);
+					}else{
+						utils.alert.warn(result.msg);
 					}
-					if (result) {
-						$.ajax({
-							type : "post",
-							url : "/docInfoMng/deleteDocInfo",
-							data: {
-								id : id
-							},
-							success : function(result){
-								if(result.code=='200'){
-									utils.alert.suc(result.msg);
-									viewSelf.dt.fnPageChange(0);
-								}else{
-									utils.alert.warn(result.msg);
-								}
-							}
-						});
-					}
-				});
+				}
 			});
+		},'是否确认删除？');		
 	},
+	
 	//查看事件
 	detailDocInfo:function(e){
 		 var $form=$("form[role='addDocInfoForm']");
 		var viewSelf = this;
 		$(document).on("click","button[role=detailDocInfo]",function(e){
-			$("#add-modal-form").resetForm();
+			$("#addDocInfoForm").resetForm();
 			$("#add-modal-form").modal("show");
 			$("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 查看文章");
 			var $this = $(this);
@@ -236,7 +233,7 @@ define(function(require, exports, module) {
 	 //编辑按钮事件
 	editDocInfo:function(e){
     	var viewSelf = this;
-    	$("#add-modal-form").resetForm();
+    	$("#addDocInfoForm").resetForm();
     	$(document).on("click","button[role=editDocInfo]",function(e){
     		$ ("select").unbind ("change");
 	    	var btnSelf = $(e.currentTarget);
@@ -253,7 +250,7 @@ define(function(require, exports, module) {
     	});
 	},
     initModal:function(){
-	    var form=$("form[role='addDocInfoForm']");
+    	var form=$("form[role='addDocInfoForm']");
 	    var validator = $(form).validate();
 		validator.resetForm();
 		$("input").attr("disabled",false);

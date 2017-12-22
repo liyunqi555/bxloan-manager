@@ -170,32 +170,30 @@ define(function(require, exports, module) {
 	//删除栏目
 	delDetail : function(e) {
 		var viewSelf = this;
-		$(document).on("click","button[role='btn-detail-del']",function(e){
-				var $this = $(this);
-				var id = $(this).attr("data-id");
-				bootbox.confirm("确定删除吗？", function(result) {
-					if(!result){//取消
-						return false;
+		var $this = $(this);
+		var btnSelf = $(e.currentTarget);
+		var id = btnSelf.data("id");
+
+		utils.button.confirm(btnSelf,function(result){
+			if(!result){//取消
+				return false;
+			}
+			$.ajax({
+				type : "post",
+				url : "/docColumnMng/deleteColumn",
+				data: {
+					id : id
+				},
+				success : function(result){
+					if(result.code=='200'){
+						viewSelf.dt.fnPageChange(0);
+						utils.alert.suc(result.msg);
+					}else{
+						utils.alert.warn(result.msg);
 					}
-					if (result) {
-						$.ajax({
-							type : "post",
-							url : "/docColumnMng/deleteColumn",
-							data: {
-								id : id
-							},
-							success : function(result){
-								if(result.code=='200'){
-									utils.alert.suc(result.msg);
-									viewSelf.dt.fnPageChange(0);
-								}else{
-									utils.alert.warn(result.msg);
-								}
-							}
-						});
-					}
-				});
+				}
 			});
+		},'是否确认删除？');		
 	},
 	//查看事件
 	detail:function(e){

@@ -10,15 +10,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-
-
-
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.coamctech.bxloan.manager.common.JsonResult;
+import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.common.DynamicQuery.DynamicQuery;
 import com.coamctech.bxloan.manager.dao.DocColumnDao;
+import com.coamctech.bxloan.manager.dao.DocInfoDao;
+import com.coamctech.bxloan.manager.dao.RoleDocColumnRelDao;
+import com.coamctech.bxloan.manager.dao.UserDocColumnRelDao;
 import com.coamctech.bxloan.manager.domain.DocColumn;
 import com.coamctech.bxloan.manager.service.IColumnService;
 import com.coamctech.bxloan.manager.service.VO.DocColumnVO;
@@ -34,6 +35,7 @@ import com.google.common.collect.Lists;
  * 修改备注：
  * 版本： V1.0
  */
+@Transactional
 @Service
 public class ColumnServiceImpl implements IColumnService{
 	@Autowired
@@ -41,6 +43,14 @@ public class ColumnServiceImpl implements IColumnService{
 
 	@Autowired
 	private DynamicQuery dynamicQuery;
+	
+	@Autowired
+	private DocInfoDao docInfoDao;
+	
+	@Autowired
+	private RoleDocColumnRelDao  roleDocColumnRelDao;
+	@Autowired
+	private UserDocColumnRelDao userDocColumnRelDao;
 	
 	@Override
 	public JsonResult getAllColumn() {
@@ -73,6 +83,8 @@ public class ColumnServiceImpl implements IColumnService{
 	public void deleteColumn(Long columnId) {
 		if(null!=columnId){
 			 docColumnDao.delete(Long.valueOf(columnId));
+			 roleDocColumnRelDao.deleteRelByDocColumnId(columnId);
+			 userDocColumnRelDao.deleteRelByDocColumnId(columnId);
 		}
 	}
 
@@ -140,6 +152,19 @@ public class ColumnServiceImpl implements IColumnService{
 			return null;
 		}
 		return v.get(0);
+	}
+
+	@Override
+	public JsonResult validateDelte(Long id) {
+		List list = docColumnDao.findByParentId(id);
+		if(null!=list&&list.size()>0){
+			return new  JsonResult(ResultCode.ERROR_CODE,"该栏目下包含子栏目,不可以删除！");
+		}
+		List docInfoList = docInfoDao.findByColumnId(id) ;
+		if(null!=docInfoList&&docInfoList.size()>0){
+			return new  JsonResult(ResultCode.ERROR_CODE,"该栏目下包含文章,不可以删除！");
+		}
+		return null;
 	}
    
 }	

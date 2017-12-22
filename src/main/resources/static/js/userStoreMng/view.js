@@ -21,8 +21,7 @@ define(function(require, exports, module) {
 		query : function(){
 			var viewSelf = this;
 			viewSelf.dt.fnPageChange(0);
-		},
-		reset : function(){
+		},		reset : function(){
 			var viewSelf = this;
 			$('#userName').val('');
 			viewSelf.dt.fnPageChange(0);
