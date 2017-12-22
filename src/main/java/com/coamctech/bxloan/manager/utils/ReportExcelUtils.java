@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.jxls.transformer.XLSTransformer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,9 @@ public class ReportExcelUtils {
 			os.flush();
 			os.close();
 			return fileName;
+		}
+		catch (InvalidFormatException e){
+			logger.info("excel版本问题");
 		}
 		catch (Exception eIo){
 			if (logger.isInfoEnabled()) {

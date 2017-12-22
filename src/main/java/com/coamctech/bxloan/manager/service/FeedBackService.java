@@ -61,7 +61,7 @@ public class FeedBackService extends BaseService<FeedBack,Long> {
         sql.append(" FROM t_feed_back r ,t_user t WHERE t.id = r.user_id ");
         int i = 0;
         if(org.apache.commons.lang3.StringUtils.isNotBlank(roleName)){
-            sql.append(" AND r.content like ?").append(++i);
+            sql.append(" AND r.title like ?").append(++i);
             params.add(org.apache.commons.lang3.StringUtils.join("%", roleName, "%"));
         }
         sql.append(" order by r.create_time desc ");

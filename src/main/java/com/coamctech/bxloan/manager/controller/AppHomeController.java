@@ -85,6 +85,10 @@ public class AppHomeController extends AppBaseController{
         Long userId = TokenUtils.sessionUser().getId();
         Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
         List<DocInfo> docInfoList = docInfoService.searchDocInfos(page, userId, Arrays.asList(this.topLevelColumnIdDoc), null);
+        docInfoList.forEach(docinfo->{
+            docinfo.setBody("");
+            docinfo.setCnBoty("");
+        });
         jsonResult.setBody(docInfoList);
         return  jsonResult;
     }
