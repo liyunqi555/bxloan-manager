@@ -97,6 +97,10 @@ public class ColumnManagementController {
     @ResponseBody
     public  JsonResult deleteColumn(Long  id) {
     	try{
+    		JsonResult result = this.columnServiceImpl.validateDelte(id);
+    		if(null!=result &&result.getCode()!=200){
+    			return new  JsonResult(result.getCode(),result.getMsg());
+    		}
     		columnServiceImpl.deleteColumn(id);
     		return new  JsonResult(ResultCode.SUCCESS_CODE,"删除成功");
 

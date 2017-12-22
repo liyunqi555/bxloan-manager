@@ -31,6 +31,8 @@ public final class CommonHelper {
 	public final static String SEPARATOR_VERTICAL = "|";
 	/**冒号分隔符*/
 	public final static String SEPARATOR_COLON = ":";
+	/** 换行分隔符 */
+	public final static String NEW_LINE = "\n";
 	public final static String DF_DATE_TIME = "yyyy-MM-dd HH:mm:ss";
 	public final static String DF_DATE_SHORT_TIME = "yyyy-MM-dd HH:mm";
 	public final static String DF_DATE = "yyyy-MM-dd";
@@ -480,5 +482,15 @@ public final class CommonHelper {
 	 */
 	public static String list2Str(List<String> list){
 		return StringUtils.join(list.toArray(), SEPARATOR_COMMA);
+	}
+	
+	
+	/**
+	 * 将带分隔字符串转为List集合
+	 * @param str
+	 * @return
+	 */
+	public static List<String> strToList(String str,String format){
+		return Arrays.asList(StringUtils.split(str,format));
 	}
 }

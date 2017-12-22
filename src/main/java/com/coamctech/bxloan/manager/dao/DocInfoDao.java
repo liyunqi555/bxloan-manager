@@ -19,4 +19,5 @@ public interface DocInfoDao extends JpaSpecificationExecutor<DocInfo>,PagingAndS
     //List<DocInfo> findByColumnIdInOrderByIfTopDescUpdateTimeDesc(Collection<Long> columnIds,Integer count);
 
     List<DocInfo> findFirst6ByColumnIdInOrderByIfTopDescUpdateTimeDesc(Collection<Long> columnIds);
+    List<DocInfo> findByColumnId(Long columnIds);
 }

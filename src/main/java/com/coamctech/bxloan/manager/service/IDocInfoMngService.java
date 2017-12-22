@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
+import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.domain.DocInfo;
 import com.coamctech.bxloan.manager.service.VO.DocInfoConditionVO;
 import com.coamctech.bxloan.manager.service.VO.DocInfoVO;
@@ -67,5 +68,6 @@ public interface IDocInfoMngService {
 	 */
 	Page<DocInfoVO> findDocInfoList(int pageNumber, Integer pageSize,
 			DocInfoConditionVO docInfoConditionVO);
+
 
 }
