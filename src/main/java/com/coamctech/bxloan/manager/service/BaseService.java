@@ -8,6 +8,7 @@ import com.coamctech.bxloan.manager.utils.TokenUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -20,6 +21,12 @@ import java.util.Map;
 
 public class BaseService<T, ID extends Serializable> {
     private  final Logger logger = LoggerFactory.getLogger(this.getClass());
+    @Value("${top.level.column.id.news}")
+    public Long topLevelColumnIdNews;
+    @Value("${top.level.column.id.doc}")
+    public Long topLevelColumnIdDoc;
+    @Value("${top.level.column.id.report}")
+    public Long topLevelColumnIdReport;
     @Autowired
     private PagingAndSortingRepository<T, ID> pagingAndSortingRepository;
     @Autowired

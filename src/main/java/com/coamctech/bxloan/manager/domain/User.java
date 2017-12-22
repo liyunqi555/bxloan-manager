@@ -182,4 +182,28 @@ public class User implements Serializable {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", nickName='" + nickName + '\'' +
+                ", password='" + password + '\'' +
+                ", birthday=" + birthday +
+                ", email='" + email + '\'' +
+                ", officePhone='" + officePhone + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", creator=" + creator +
+                ", status=" + status +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", sign='" + sign + '\'' +
+                ", departmentId=" + departmentId +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", ifStoreViewHitory=" + ifStoreViewHitory +
+                ", token='" + token + '\'' +
+                '}';
+    }
 }

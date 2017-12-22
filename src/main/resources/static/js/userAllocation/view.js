@@ -29,7 +29,7 @@ define(function(require, exports, module) {
             nodes2=treeObj2.getCheckedNodes(true);
             var v2 = "";
             for(var i=0;i<nodes2.length;i++){
-            	v2+=nodes1[i].id + ",";
+            	v2+=nodes2[i].id + ",";
             }
             if(v1==""){
             	utils.alert.warn("请选择来源");

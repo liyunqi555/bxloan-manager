@@ -44,17 +44,18 @@ public class AppUserService  extends BaseService<User,Long> {
         if (!user.getPassword().equals(password)) {
             return new JsonResult(ResultCode.PASSWORD_ERR_CODE, ResultCode.PASSWORD_ERR_MSG);
         }
-        Device device = deviceDao.findByDeviceCode(deviceCode);
+       /* Device device = deviceDao.findByDeviceCode(deviceCode);
         if (device != null && !device.getUserId().equals(user.getId())) {
-            return new JsonResult(ResultCode.PARAM_ERROR_CODE, ResultCode.DEVICE_CODE_ERROR_MSG);
+//            return new JsonResult(ResultCode.PARAM_ERROR_CODE, ResultCode.DEVICE_CODE_ERROR_MSG);
+            device.setUserId(user.getId());
         }
         if (device == null) {
             device = new Device();
             device.setUserId(user.getId());
             device.setDeviceCode(deviceCode);
             device.setCreateTime(new Date());
-            deviceDao.save(device);
         }
+        deviceDao.save(device);*/
         //重置签名
         String sign = DigestUtils.md5DigestAsHex(Encodes.encodeHex(Digests.generateSalt(4)).getBytes()).toUpperCase();
         user.setSign(sign);

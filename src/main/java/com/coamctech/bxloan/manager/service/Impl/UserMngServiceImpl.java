@@ -1,13 +1,22 @@
 package com.coamctech.bxloan.manager.service.Impl;
 
+import java.io.File;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -28,9 +37,11 @@ import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.domain.UserDocColumnRel;
 import com.coamctech.bxloan.manager.domain.UserDocSourceRel;
 import com.coamctech.bxloan.manager.service.UserMngService;
+import com.coamctech.bxloan.manager.service.VO.UserStoreVO;
 import com.coamctech.bxloan.manager.service.VO.UserTreeVO;
 import com.coamctech.bxloan.manager.service.VO.UserVO;
 import com.coamctech.bxloan.manager.utils.CommonHelper;
+import com.coamctech.bxloan.manager.utils.ReportExcelUtils;
 import com.coamctech.bxloan.manager.utils.encrypt.MD5Util;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -60,15 +71,18 @@ public class UserMngServiceImpl implements UserMngService{
 
 	@Override
 	public Page<UserVO> findBySearch(Integer pageNumber, Integer pageSize,
-			String userName) throws ParseException{
+			String userName,User curUser) throws ParseException{
 		List<Object> params = new ArrayList<Object>();
 		StringBuffer sql = new StringBuffer();
-		sql.append(" SELECT u.id,u.user_name,u.nick_name,u.birthday,u.email,u.office_phone,u.telephone ");
+		sql.append(" SELECT u.id,u.user_name,u.nick_name,u.birthday,u.email,u.office_phone,u.telephone,u.creator ");
 		sql.append(" FROM t_user u WHERE 1=1");
 		int i = 0;
 		if(StringUtils.isNotBlank(userName)){
 			sql.append(" AND u.user_name like ?").append(++i);
 			params.add(StringUtils.join("%", userName, "%"));
+		}
+		if(!curUser.getUserName().equals("admin")){
+			sql.append(" AND u.user_name != 'admin'");
 		}
 		Page<Object[]> page = dynamicQuery.nativeQuery(Object[].class,
 				new PageRequest(pageNumber, pageSize), sql.toString(),params.toArray());
@@ -77,6 +91,13 @@ public class UserMngServiceImpl implements UserMngService{
 					@Override
 					public UserVO apply(Object[] objs) {
 						UserVO vo =  new UserVO(objs);
+						if(vo.getCreator()!=null){
+							if(userDao.findOne(vo.getCreator())!=null){
+								vo.setCreatorStr(userDao.findOne(vo.getCreator()).getUserName());
+							}else{
+								vo.setCreatorStr("");
+							}
+						}
 						return vo;
 					}
 				}));
@@ -85,17 +106,15 @@ public class UserMngServiceImpl implements UserMngService{
 	}
 
 	@Override
-	public JsonResult deleteUserById(Long userId) throws Exception{
-		List<Long> ll = roleUserRelDao.getRoleIdsByUserId(userId);
-		if(CollectionUtils.isNotEmpty(ll)){
-			for(Long id:ll){
-				Role r = roleDao.findOne(id);
-				if(r.getType()==1){//管理员
-					return new JsonResult(ResultCode.ERROR_CODE,"该用户为管理员，不可删除",null);
-				}
+	public JsonResult deleteUserById(Long userId,User curUser) throws Exception{
+		User user = userDao.findOne(userId);
+		if(curUser.getUserName().equals("admin")){
+			
+		}else{
+			if(isManager(userId)){
+				return new JsonResult(ResultCode.ERROR_CODE,"该用户为其他管理员，您无删除权限，请确认！");
 			}
 		}
-		User user = userDao.findOne(userId);
 		userDao.delete(user);
 		roleUserRelDao.deleteByUserId(userId);
 		userDocSourceRelDao.deleteRelByUserId(userId);
@@ -165,7 +184,9 @@ public class UserMngServiceImpl implements UserMngService{
 			user.setOfficePhone(vo.getOfficePhone());
 			user.setTelephone(vo.getTelephone());
 			user.setUpdateTime(CommonHelper.getNow());
-			user.setPassword(MD5Util.md5Hex(vo.getPassword()));
+			if(StringUtils.isNotBlank(vo.getPassword())){
+				user.setPassword(MD5Util.md5Hex(vo.getPassword()));
+			}
 			user.setStartTime(CommonHelper.str2Date(vo.getStartTime(), CommonHelper.DF_DATE));
 			user.setEndTime(CommonHelper.str2Date(vo.getEndTime(), CommonHelper.DF_DATE));
 			userDao.save(user);
@@ -289,5 +310,83 @@ public class UserMngServiceImpl implements UserMngService{
 	public JsonResult getCheckedSource(Long userId) {
 		List<Long> ll = userDocSourceRelDao.findSourceIdsByUserId(userId);
 		return new JsonResult(ResultCode.SUCCESS_CODE,null,ll);
+	}
+
+	@Override
+	public JsonResult updatePassword(Long userId, String newPassword) throws RuntimeException{
+		User user = userDao.findOne(userId);
+		user.setPassword(MD5Util.md5Hex(newPassword));
+		return new JsonResult(ResultCode.SUCCESS_CODE,"密码修改成功",null);
+	}
+	
+	//判断是否为管理员
+	@Override
+	public boolean isManager(Long userId){
+		List<Long> ll = roleUserRelDao.getRoleIdsByUserId(userId);
+		if(CollectionUtils.isNotEmpty(ll)){
+			for(int i=0;i<ll.size();i++){
+				Long id = CommonHelper.toLong(ll.get(i));
+				Role r = roleDao.findOne(id);
+				if(r.getType()==1){//管理员
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public Page<UserStoreVO> findUserStoreList(Integer pageNumber, Integer pageSize,
+			String userName) {
+		List<Object> params = new ArrayList<Object>();
+		StringBuffer sql = new StringBuffer();
+		sql.append(" SELECT u.id,u.user_name,di.title,u.create_time ");
+		sql.append(" FROM t_user_store us,t_user u,t_doc_info di WHERE u.id=us.user_id and us.doc_info_id = di.id");
+		int i = 0;
+		if(StringUtils.isNotBlank(userName)){
+			sql.append(" AND u.user_name like ?").append(++i);
+			params.add(StringUtils.join("%", userName, "%"));
+		}
+		Page<Object[]> page = dynamicQuery.nativeQuery(Object[].class,
+				new PageRequest(pageNumber, pageSize), sql.toString(),params.toArray());
+		List<UserStoreVO> returnList = Lists.newArrayList(Lists.transform(
+				page.getContent(), new Function<Object[], UserStoreVO>() {
+					@Override
+					public UserStoreVO apply(Object[] objs) {
+						UserStoreVO vo = new UserStoreVO(objs);
+						return vo;
+					}
+				}));
+		Page<UserStoreVO> resultPage = new PageImpl<UserStoreVO>(returnList, new PageRequest(pageNumber, pageSize), page.getTotalElements());
+		return resultPage;
+	}
+
+	@Override
+	public void exportUserStore(String userName, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		try{
+			Resource resource = new ClassPathResource("excel/userStore_template.xlsx");
+			InputStream is = resource.getInputStream();
+			//System.out.println("scr.getInputStream()scr.getInputStream()=="+resource.getInputStream());
+			int PAGE_SIZE = 1000000;
+			Map<String, List<UserStoreVO>> map = new HashMap<String, List<UserStoreVO>>();
+			Page<UserStoreVO> page = this.findUserStoreList(0, PAGE_SIZE, userName);
+			List<UserStoreVO> list = page.getContent();
+			map.put("reportList", list);
+			/**导出excel工具类*/
+			ReportExcelUtils reportExcelUtils= new ReportExcelUtils();
+			/**加载模版并且生成导出文件落地*/
+			String fileName = reportExcelUtils.genernateExcelFileName(is, "excel/", "用户收藏", map);
+			/**获取文件路径*/
+			String reportPath = "excel/"; 
+			File file = new File(reportPath+fileName);
+			/**从服务器下载到本地*/
+			ReportExcelUtils.downloadFile(file, fileName, request, response);
+			/**下载后删除服务器文件*/
+			file.delete();
+		}catch(Exception e){
+			throw new Exception("下载失败！");
+		}
+		
 	}
 }

@@ -20,6 +20,7 @@ import com.coamctech.bxloan.manager.service.IDocInfoMngService;
 import com.coamctech.bxloan.manager.service.VO.DocInfoConditionVO;
 import com.coamctech.bxloan.manager.service.VO.DocInfoFormVO;
 import com.coamctech.bxloan.manager.service.VO.DocInfoVO;
+import com.coamctech.bxloan.manager.utils.CommonHelper;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
@@ -80,9 +81,15 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 
 	@Override
 	public void addDocInfo(DocInfo docInfo, Long id) {
-		docInfo.setCreateTime(new Date());
+		if(null==docInfo.getCreateTime()){
+			docInfo.setCreateTime(new Date());
+		}
 		docInfo.setUpdateTime(new Date());
 		docInfo.setCreator(id);
+		//正文处理
+		docInfo.setBody(handleText(docInfo.getBody()));
+		docInfo.setCnBoty(handleText(docInfo.getCnBoty()));
+		docInfo.setSummary(handleText(docInfo.getSummary()));
 		docInfoDao.save(docInfo);
 	}
 
@@ -128,11 +135,29 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
  		Page<DocInfoVO> resultPage = new PageImpl<DocInfoVO>(docInfoVOList, new PageRequest(pageNumber, pageSize),page.getTotalElements());
 		return resultPage;
 	}
-
+	//批量删除入口
 	@Override
 	public void deleteDocInfo(List<DocInfo> diList, Long id) {
 		// TODO Auto-generated method stub
 		
+	}
+	//处理文章
+	private String  handleText(String str){
+		StringBuffer newText = new StringBuffer("<p style='text-indent:2em'>");
+		//文章是否含有P标签
+		if(str.indexOf("<p>")<0||str.indexOf("</p>")<0||str.indexOf("<")<0){
+			List<String> list = CommonHelper.strToList(str,CommonHelper.NEW_LINE);
+			if(null!=list &&list.size()>0){
+				for(int i = 0; i<list.size();i++){
+					String line = list.get(i);
+					newText.append(line).append("</p>\n<p style='text-indent:2em'>");
+				}
+			}
+			newText = new StringBuffer(newText.substring(0,newText.lastIndexOf("<p style='text-indent:2em'>")));
+			return newText.toString();
+		}else{
+			return str;
+		}
 	}
 
 }

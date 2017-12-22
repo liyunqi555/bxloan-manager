@@ -31,7 +31,7 @@ public class AppFileController extends AppBaseController{
     @Autowired
     private UserStoreService userStoreService;
 
-    @RequestMapping("img")
+    @RequestMapping("anon/img")
     public void img(@RequestParam(name="mediaId") Long mediaId,HttpServletResponse response){
         List<byte[]> list = dataCenterService.getMedia(mediaId);
         writeResponse(response,list);
