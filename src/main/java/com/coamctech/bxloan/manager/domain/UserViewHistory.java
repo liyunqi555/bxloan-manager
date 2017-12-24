@@ -20,8 +20,6 @@ public class UserViewHistory implements Serializable {
 
     //智库报告 新闻动态 专题跟踪 相关
     private Long docInfoId;//文章ID
-    private Long docColumnId;//二级栏目ID
-    private Long docColumnParentId;//一级栏目ID
 
     //数据中心相关
     private String conceptUri;//数据概念
@@ -43,14 +41,6 @@ public class UserViewHistory implements Serializable {
 
     public void setDocInfoId(Long docInfoId) {
         this.docInfoId = docInfoId;
-    }
-
-    public Long getDocColumnParentId() {
-        return docColumnParentId;
-    }
-
-    public void setDocColumnParentId(Long docColumnParentId) {
-        this.docColumnParentId = docColumnParentId;
     }
 
     public String getConceptUri() {
@@ -75,14 +65,6 @@ public class UserViewHistory implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getDocColumnId() {
-        return docColumnId;
-    }
-
-    public void setDocColumnId(Long docColumnId) {
-        this.docColumnId = docColumnId;
     }
 
     public Long getUserId() {

@@ -19,7 +19,6 @@ public class DocInfo implements Serializable {
     private String title;//标题
     private String cnTitle;//中文标题
     private Long sourceId;//来源id
-    private Long columnId;//栏目id
     private String classification;//分类
     private String groupName;//分组
     private String website;//网址
@@ -43,7 +42,11 @@ public class DocInfo implements Serializable {
     private String sourceName;//来源名称
     @Transient
     private Integer storeFlag;//收藏标识，1：已收藏，0：未收藏
-    private Long storeId;
+    @Transient
+    private Long storeId;//收藏ID，未收藏，收藏id为null
+
+    @Transient
+    private String imgUrl;//从body中检索出的图片地址
 
     public Long getStoreId() {
         return storeId;
@@ -109,9 +112,6 @@ public class DocInfo implements Serializable {
         this.ifTop = ifTop;
     }
 
-    @Transient
-    private String imgUrl;//从body中检索出的图片地址
-
     public String getImgUrl() {
         return imgUrl;
     }
@@ -142,14 +142,6 @@ public class DocInfo implements Serializable {
 
     public void setSourceId(Long sourceId) {
         this.sourceId = sourceId;
-    }
-
-    public Long getColumnId() {
-        return columnId;
-    }
-
-    public void setColumnId(Long columnId) {
-        this.columnId = columnId;
     }
 
     public String getClassification() {

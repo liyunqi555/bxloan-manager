@@ -57,11 +57,9 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
 
 
 
-    public List<DocInfo> getTopDocInfos(Long parentColumnId,Integer topCount){
+    public List<DocInfo> getTopDocInfos(){
 
-        List<Long> columnIds = docColumnService.getChildColumnIdsByParentId(parentColumnId);
-        //List<DocInfo> docInfos = docInfoDao.findByColumnIdInOrderByIfTopDescUpdateTimeDesc(columnIds, topCount);
-        List<DocInfo> docInfos = docInfoDao.findFirst6ByColumnIdInOrderByIfTopDescUpdateTimeDesc(columnIds);
+        List<DocInfo> docInfos = docInfoDao.findFirst6ByOrderByIfTopDescUpdateTimeDesc();
         parseImgUrl(docInfos);
         return docInfos;
     }

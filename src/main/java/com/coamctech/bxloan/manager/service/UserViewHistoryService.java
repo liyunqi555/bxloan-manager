@@ -43,9 +43,6 @@ public class UserViewHistoryService extends BaseService<UserViewHistory,Long>{
             userViewHistory.setCreateTime(new Date());
         }
         userViewHistory.setUpdateTime(new Date());
-        DocColumn docColumn = docColumnService.findOne(docInfo.getColumnId());
-        userViewHistory.setDocColumnId(docColumn.getId());
-        userViewHistory.setDocColumnParentId(docColumn.getParentId());
         userViewHistoryDao.save(userViewHistory);
         return true;
     }
