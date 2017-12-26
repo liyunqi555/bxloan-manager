@@ -27,6 +27,9 @@ public class BaseService<T, ID extends Serializable> {
     public Long topLevelColumnIdDoc;
     @Value("${top.level.column.id.report}")
     public Long topLevelColumnIdReport;
+    public static final String TITLE="title";
+    public static final String SOURCE_NAME="sourceName";
+    public static final String BODY="body";
     @Autowired
     private PagingAndSortingRepository<T, ID> pagingAndSortingRepository;
     @Autowired

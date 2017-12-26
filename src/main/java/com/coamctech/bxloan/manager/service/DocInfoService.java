@@ -7,6 +7,7 @@ import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.dao.DocInfoDao;
 import com.coamctech.bxloan.manager.dao.UserDocColumnRelDao;
 import com.coamctech.bxloan.manager.domain.*;
+import com.coamctech.bxloan.manager.utils.CommonHelper;
 import com.coamctech.bxloan.manager.utils.StringUtils;
 import com.coamctech.bxloan.manager.utils.TokenUtils;
 
@@ -21,6 +22,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -56,7 +59,6 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
     private AppUserService appUserService;
 
 
-
     public List<DocInfo> getTopDocInfos(){
 
         List<DocInfo> docInfos = docInfoDao.findFirst6ByOrderByIfTopDescUpdateTimeDesc();
@@ -78,8 +80,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
             }
         }
 
-        PageList<DocInfo> pageList =   this.getDocInfos(userId,page, Arrays.asList(columnId), null);
-        return pageList.getList();
+        return this.getDocInfos(userId, page, Arrays.asList(columnId), null);
     }
 
 
@@ -98,8 +99,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         if(childColumnIds.size()==0){
             return Collections.EMPTY_LIST;
         }
-        PageList<DocInfo> pageList =   this.getDocInfos(userId,page, childColumnIds, keyWorld);
-        return pageList.getList();
+        return this.getDocInfos(userId, page, childColumnIds, keyWorld);
     }
 
     /**
@@ -109,28 +109,109 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
      * @param keyworld 搜索词，如果为空，则查询所有
      * @return
      */
-    public PageList<DocInfo> getDocInfos(Long userId,Page page,List<Long> columnIds,String keyworld){
-        List<Long> canVisitDocSourceIds = docSourceService.getCanVisitDocSourceIds(userId);
-        Map<String, Object> param = new HashMap<>();
-        StringBuilder sql = new StringBuilder(" from DocInfo where  columnId in (:columnId) ");
-        param.put("columnId",columnIds);
-        if(canVisitDocSourceIds.size()==0){
-           canVisitDocSourceIds.add(-1L);
+    public  List<DocInfo> getDocInfos(Long userId,Page page,List<Long> columnIds,String keyworld){
+        List<DocInfo> docInfos = new ArrayList<>();
+        if(columnIds.size()==0){
+            logger.info("参数栏目为空");
+            return docInfos;
         }
-        sql.append(" and  sourceId in(:sourceId) ");
-        param.put("sourceId",canVisitDocSourceIds);
-        if(StringUtils.isNotEmpty(keyworld)){
-            sql.append(" and title like :title ");
-            param.put("title","%"+keyworld+"%");
+        EntityManager entityManager = null;
+        try{
+            List<Long> canVisitDocSourceIds = docSourceService.getCanVisitDocSourceIds(userId);
+            if(canVisitDocSourceIds.size()==0 ){
+                logger.info("该用户userId={}没有配置来源",userId);
+                return docInfos;
+            }
+
+            Map<String, Object> param = new HashMap<>();
+            entityManager = this.entityManagerFactory.createEntityManager();
+            StringBuilder sql = new StringBuilder();
+            sql.append(" select tt.id ,tt.title , tt.cn_title , tt.summary , tt.update_time , tt.body , tt.cn_boty ,tt.name   from ( ")
+                    .append( " select row_number()over(order by tempcolumn)temprownumber,*  from ")
+                    .append(" ( ")
+                    .append( " select top "+(page.getPageIndex()*page.getPageSize()+page.getPageSize())+" tempcolumn=0,")
+                    .append("t.id ,t.title , t.cn_title , t.summary , t.update_time , t.body , t.cn_boty ,ds.name ")
+                    .append("  from t_doc_info t ,t_doc_source ds  where t.source_id=ds.id ");
+            Iterable<DocColumn> docColumns = docColumnService.findAll(columnIds);
+            sql.append(" and ( 1=1 ");
+            for(DocColumn docColumn:docColumns){
+                sql.append(" or ").append(this.getConditionSql(docColumn));
+            }
+            sql.append(" ) ");
+            sql.append(" and  t.source_Id in(:sourceId) ");
+            param.put("sourceId",canVisitDocSourceIds);
+
+            if(StringUtils.isNotEmpty(keyworld)){
+                sql.append(" and t.title like :title ");
+                param.put("title", "%" + keyworld + "%");
+            }
+            sql.append(" order by t.update_Time desc ");
+            sql.append(" ) t1 ").append(" )tt  where temprownumber > ").append(page.getPageIndex()*page.getPageIndex()) ;
+            logger.info("sql={}",sql);
+            Query query = entityManager.createNativeQuery(sql.toString());
+            param.entrySet().forEach(p -> {
+                query.setParameter(p.getKey(), p.getValue());
+            });
+            List<Object[]> list = query.getResultList();
+
+            list.forEach(arr->{
+                DocInfo docInfo = new DocInfo();
+                //t.id ,t.title , t.cn_title , t.summary , t.update_time , t.body , t.cn_body ,ds.name
+                docInfo.setId(CommonHelper.toLong(arr[0]));
+                docInfo.setTitle(CommonHelper.toStr(arr[1]));
+                docInfo.setCnTitle(CommonHelper.toStr(arr[2]));
+                docInfo.setSummary(CommonHelper.toStr(arr[3]));
+                docInfo.setUpdateTime(CommonHelper.toDate(arr[4]));
+                docInfo.setBody(CommonHelper.toStr(arr[5]));
+                docInfo.setCnBoty(CommonHelper.toStr(arr[6]));
+                docInfo.setSourceName(CommonHelper.toStr(arr[7]));
+                docInfos.add(docInfo);
+            });
+            logger.info("list.size()=",list.size());
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(entityManager!=null){
+                entityManager.close();
+            }
         }
-        sql.append(" order by updateTime desc ");
 
-        PageList<DocInfo> pageList = this.pageList(page,sql.toString(),param);
+        parseImgUrl(docInfos);
+//        addDocSourceName(pageList.getList());
+        addStoreFlag(docInfos,userId);
+        return docInfos;
+    }
+    private String getConditionSql(DocColumn docColumn){
+        StringBuilder conditionSql = new StringBuilder();
+        String conditionField = docColumn.getCondtionField();
+        Integer conditionType = docColumn.getConditionType();
 
-        parseImgUrl(pageList.getList());
-        addDocSourceName(pageList.getList());
-        addStoreFlag(pageList.getList(),userId);
-        return pageList;
+        conditionSql.append(" ( 1=1 ");
+        if(conditionType!=null){
+            if(conditionType.equals(1)){//普通关联
+                String[] arr = conditionField.split(StringUtils.BLANK_STRING);
+                for(String v:arr){
+                    conditionSql.append(" and (")
+                            .append(" t.title like '%").append(v).append("%' ")
+                            .append(" or t.body like '%").append(v).append("%' ")
+                            .append(" ) ");
+                }
+            }else if(conditionType.equals(2)) {//高级sql模式
+                conditionSql.append(" and ").append(this.replaceConditionField(conditionField,"t.title","ds.name","t.body"));
+            }else{
+                logger.warn("栏目配置内容有误 columnId={}",docColumn.getId());
+            }
+        }
+        conditionSql.append(" ) ");
+        logger.info("docColumnId={},docColumnName={},conditionType={},conditionField={},conditionSql={}",
+                docColumn.getId(),docColumn.getName(),conditionType,conditionField,conditionSql);
+        return conditionSql.toString();
+    }
+    private String replaceConditionField(String conditionField,String title,String sourceName,String body){
+        conditionField = conditionField.replace(this.TITLE,StringUtils.BLANK_STRING+title+StringUtils.BLANK_STRING);
+        conditionField = conditionField.replace(this.SOURCE_NAME,StringUtils.BLANK_STRING+sourceName+StringUtils.BLANK_STRING);
+        conditionField = conditionField.replace(this.BODY,StringUtils.BLANK_STRING+body+StringUtils.BLANK_STRING);
+        return conditionField;
     }
     private void parseImgUrl(Iterable<DocInfo> docInfos){
         if(docInfos==null){

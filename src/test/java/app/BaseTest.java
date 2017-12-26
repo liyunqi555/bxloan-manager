@@ -38,9 +38,9 @@ public class BaseTest {
 //        lastVersion();
 //        cancelCustomColumn();
       //  worlds();
-//        docInfos();
+        docInfos();
 //        search();
-        docInfoDetail();
+//        docInfoDetail();
 //        store();
 //        cancelStore();
 //        myStore();
