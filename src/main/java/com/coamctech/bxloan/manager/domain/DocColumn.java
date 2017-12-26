@@ -21,7 +21,9 @@ public class DocColumn implements Serializable {
     private Long creator;
     private Date createTime;
     private Date updateTime;
-    private String condtionField;
+    private Integer conditionType;//关联类型，1：普通查询，2：高级查询
+    private String condtionField;//关联文章的条件
+
     @Transient
     private int customOrder;
 
@@ -99,6 +101,14 @@ public class DocColumn implements Serializable {
 
     public String getCondtionField() {
         return condtionField;
+    }
+
+    public Integer getConditionType() {
+        return conditionType;
+    }
+
+    public void setConditionType(Integer conditionType) {
+        this.conditionType = conditionType;
     }
 
     public void setCondtionField(String condtionField) {

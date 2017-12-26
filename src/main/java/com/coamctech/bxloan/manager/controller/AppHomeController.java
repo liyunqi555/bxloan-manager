@@ -64,7 +64,7 @@ public class AppHomeController extends AppBaseController{
     @RequestMapping("banner")
     public JsonResult banner(){
         JsonResult jsonResult = JsonResult.success();
-        List<DocInfo> docInfos = docInfoService.getTopDocInfos(this.topLevelColumnIdNews,this.appHomeBannerCount);
+        List<DocInfo> docInfos = docInfoService.getTopDocInfos();
         docInfos.forEach(docInfo->{
             docInfo.setBody("");
             docInfo.setSummary("");
@@ -85,10 +85,6 @@ public class AppHomeController extends AppBaseController{
         Long userId = TokenUtils.sessionUser().getId();
         Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
         List<DocInfo> docInfoList = docInfoService.searchDocInfos(page, userId, Arrays.asList(this.topLevelColumnIdDoc), null);
-        docInfoList.forEach(docinfo->{
-            docinfo.setBody("");
-            docinfo.setCnBoty("");
-        });
         jsonResult.setBody(docInfoList);
         return  jsonResult;
     }
@@ -226,9 +222,11 @@ public class AppHomeController extends AppBaseController{
      * @return
      */
     @RequestMapping("store")
-    public JsonResult store(@RequestParam(name = "docInfoId") Long docInfoId){
+    public JsonResult store(
+            @RequestParam(name = "docInfoId") Long docInfoId,
+            @RequestParam(name = "topLevelColumnId") Long topLevelColumnId){
         long userId = TokenUtils.sessionUser().getId();
-        return userStoreService.store(userId,docInfoId);
+        return userStoreService.store(userId,docInfoId,topLevelColumnId);
     }
 
     /**
@@ -268,7 +266,7 @@ public class AppHomeController extends AppBaseController{
     public JsonResult myHistory(@RequestParam(name="pageIndex",defaultValue ="0") Integer pageIndex){
         long userId = TokenUtils.sessionUser().getId();
         Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
-       List<DocInfo> docInfos = docInfoService.myHistory(page,userId);
+        List<DocInfo> docInfos = docInfoService.myHistory(page,userId);
         return JsonResult.success(docInfos);
     }
     /**

@@ -38,7 +38,7 @@ public class UserStoreService extends BaseService<UserStore,Long>{
     private DocInfoService docInfoService;
     @Autowired
     private DocColumnService docColumnService;
-    public JsonResult store(Long userId,Long docInfoId){
+    public JsonResult store(Long userId,Long docInfoId,Long topLevelColumnId){
         if(docInfoId==null || userId==null){
             return new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.PARAM_ERROR_MSG);
         }
@@ -50,13 +50,11 @@ public class UserStoreService extends BaseService<UserStore,Long>{
         if(docInfo==null){
             return new JsonResult(ResultCode.PARAM_ERROR_CODE,ResultCode.PARAM_ERROR_MSG);
         }
-        DocColumn docColumn = docColumnService.findOne(docInfo.getColumnId());
         userStore = new UserStore();
         userStore.setUserId(userId);
         userStore.setDocInfoId(docInfoId);
         userStore.setCreateTime(new Date());
-        userStore.setDocColumnId(docColumn.getId());
-        userStore.setDocColumnParentId(docColumn.getParentId());
+        userStore.setDocColumnParentId(topLevelColumnId);
         userStoreDao.save(userStore);
         return JsonResult.success();
     }

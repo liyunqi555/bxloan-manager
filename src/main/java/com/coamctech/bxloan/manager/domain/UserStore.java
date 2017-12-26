@@ -20,7 +20,6 @@ public class UserStore implements Serializable {
 
     //智库报告 新闻动态 专题跟踪 相关
     private Long docInfoId;//文章ID
-    private Long docColumnId;//二级栏目ID
     private Long docColumnParentId;//一级栏目ID
 
     //数据中心相关
@@ -67,14 +66,6 @@ public class UserStore implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getDocColumnId() {
-        return docColumnId;
-    }
-
-    public void setDocColumnId(Long docColumnId) {
-        this.docColumnId = docColumnId;
     }
 
     public Long getUserId() {
