@@ -196,6 +196,7 @@ public class BaseTest {
     protected static void switchViewHistory(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         addTokenAndSign(nvps);
+        
         String res = post(nvps,"api/app/user/switchViewHistory");
     }
     protected static void changePassword(){
