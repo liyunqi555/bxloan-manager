@@ -124,6 +124,17 @@
 
             <b class="arrow"></b>
         </li>
+        
+         <li class="" id="userSign">
+            <a href="/userSign">
+                <i class="menu-icon fa fa-shopping-bag"></i>
+				<span class="menu-text">
+				用户授权栏目
+				 </span>
+            </a>
+
+            <b class="arrow"></b>
+        </li>
 
 	</ul><!-- /.nav-list -->
 
@@ -142,7 +153,7 @@
 		success : function(result){
 			if(result.code==200){
 				if(result.body=='1'){//管理员
-					
+					$('#userSign').hide();
 				}else{
 					$('#userMng').hide();
 					$('#roleMng').hide();

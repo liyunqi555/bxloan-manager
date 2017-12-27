@@ -27,21 +27,21 @@
 								<i class="ace-icon fa fa-home home-icon"></i>
 								<a href="/index">首页</a>
 							</li>
-							<li class="active">用户收藏管理</li>
+							<li class="active">用户授权栏目</li>
 						</ul><!-- /.breadcrumb -->
 					</div>
 
 					<div class="page-content">
 						<div class="page-header">
 							<h1>
-		            			用户收藏管理
+		            			用户授权栏目
             				</h1>
 						</div><!-- /.page-header -->
 						<form id="searchForm">
 							<div class="form-group">
-								<label for="userName" class="control-label col-sm-1">用户名称：</label>
+								<label for="columnName" class="control-label col-sm-1">栏目名称：</label>
 								<div class="col-sm-2">
-									<input type="text" id="userName" class="form-control col-sm-5 input-sm" placeholder="请输入客户名称" name="userName" th:value="${curUserName}"/>
+									<input type="text" id="columnName" class="form-control col-sm-5 input-sm" placeholder="请输入栏目名称" name="columnName"/>
 								</div>
 							</div>
 						</form>
@@ -56,11 +56,6 @@
 		                      </i>
 		                      	  重置
 		                    </button>
-		                    <button role="btn-Export" type="button" class="btn btn-sm btn-yellow" >
-		                      <i class="ace-icon fa fa-download">
-		                      </i>
-		                      	 导出
-		                    </button>
 						</span>
 						
 						<br/><br/><br/>
@@ -71,13 +66,13 @@
 									<thead>
 										<tr>
 											<th>
-												栏目级别
-											</th>
-											<th>
 												栏目名称
 											</th>
 											<th>
-											  	收藏时间
+												栏目级别
+											</th>
+											<th>
+											  	父栏目名称
 											</th>
 										</tr>
 									</thead>
@@ -85,13 +80,12 @@
 		            		</div>
 		            	<!-- 表单内容end -->
 		           		</div>
-						<input type="hidden" id="type" th:value="${type}"/>
 					</div><!-- /.page-content -->
 				</div>
 			</div><!-- /.main-content -->
 		</div><!-- /.main-container -->	
 		<script>
-	      seajs.use('/js/userStoreMng/main');
+	      seajs.use('/js/userSignMng/main');
 	 </script>
 	</body>
 </html>

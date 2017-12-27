@@ -1,7 +1,5 @@
 package com.coamctech.bxloan.manager.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -15,11 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.coamctech.bxloan.manager.common.DataTablesPage;
-import com.coamctech.bxloan.manager.common.JsonResult;
-import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.service.UserMngService;
-import com.coamctech.bxloan.manager.service.VO.UserStoreVO;
+import com.coamctech.bxloan.manager.service.VO.UserSignVO;
 
 /**
  * Created by Administrator on 2017/10/20.
@@ -52,10 +48,11 @@ public class UserSignController {
 	public DataTablesPage findByCondition(@RequestParam("sEcho") Integer sEcho,
 			@RequestParam("iDisplayStart") Integer firstIndex,
 			@RequestParam("iDisplayLength") Integer pageSize,
-			@RequestParam("userName") String userName,HttpSession session) {
+			@RequestParam("columnName") String columnName,HttpSession session) {
+    	User curUser = (User)session.getAttribute("user");
     	try{
-    		Page<UserStoreVO> page = null;
-    		page = userMngService.findUserStoreList(firstIndex/pageSize, pageSize,userName);
+    		Page<UserSignVO> page = null;
+    		page = userMngService.findUserSignList(firstIndex/pageSize, pageSize,curUser.getId(),columnName);
     		return new DataTablesPage(sEcho, page);
     	}catch(Exception e){
     		e.printStackTrace();
@@ -63,38 +60,6 @@ public class UserSignController {
 		return null;
     	
     }
-    
-    @RequestMapping("/checkDownload")
-	@ResponseBody
-	public JsonResult checkDownload(@RequestParam("userName") String  userName){
-		try{
-			Page<UserStoreVO> page = null;
-			page = userMngService.findUserStoreList(new Integer(0 / 1000), new Integer(1000),
-					userName);
-			//查询正常合同列表
-			if(page == null || page.getContent() == null || page.getContent().size() == 0){
-				return new JsonResult(ResultCode.ERROR_CODE,"无数据，无法导出报表",null);
-			}
-		}catch (Exception e) {
-			logger.error(e.getMessage());
-			return new JsonResult(ResultCode.ERROR_CODE,"服务器异常",null);
-		}
-		return new JsonResult(ResultCode.SUCCESS_CODE,"导出成功",null);
-		
-	}
-	
-	@RequestMapping("/downloadExcel")
-	@ResponseBody
-	public JsonResult downloadExcel(HttpServletRequest request, HttpServletResponse response, String userName){
-		try {
-			/**下载excel到本地*/
-			userMngService.exportUserStore(userName, request, response);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return new JsonResult(ResultCode.ERROR_CODE,"服务器异常",null);
-		}
-		return new JsonResult(ResultCode.SUCCESS_CODE,"导出成功",null);
-	}
     
   
     

@@ -99,6 +99,22 @@ define(function(require, exports, module) {
 				$("#birthday").datepicker("setBirthday",ev.date?ev.date:"");
 				
 			});
+			$('#startTime').datepicker({
+				format : 'yyyy-mm-dd', 
+				clearBtn:true,
+				autoclose:true
+			}).on("changeDate",function(ev){
+				$("#startTime").datepicker("setStartTime",ev.date?ev.date:"");
+				
+			});
+			$('#endTime').datepicker({
+				format : 'yyyy-mm-dd', 
+				clearBtn:true,
+				autoclose:true
+			}).on("changeDate",function(ev){
+				$("#endTime").datepicker("setEndTime",ev.date?ev.date:"");
+				
+			});
 		},
 		save:function(){
 			var treeObj1=$.fn.zTree.getZTreeObj("ColumnZTree");
