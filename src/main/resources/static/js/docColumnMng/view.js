@@ -14,7 +14,14 @@ define(function(require, exports, module) {
 		"click button[role=edit]" : "edit",//编辑
 		"click button[role=detail]" : "detail",//查看
 		"click button[role=docInfoList]":"docInfoList",//进入文章列表
-		"click #btn-docInfoView":"initdocInfoView" //进入文章列表
+		"click #add-simple-submit":"saveColumn",
+		
+		"change #conditionType" : "ifConditionType",//更改模式
+		"click #titleKeyWord":"titleKeyWord",
+		"click #sourceKeyWord":"sourceKeyWord",
+		"click #bodyKeyWord":"bodyKeyWord",
+		"click #or":"ifOr",
+		"click #and":"ifAnd"
 	},
 	initialize: function() {
 		this.model = new model();
@@ -24,7 +31,10 @@ define(function(require, exports, module) {
 	render: function() {
 		var viewSelf = this;
 		this.initDtTable();
-		this.saveColumn();
+		this.initUserTree();
+		this.initSourceTree();
+		this.ifConditionType();
+		this.formValidate();
 	},
 	//查询
 	query : function(){
@@ -43,9 +53,6 @@ define(function(require, exports, module) {
 		//执行查询
 		viewSelf.dt.fnPageChange(0);
 	},
-	initdocInfoView : function (){
-		
-	},
 	//新增栏目
 	addColumn: function (){
 		var viewSelf = this;
@@ -55,15 +62,85 @@ define(function(require, exports, module) {
 	    $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 新增栏目");
 	    return false;
 	},
-	saveColumn:function(){ 
+	ifConditionType : function() {
+		$('#conditionField').val('');
+		if($('#conditionType').val() == '1') {
+            $("#or").css("display","none");
+            $("#and").css("display","none");
+		} else {
+			$("#or").removeAttr("style");
+	        $("#and").removeAttr("style");
+		}
+	},
+	titleKeyWord:function(){
+		if(null==$('#conditionField').val()||""==$('#conditionField').val()){
+			$('#conditionField').val($('#conditionField').val()+"标题关键字=");
+		}else{
+			$('#conditionField').val($('#conditionField').val()+"\n 标题关键字 =");
+		}
+	},
+	sourceKeyWord:function(){
+		if(null==$('#conditionField').val()||""==$('#conditionField').val()){
+			$('#conditionField').val($('#conditionField').val()+"来源关键字 =");
+		}else{
+			$('#conditionField').val($('#conditionField').val()+"\n来源关键字 =");
+		}
+	},
+	bodyKeyWord:function(){
+		if(null==$('#conditionField').val()||""==$('#conditionField').val()){
+			$('#conditionField').val($('#conditionField').val()+"文章关键字 =");
+		}else{
+			$('#conditionField').val($('#conditionField').val()+"\n文章关键字 =");
+		}
+	},
+	ifOr:function(){
+		if(null==$('#conditionField').val()||""==$('#conditionField').val()){
+			utils.alert.err("<strong> 逻辑运算不可在首位</strong>");
+			return ;
+		}else{
+			$('#conditionField').val($('#conditionField').val()+"\n or");
+		}
+	},
+	ifAnd:function(){
+		if(null==$('#conditionField').val()||""==$('#conditionField').val()){
+			utils.alert.err("<strong> 逻辑运算不可在首位</strong>");
+			return ;
+		}else{
+			$('#conditionField').val($('#conditionField').val()+"\n and ");
+		}
+	},
+/*	saveColumn:function(){ 
 		var viewSelf = this;
 		var $form=$("form[role='addColumnForm']");
+		var treeObj1=$.fn.zTree.getZTreeObj("userZTree");
+        nodes1=treeObj1.getCheckedNodes(true);
+        var userIds = "";
+        console.log("你是怎么知道的");
+        for(var i=0;i<nodes1.length;i++){
+        	userIds+=nodes1[i].id + ",";
+        }
+        if(userIds==""){
+        	utils.alert.warn("请选择角色或用户");
+        	return false;
+        }
+        
+        var treeObj2=$.fn.zTree.getZTreeObj("sourceZTree");
+        nodes2=treeObj2.getCheckedNodes(true);
+        var sourceIds = "";
+        for(var i=0;i<nodes2.length;i++){
+        	sourceIds+=nodes2[i].id + ",";
+        }
+        if(sourceIds==""){
+        	utils.alert.warn("请选择来源");
+        	return false;
+        }
 		  $form.validate({
 			rules: rm.rules,
             messages: rm.messages,
             submitHandler: function(form) {
 				var formSelf = $(form);
-				viewSelf.model.submitForm($form, function(result) {
+				
+				viewSelf.model.submitForm($form, userIds,sourceIds,function(result) {
 						if (result.code=='200') {
 							$("#add-modal-form").modal("hide");
 							formSelf.resetForm();
@@ -74,7 +151,74 @@ define(function(require, exports, module) {
 					});
 			  	}
 			});
+	},*/
+	formValidate:function(){
+        $("#addColumnForm").validate({
+            rules: rm.rules,
+            messages: rm.messages,
+            errorPlacement: function(error, element) {
+                if (element.is(":radio")) error.appendTo(element.parent().next().next());
+                else if (element.is(":checkbox")) error.appendTo(element.next());
+                else if (element.parent().hasClass("input-group")) error.appendTo(element.parent().parent());
+                else error.appendTo(element.parent());
+            }
+        });
+    
 	},
+	saveColumn: function(e) {
+		var viewSelf = this;
+		var btnSubmit=$(e.currentTarget);
+         utils.button.ban(btnSubmit);//禁用按钮
+		var $form=$("form[role='addColumnForm']");
+		var treeObj1=$.fn.zTree.getZTreeObj("userZTree");
+        nodes1=treeObj1.getCheckedNodes(true);
+        var userIds = "";
+        for(var i=0;i<nodes1.length;i++){
+        	userIds+=nodes1[i].id + ",";
+        }
+        if(userIds==""){
+        	utils.alert.warn("请选择角色或用户");
+        	return false;
+        }
+        
+        var treeObj2=$.fn.zTree.getZTreeObj("sourceZTree");
+        nodes2=treeObj2.getCheckedNodes(true);
+        var sourceIds = "";
+        for(var i=0;i<nodes2.length;i++){
+        	sourceIds+=nodes2[i].id + ",";
+        }
+        if(sourceIds==""){
+        	utils.alert.warn("请选择来源");
+        	return false;
+        }
+/*        if (!$("#addColumnForm").valid()) {
+        	utils.button.reset(btnSubmit);//启用按钮
+        	return ;	
+        }*/
+        //add by mz 20160223
+    	utils.button.confirm(btnSubmit,function(result){
+			if(result){
+				$.ajax({
+                    cache: false,
+                    type: "POST",
+                    url: "/docColumnMng/addColumn?userIds=" + userIds+"&sourceIds="+sourceIds,
+                    data:$form.serialize(),
+                    success: function(result) {
+                    	if(result.code=='200') {
+                    		$("#add-modal-form").modal("hide");
+                    		$form.resetForm();
+                    		viewSelf.dt.fnDraw(); // 重新加载表格中的数据
+                    	} else {
+                    		 utils.button.reset(btnSubmit);//启用按钮
+                    		utils.alert.err("<strong>" + result.msg + "</strong>");
+                    	}
+                    }
+				 }); //ajax end
+			}else{
+				utils.button.reset(btnSubmit);//启用按钮
+			}
+		},"您确定要提交保存吗?");
+    },
 	initDtTable: function() {  //查询导入的记录
 		var viewSelf = this;
 		var dt = $("#tb_columnList").dataTable({
@@ -258,16 +402,23 @@ define(function(require, exports, module) {
 					  var form=$("form[role='addColumnForm']");
 					    var validator = $(form).validate();
 						validator.resetForm();
+					$.each($("#addDocInfoForm").find("input[type='text'],input[type='hidden'], select,textarea"), function() {
+							$(this).val(obj[$(this).attr("name")]);
+					});
 			    	 $('#addName').val(result.body.name);
 			    	 $('#docColumnCdMask').val(result.body.parentName);
 			    	 $('#ifSpecial').val(result.body.ifSpecial);
 			    	 $("input[name='id']").val(id);
 			    	 $("input[name='parentId']").val(result.body.parentId);
 			    	 $('#docColumnId').val(result.body.id);
+			    	 $('#conditionField').val(result.body.conditionField);
+			     	 $('#conditionType').val(result.body.conditionType);
 					if(type=='view'){
 						$("#addName").attr("disabled",true);
 						$("#ifSpecial").attr("disabled",true);
 						$("#docColumnCdMask").attr("disabled",true);
+						 $('#conditionField').attr("disabled",true);
+				     	 $('#conditionType').attr("disabled",true);
 						$("#add-simple-submit").hide();
 					}
 					$("#add-modal-form").modal("show");
@@ -362,7 +513,74 @@ define(function(require, exports, module) {
 		                    $("#btn-showTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
 		                }
          });
-     }
+     },
+		initUserTree:function(){
+			var viewSelf = this;
+			$.fn.zTree.init($("#userZTree"), {
+				async : {
+					enable : true,
+					url : "/userColumnSourceAssign/getAllUser"
+				},
+				check: {
+					enable: true,
+				},
+				data : {
+					simpleData : {
+						enable : true,
+						idKey : "id",
+						pIdKey : "parentId"
+					},
+					key : {
+						name : "name"
+					}
+				},
+				view: {
+					fontCss : {
+						size:"2em"
+					}
+				},
+				callback : {
+					onAsyncSuccess : function(event, treeId, treeNode, msg) {
+						var treeObj = $.fn.zTree.getZTreeObj(treeId);
+						var nodes = treeObj.transformToArray(treeObj.getNodes());
+				/*		for (var i=0, l=nodes.length; i < l; i++) {
+		                      if (nodes[i].isParent){
+		                          treeObj.setChkDisabled(nodes[i], true);
+		                      }
+		                    }*/
+					},	
+					onCheck : function(event, treeId, treeNode) {}
+				}
+				
+			});
+		},
+		initSourceTree:function(){
+			var viewSelf = this;
+			$.fn.zTree.init($("#sourceZTree"), {
+				async : {
+					enable : true,
+					url : "/userColumnSourceAssign/getAllSource"
+				},
+				check: {
+					enable: true
+				},
+				data : {
+					simpleData : {
+						enable : true,
+						idKey : "id"
+					},
+					key : {
+						name : "name"
+					}
+				},
+				view: {
+					fontCss : {
+						size:"2em"
+					}
+				}
+			});
+			var treeObj = $.fn.zTree.getZTreeObj("sourceZTree");
+	}
 
 });
 	module.exports = view;	

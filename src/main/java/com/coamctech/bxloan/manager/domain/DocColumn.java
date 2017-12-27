@@ -22,7 +22,7 @@ public class DocColumn implements Serializable {
     private Date createTime;
     private Date updateTime;
     private Integer conditionType;//关联类型，1：普通查询，2：高级查询
-    private String condtionField;//关联文章的条件
+    private String conditionField;//关联文章的条件
 
     @Transient
     private int customOrder;
@@ -99,9 +99,6 @@ public class DocColumn implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public String getCondtionField() {
-        return condtionField;
-    }
 
     public Integer getConditionType() {
         return conditionType;
@@ -111,7 +108,11 @@ public class DocColumn implements Serializable {
         this.conditionType = conditionType;
     }
 
-    public void setCondtionField(String condtionField) {
-        this.condtionField = condtionField;
-    }
+	public String getConditionField() {
+		return conditionField;
+	}
+
+	public void setConditionField(String conditionField) {
+		this.conditionField = conditionField;
+	}
 }

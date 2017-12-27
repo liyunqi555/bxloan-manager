@@ -15,4 +15,5 @@ import java.util.List;
 @Repository
 public interface DocInfoDao extends JpaSpecificationExecutor<DocInfo>,PagingAndSortingRepository<DocInfo,Long> {
     List<DocInfo> findFirst6ByOrderByIfTopDescUpdateTimeDesc();
+    //List<DocInfo> findByColumnId(Long columnIds);
 }

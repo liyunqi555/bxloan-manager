@@ -50,13 +50,15 @@ public interface IColumnService {
     
     /**
      *新增栏目
+     * @param sourceIds  来源ID
+     * @param userIds  用户ID
      * @param loginId 登陆人ID
      * @param columnId
      * @return
      *
      * @lastModified zhaoqingwen 2017年12月7日 下午3:53:22  
      */
-    public  void addColumn(DocColumn docColumn, Long loginId);
+    public  void addColumn(DocColumn docColumn, String userIds, String sourceIds, Long loginId);
 
 	/**
 	 *获取栏目菜单
