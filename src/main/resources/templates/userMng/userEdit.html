@@ -40,10 +40,13 @@
 						  	
 							<!-- 左列 -->
 							<div class="col-md-6 row_left">
+								<h3 style="text-align:center">用户信息</h3>
+								<br/>
 								<form id="basicInfoForm" class="form-horizontal">
 									<input type="hidden" id="type" th:value="${type}"/>
 									<input type="hidden" id="checkedRole" th:value="${user.roleIds}"/>
 						  			<input type="hidden" id="id" name="id" th:value="${userId}"/>
+						  			
 									<div class="row">
 										<label class="control-label col-sm-3" for="userName">用户名：</label>
 										<div class="col-sm-6">
@@ -131,6 +134,8 @@
 							</div>
 							<!-- 中列 -->
 							<div class="col-md-3 row_center">
+							<h3 style="text-align:center">栏目列表</h3>
+								<br/>
 								<span class="block input-icon input-icon-right">
 									<div id="ColumnZTree" class="ztree">
 										<div class="col-xs-12" style="overflow-y: auto;max-height: 500px;position:absolute;z-index:999;background:#fff;border:1px solid #e3e3e3">
@@ -142,6 +147,8 @@
 							</div>
 							<!-- 右列 -->
 							<div class="col-md-3 row_right">
+								<h3 style="text-align:center">来源列表</h3>
+								<br/>
 								<span class="block input-icon input-icon-right">
 									<!-- <table id="tbSourceList">
 										<thead>

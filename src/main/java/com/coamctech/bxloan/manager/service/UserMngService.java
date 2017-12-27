@@ -9,10 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 
 import com.coamctech.bxloan.manager.common.JsonResult;
-import com.coamctech.bxloan.manager.domain.DocColumn;
-import com.coamctech.bxloan.manager.domain.DocSource;
-import com.coamctech.bxloan.manager.domain.Role;
 import com.coamctech.bxloan.manager.domain.User;
+import com.coamctech.bxloan.manager.service.VO.UserSignVO;
 import com.coamctech.bxloan.manager.service.VO.UserStoreVO;
 import com.coamctech.bxloan.manager.service.VO.UserTreeVO;
 import com.coamctech.bxloan.manager.service.VO.UserVO;
@@ -62,4 +60,7 @@ public interface UserMngService {
 	//导出用户收藏列表
 	void exportUserStore(String userName, HttpServletRequest request,
 			HttpServletResponse response) throws Exception ;
+	
+	//用户授权栏目列表
+	Page<UserSignVO> findUserSignList(Integer pageNumber, Integer pageSize,Long userId, String columnName);
 }

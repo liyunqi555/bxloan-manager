@@ -70,6 +70,24 @@ public class UserController {
     	return userAddPage;
     }
     
+    
+    
+    @RequestMapping(value="/isManager")
+	@ResponseBody
+	public JsonResult IsManager(HttpSession session){
+		User curUser = (User)session.getAttribute("user");
+    	if("admin".equals(curUser.getUserName())){
+    		return new JsonResult(ResultCode.SUCCESS_CODE,null,"1");
+		}else{
+			if(userMngService.isManager(curUser.getId())){
+				return new JsonResult(ResultCode.SUCCESS_CODE,null,"1");
+			}else{
+				return new JsonResult(ResultCode.SUCCESS_CODE,null,"0");
+			}
+		}
+		
+	}
+    
     /**
      * type: add-新增 edit-编辑 view-查看
      */

@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -15,6 +14,7 @@ import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.config.WebSecurityConfig;
 import com.coamctech.bxloan.manager.domain.User;
+import com.coamctech.bxloan.manager.service.UserMngService;
 import com.coamctech.bxloan.manager.service.UserService;
 
 @Controller
@@ -23,6 +23,9 @@ public class LoginController {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private UserMngService userMngService;
 
     @RequestMapping(value="/login")
     public String login(){
@@ -30,8 +33,18 @@ public class LoginController {
     }
     
     @RequestMapping(value="/index")
-    public String index(){
-    	return "index";
+    public String index(HttpSession session){
+    	User curUser = (User)session.getAttribute("user");
+    	if("admin".equals(curUser.getUserName())){
+    		return "index1";
+		}else{
+			if(userMngService.isManager(curUser.getId())){
+				return "index1";
+			}else{
+				return "index2";
+			}
+		}
+    	
     }
     
     @RequestMapping("/loginPost")
