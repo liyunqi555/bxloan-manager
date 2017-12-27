@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+	<head th:include="pre_included">
+		<meta charset="utf-8" />
+		<title>首页</title>
+	</head>
+
+	<body class="no-skin">
+		<div th:include="sidebar"></div> 
+
+		<div class="main-container" id="main-container">
+			<script type="text/javascript">
+				try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+			</script>
+
+
+			<div class="main-content">
+				<div class="main-content-inner">
+					<div class="breadcrumbs" id="breadcrumbs">
+						<script type="text/javascript">
+							try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+						</script>
+
+						<ul class="breadcrumb">
+							<li>
+								<i class="ace-icon fa fa-home home-icon"></i>
+								<a href="/index">首页</a>
+							</li>
+							<li class="active">用户收藏管理</li>
+						</ul><!-- /.breadcrumb -->
+					</div>
+
+					<div class="page-content">
+						<div class="page-header">
+							<h1>
+		            			用户收藏管理
+            				</h1>
+						</div><!-- /.page-header -->
+						<form id="searchForm">
+							<div class="form-group">
+								<label for="userName" class="control-label col-sm-1">用户名称：</label>
+								<div class="col-sm-2">
+									<input type="text" id="userName" class="form-control col-sm-5 input-sm" placeholder="请输入客户名称" name="userName" th:value="${curUserName}"/>
+								</div>
+							</div>
+						</form>
+						<span style="float:right;">
+							<button role="btn-Query" type="button" class="btn btn-sm btn-purple" >
+		                      <i class="ace-icon fa fa-search">
+		                      </i>
+		                      	  查询
+		                    </button>
+		                    <button role="btn-Reset" type="button" class="btn btn-sm" >
+		                      <i class="ace-icon fa fa-undo">
+		                      </i>
+		                      	  重置
+		                    </button>
+		                    <button role="btn-Export" type="button" class="btn btn-sm btn-yellow" >
+		                      <i class="ace-icon fa fa-download">
+		                      </i>
+		                      	 导出
+		                    </button>
+						</span>
+						
+						<br/><br/><br/>
+						
+						<div class="row">
+		            		<div class="col-xs-12">
+		            			<table id="tb-list" class="table table-striped table-bordered table-hover" style="width:100%!important;">
+									<thead>
+										<tr>
+											<th>
+												栏目级别
+											</th>
+											<th>
+												栏目名称
+											</th>
+											<th>
+											  	收藏时间
+											</th>
+										</tr>
+									</thead>
+								</table>
+		            		</div>
+		            	<!-- 表单内容end -->
+		           		</div>
+						<input type="hidden" id="type" th:value="${type}"/>
+					</div><!-- /.page-content -->
+				</div>
+			</div><!-- /.main-content -->
+		</div><!-- /.main-container -->	
+		<script>
+	      seajs.use('/js/userStoreMng/main');
+	 </script>
+	</body>
+</html>

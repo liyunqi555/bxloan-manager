@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"></meta>
+<link rel="stylesheet" th:href="@{css/select-module.css}" />
+<style>
+        .ui-page-width{text-align:center}
+        .body {
+            background: #394557 url("images/meteorshower2.jpg") repeat scroll 0 0;
+            height:auto;
+        }
+        .mod-case__wrap {
+            height: 660px;
+            margin: 80px auto;
+            overflow: hidden;
+            width: 940px;
+        }
+        .mod-case__list {
+            height: 600px;
+        }
+        .mod-index__block {
+            border-bottom: 0px solid #e9ebee;
+            padding: 60px 0;
+        }
+		.icon_list{
+			display:flex;
+		}
+    </style>
+</head>
+<body class="body">
+<div class="mod-index">
+    <div class="mod-index__block mod-index__block_auto-height">
+        <h3 class="mod-index__subtitle" style="color: #FFFFFF;margin: 60px 0;">国图情报系统功能列表</h3>
+            <div class="mod-case">
+                <div class="mod-case">
+                    <div class="mod-case__wrap">
+                        <div class="mod-case__list js_case_imgs_list_content icon_list">
+                            <ul class="mod-case__list js_case_imgs_list">
+                                 <a href="userStoreMng">
+                                    <li data-case-id="8" class="mod-case__item">
+                                        <img alt="" src="images/image-6.jpg" class="mod-case__item-image"></img>
+                                        <i class="mod-case__icon mod-case__icon-case14"></i><p class="mod-case__item-text">用户收藏管理</p>
+                                    </li>
+                                </a>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+</body>
+</html>

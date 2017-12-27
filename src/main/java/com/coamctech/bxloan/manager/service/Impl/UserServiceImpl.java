@@ -43,11 +43,6 @@ public class UserServiceImpl implements UserService{
 				return new JsonResult(ResultCode.ERROR_CODE,"用户已失效，请联系管理员",null);
 			}
 		}
-		if(!user.getUserName().equals("admin")){
-			if(!userMngService.isManager(user.getId())){
-				return new JsonResult(ResultCode.ERROR_CODE,"您不是管理员，无法登陆后台管理系统",null);
-			}
-		}
 		return new JsonResult(ResultCode.SUCCESS_CODE, "登陆成功", user);
 
 	}

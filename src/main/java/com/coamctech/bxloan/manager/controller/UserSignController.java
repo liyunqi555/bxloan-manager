@@ -25,41 +25,27 @@ import com.coamctech.bxloan.manager.service.VO.UserStoreVO;
  * Created by Administrator on 2017/10/20.
  */
 @Controller
-@RequestMapping("/userStoreMng")
-public class UserStoreController {
-    private static final Logger logger = LoggerFactory.getLogger(UserStoreController.class);
+@RequestMapping("/userSign")
+public class UserSignController {
+    private static final Logger logger = LoggerFactory.getLogger(UserSignController.class);
     
-    private static final String mainPage = "userStore";
+    private static final String mainPage = "userSign";
     
     @Autowired
     private UserMngService userMngService;
     
     /**
-     * 用户收藏管理主页面
+     * 主页面
      */
     @RequestMapping
     public String index(HttpSession session,Model model){
-    	User curUser = (User)session.getAttribute("user");
-    	if(curUser.getUserName().equals("admin")){
-    		model.addAttribute("curUserName", "");
-    		model.addAttribute("type", "2");
-    	}else{
-    		//判断当前用户角色是否为管理员
-        	if(!userMngService.isManager(curUser.getId())){
-        		model.addAttribute("curUserName", curUser.getUserName());
-        		model.addAttribute("type", "1");
-        	}else{
-        		model.addAttribute("curUserName", "");
-        		model.addAttribute("type", "2");
-        	}
-    	}
     	
     	return mainPage;
     }
     
     
     /**
-     * 用户收藏管理主页面初始化
+     * 主页面初始化
      */
     @RequestMapping("/findByCondition")
 	@ResponseBody

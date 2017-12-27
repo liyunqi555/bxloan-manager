@@ -377,9 +377,8 @@ public class UserMngServiceImpl implements UserMngService{
 	public void exportUserStore(String userName, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		try{
-			Resource resource = new ClassPathResource("/excel/userStore_template.xlsx");
-			InputStream is = new FileInputStream(resource.getFile());
-			//System.out.println("scr.getInputStream()scr.getInputStream()=="+resource.getInputStream());
+			Resource resource = new ClassPathResource("excel/111.xlsx");
+			InputStream is = resource.getInputStream();
 			int PAGE_SIZE = 1000000;
 			Map<String, List<UserStoreVO>> map = new HashMap<String, List<UserStoreVO>>();
 			Page<UserStoreVO> page = this.findUserStoreList(0, PAGE_SIZE, userName);
@@ -388,9 +387,9 @@ public class UserMngServiceImpl implements UserMngService{
 			/**导出excel工具类*/
 			ReportExcelUtils reportExcelUtils= new ReportExcelUtils();
 			/**加载模版并且生成导出文件落地*/
-			String fileName = reportExcelUtils.genernateExcelFileName(is, "/excel/", "111", map);
+			String fileName = reportExcelUtils.genernateExcelFileName(is, "excel/", "用户收藏", map);
 			/**获取文件路径*/
-			String reportPath = "/excel/";
+			String reportPath = "excel/";
 			File file = new File(reportPath+fileName);
 			/**从服务器下载到本地*/
 			ReportExcelUtils.downloadFile(file, fileName, request, response);

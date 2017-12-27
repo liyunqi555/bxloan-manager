@@ -194,6 +194,7 @@
                  <filtering>true</filtering>
                  <excludes>
                      <exclude>static/css/fonts/**</exclude>
+                     <exclude>excel/**</exclude>
                  </excludes>
              </resource>
          <!-- fonts file cannot use filter as the data structure of byte file will be changed via filter -->
@@ -202,6 +203,7 @@
              <filtering>false</filtering>
              <includes>
                  <include>static/css/fonts/**</include>
+                 <include>excel/**</include>
              </includes>
          </resource>
         </resources>
