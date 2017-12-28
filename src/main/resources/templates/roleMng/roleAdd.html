@@ -26,21 +26,53 @@
 								<i class="ace-icon fa fa-home home-icon"></i>
 								<a href="/index">首页</a>
 							</li>
-							<li class="active">用户栏目来源分配</li>
+							<li class="active">角色管理</li>
 						</ul><!-- /.breadcrumb -->
 					</div>
 
 					<div class="page-content">
 						<div class="page-header">
 							<h1>
-		            			用户栏目来源分配
+		            			角色新增
             				</h1>
 						</div><!-- /.page-header -->
 						  <div class="row row_content">
-						  	<input type="hidden" id="checkedId"/>
 							<!-- 左列 -->
-							<div class="col-md-4 row_left">
+							<div class="col-md-3 row_left">
+								<h3 style="text-align:center">角色信息</h3>
+								<br/>
+								<form id="basicInfoForm" class="form-horizontal">
+									<div class="row">
+										<label class="control-label col-sm-3" for="addRoleName">角色名称：</label>
+										<div class="col-sm-6">
+											<input id="roleName" type="text" class="form-control col-sm-3 input-sm" 
+											name="roleName"/>
+										</div>
+									</div>
+									<br/>
+									<div class="row">
+										<label class="control-label col-sm-3" for="englishName">英文名称：</label>
+										<div class="col-sm-6">
+											<input id="englishName" type="text" class="form-control col-sm-3 input-sm" 
+											name="englishName"/>
+										</div>
+									</div>
+									<br/>
+									<div class="row">
+										<label class="control-label col-sm-3" for="roleType">角色类型：</label>
+										<div class="col-sm-6">
+											<select name="type" id="type" class="form-control">
+		                                      <option value='1'>管理员</option>
+		                                      <option value='2'>普通用户</option>
+		                                    </select>
+										</div>
+									</div>
+									
+								</form>
+							</div>
+							<div class="col-md-3 row_center">
 								<h3 style="text-align:center">用户列表</h3>
+								<div><font style="color:red">一个用户仅能对应一个角色，分配后该用户原角色失效，请留意！</font></div>
 								<br/>
 								<span class="block input-icon input-icon-right">
 									<div id="UserZTree" class="ztree">
@@ -52,7 +84,7 @@
 								</span>
 							</div>
 							<!-- 中列 -->
-							<div class="col-md-4 row_center">
+							<div class="col-md-3 row_center">
 								<h3 style="text-align:center">栏目列表</h3>
 								<br/>
 								<span class="block input-icon input-icon-right">
@@ -65,19 +97,10 @@
 								</span>
 							</div>
 							<!-- 右列 -->
-							<div class="col-md-4 row_right">
+							<div class="col-md-3 row_right">
 								<h3 style="text-align:center">来源列表</h3>
 								<br/>
 								<span class="block input-icon input-icon-right">
-									<!-- <table id="tbSourceList">
-										<thead>
-											<tr>
-												<th style="width:10%"><input type="checkbox" id="sourceId" title='选取本页所有文档' /> 选择</th>
-												
-												<th style="width:15%">来源名称</th>
-											</tr>
-										</thead>
-									</table> -->
 									<div id="SourceZTree" class="ztree">
 										<div class="col-xs-12" style="overflow-y: auto;max-height: 500px;position:absolute;z-index:999;background:#fff;border:1px solid #e3e3e3">
 											<ul id="tree" class="ztree">
@@ -94,6 +117,9 @@
 						  	<button type="button" class="btn btn-md btn-primary" id="save" data-loading-text="保存中...">
 								<i class="ace-icon fa fa-floppy-o"></i> 保存
 							</button>
+							<button type="button" class="btn btn-md btn-pre" id="back" onclick="javascript:history.go(-1);">
+								<i class="ace-icon fa fa-chevron-left"></i> 返回
+							</button>
 						  </div>
 						
 						
@@ -105,7 +131,7 @@
 		
 		</div><!-- /.main-container -->		
 		<script>
-	      seajs.use('/js/userAllocation/main');
+	      seajs.use('/js/roleMng/addRole/main');
 	 	</script>
 	</body>
 </html>

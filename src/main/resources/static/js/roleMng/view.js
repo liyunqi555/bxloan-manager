@@ -104,14 +104,15 @@ define(function(require, exports, module) {
 			viewSelf.dt.fnPageChange(0);
 		},
 	    add: function() { // 新增按钮事件
-	    	this.initModal();
+	    	/*this.initModal();
             $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 新增角色");
             $("#add-modal-form").modal("show");
             $('#checkedId').val('');
-            $('#operateType').val('');
+            $('#operateType').val('');*/
+			window.location.href="roleMng/addRole";
         },
         edit:function(e){ //编辑按钮事件
-        	var viewSelf = this;
+        	/*var viewSelf = this;
         	viewSelf.initModal();
         	var btnSelf = $(e.currentTarget);
         	var roleId = btnSelf.data("id"); 
@@ -120,16 +121,24 @@ define(function(require, exports, module) {
         	 $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-edit'></i> 编辑角色");
         	 $('#checkedId').val(roleId);
         	 $('#operateType').val('edit');
-        	 viewSelf.initModalData(roleId,'edit');
+        	 viewSelf.initModalData(roleId,'edit');*/
+        	var viewSelf = this;
+			var btnSelf = $(e.currentTarget);
+			var roleId = btnSelf.data("id"); 
+			window.location.href="/roleMng/edit/"+"edit"+"/"+roleId;
         },
         detail:function(e){ //查看按钮事件
-        	var viewSelf = this;
+        	/*var viewSelf = this;
         	viewSelf.initModal();
 			var btnSelf = $(e.currentTarget);
 			var roleId = btnSelf.data("id"); 
         	$("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-eye'></i> 查看角色");
         	$('#checkedId').val(roleId);
-        	viewSelf.initModalData(roleId,'view');
+        	viewSelf.initModalData(roleId,'view');*/
+        	var viewSelf = this;
+			var btnSelf = $(e.currentTarget);
+			var roleId = btnSelf.data("id"); 
+			window.location.href="/roleMng/edit/"+"view"+"/"+roleId;
         },
         initModal:function(){
         	$("#addForm").resetForm();

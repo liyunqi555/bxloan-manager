@@ -7,12 +7,15 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,6 +28,8 @@ import com.coamctech.bxloan.manager.domain.Role;
 import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.service.RoleMngService;
 import com.coamctech.bxloan.manager.service.VO.RoleVO;
+import com.coamctech.bxloan.manager.service.VO.UserVO;
+import com.coamctech.bxloan.manager.utils.CommonHelper;
 
 /**
  * Created by Administrator on 2017/10/20.
@@ -43,6 +48,26 @@ public class RoleController {
     
     @Autowired
     private RoleDao roleDao;
+    
+    @RequestMapping("/addRole")
+    public String addUser(){
+    	return roleAddPage;
+    }
+    
+    /**
+     * type: add-新增 edit-编辑 view-查看
+     */
+    @RequestMapping("/edit/{operateType}/{roleId}")
+    public String edit(Model model,@PathVariable("operateType") String operateType,@PathVariable("roleId") Long roleId){
+    	model.addAttribute("operateType", operateType);
+    	model.addAttribute("roleId", roleId);
+    	Role role = roleDao.findOne(roleId);
+    	
+    	model.addAttribute("roleName",role.getRoleName());
+    	model.addAttribute("englishName",role.getEnglishName());
+    	model.addAttribute("type",role.getType());
+    	return roleEditPage;
+    }
     
     /**
      * 角色管理主页面初始化
@@ -133,6 +158,39 @@ public class RoleController {
 		}
     	
     	
+    }
+    
+    /**
+     * 用户新增/编辑
+     */
+	@RequestMapping("/editRole")
+    @ResponseBody
+    public JsonResult editUser(RoleVO vo,HttpSession session){
+    	try {
+    		String sourceIds = vo.getSourceIds();
+    		String columnIds = vo.getColumnIds();
+    		String userIds = vo.getUserIds();
+    		String operateType = vo.getOperateType();
+    		User curUser = (User)session.getAttribute("user");
+    		List<String> sourceList = new ArrayList<>();
+    		for(int i=0;i<sourceIds.split(",").length;i++){
+    			sourceList.add(sourceIds.split(",")[i]);
+    		}
+    		List<String> columnList = new ArrayList<>();
+    		for(int i=0;i<columnIds.split(",").length;i++){
+    			columnList.add(columnIds.split(",")[i]);
+    		}
+    		List<String> userList = new ArrayList<>();
+    		for(int i=0;i<userIds.split(",").length;i++){
+    			userList.add(userIds.split(",")[i]);
+    		}
+			JsonResult r = roleMngService.addOrEdit(curUser,vo,columnList,sourceList,userList,operateType);
+			return r;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return new JsonResult(ResultCode.ERROR_CODE,"服务器异常");
+		}
     }
     
     @RequestMapping(value="/getAllRoles")

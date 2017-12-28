@@ -35,4 +35,13 @@ public interface RoleMngService {
 		
 	//查询角色已选来源列表
 	JsonResult getCheckedSource(Long roleId);
+	
+	//查询角色已选用户列表
+	JsonResult getCheckedUser(Long roleId);
+	
+	//新增、编辑角色
+	JsonResult addOrEdit(User curUser, RoleVO vo, List<String> columnList,
+			List<String> sourceList, List<String> userList, String operateType);
+
+	
 }

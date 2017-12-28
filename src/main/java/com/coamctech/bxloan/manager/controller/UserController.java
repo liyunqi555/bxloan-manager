@@ -236,4 +236,13 @@ public class UserController {
 		return list;
     	
     }
+    
+    @RequestMapping(value="/getAllUser", method = RequestMethod.POST)
+    @ResponseBody
+    public List<User> getAllUser(){
+    	
+		List<User> list =  (List<User>)userDao.findUserExcludesAdmin();
+		return list;
+    	
+    }
 }
