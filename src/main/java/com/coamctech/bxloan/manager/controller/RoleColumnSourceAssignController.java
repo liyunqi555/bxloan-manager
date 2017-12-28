@@ -39,5 +39,13 @@ public class RoleColumnSourceAssignController {
     	return roleMngService.getCheckedSource(roleId);
     	
     }
+    
+    @RequestMapping(value="/getCheckedUser")
+    @ResponseBody
+    public JsonResult getCheckedUser(HttpServletRequest request){
+    	Long roleId = CommonHelper.toLong(request.getParameter("roleId"));
+    	return roleMngService.getCheckedUser(roleId);
+    	
+    }
 
 }

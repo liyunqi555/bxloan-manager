@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService{
 			}
 		}
 		List<Long> ll = roleUserRelDao.findRoleIdsByUserId(user.getId());
-		if(CollectionUtils.isEmpty(ll)){
+		if(CollectionUtils.isEmpty(ll)&&!"admin".equals(user.getUserName())){
 			return new JsonResult(ResultCode.ERROR_CODE,"用户未分配角色，请联系管理员",null);
 		}
 		return new JsonResult(ResultCode.SUCCESS_CODE, "登陆成功", user);

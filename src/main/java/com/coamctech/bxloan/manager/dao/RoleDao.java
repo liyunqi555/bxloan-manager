@@ -7,4 +7,7 @@ import com.coamctech.bxloan.manager.domain.Role;
 
 public interface RoleDao extends JpaSpecificationExecutor<Role>,PagingAndSortingRepository<Role,Long> {
 
+	Role findByRoleName(String roleName);
+	
+
 }
