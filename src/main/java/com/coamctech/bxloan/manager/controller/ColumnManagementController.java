@@ -118,11 +118,11 @@ public class ColumnManagementController {
      */
     @RequestMapping("/addColumn")
     @ResponseBody
-    public  JsonResult addColumn(@ModelAttribute DocColumn docColumn,HttpServletRequest request) {
+    public  JsonResult addColumn(@ModelAttribute DocColumn docColumn, @RequestParam(required = false) String userIds,@RequestParam(required = false) String sourceIds,HttpServletRequest  request) {
     	JsonResult result = new JsonResult();
     	try{
     		User curUser = (User)request.getSession().getAttribute("user");
-    		columnServiceImpl.addColumn(docColumn,curUser.getId());
+    		columnServiceImpl.addColumn(docColumn,userIds,sourceIds,curUser.getId());
     		return new  JsonResult(ResultCode.SUCCESS_CODE,"保存成功");
 
     	}catch(Exception e){
@@ -151,5 +151,27 @@ public class ColumnManagementController {
 		/**处理并返回查询结果*/
 		return new DataTablesPage(sEcho, page);
 	}
-
+	@RequestMapping("/getSource")
+    @ResponseBody
+    public  JsonResult getSource(Long  id) {
+    	try{
+    		List<Long> sourceIds  = columnServiceImpl.getSources(id);
+    		return new  JsonResult(ResultCode.SUCCESS_CODE,"",sourceIds);
+    	}catch(Exception e){
+    		return new  JsonResult(ResultCode.ERROR_CODE,"");
+    	}
+     
+    }
+	@RequestMapping("/getUser")
+    @ResponseBody
+    public  JsonResult getUser(Long  id) {
+    	try{
+    		List<Long> userIds  = columnServiceImpl.getUsers(id);
+    		return new  JsonResult(ResultCode.SUCCESS_CODE,"",userIds);
+    	}catch(Exception e){
+    		return new  JsonResult(ResultCode.ERROR_CODE,"");
+    	}
+     
+    }
+	
 }

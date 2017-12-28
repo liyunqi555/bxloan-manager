@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,18 +12,22 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.common.DynamicQuery.DynamicQuery;
 import com.coamctech.bxloan.manager.dao.DocColumnDao;
+import com.coamctech.bxloan.manager.dao.DocColumnDocSourceRelDao;
 import com.coamctech.bxloan.manager.dao.DocInfoDao;
 import com.coamctech.bxloan.manager.dao.RoleDocColumnRelDao;
 import com.coamctech.bxloan.manager.dao.UserDocColumnRelDao;
 import com.coamctech.bxloan.manager.domain.DocColumn;
+import com.coamctech.bxloan.manager.domain.DocColumnDocSourceRel;
+import com.coamctech.bxloan.manager.domain.UserDocColumnRel;
+import com.coamctech.bxloan.manager.domain.UserDocSourceRel;
 import com.coamctech.bxloan.manager.service.IColumnService;
 import com.coamctech.bxloan.manager.service.VO.DocColumnVO;
+import com.coamctech.bxloan.manager.utils.CommonHelper;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 /**   
@@ -51,6 +56,8 @@ public class ColumnServiceImpl implements IColumnService{
 	private RoleDocColumnRelDao  roleDocColumnRelDao;
 	@Autowired
 	private UserDocColumnRelDao userDocColumnRelDao;
+	@Autowired
+	private DocColumnDocSourceRelDao docColumnDocSourceRelDao;
 	
 	@Override
 	public JsonResult getAllColumn() {
@@ -89,23 +96,77 @@ public class ColumnServiceImpl implements IColumnService{
 	}
 
 	@Override
-	public void addColumn(DocColumn docColumn,Long userId) {
-		 Long parentId = docColumn.getParentId();
-		 if(null!=parentId){
-			 DocColumn parentDocColumn = docColumnDao.findOne(parentId);
-			 docColumn.setLevel(parentDocColumn.getLevel()+1);
-		 }
-		 docColumn.setCreateTime(new Date());
-		 docColumn.setUpdateTime(new Date());
-		 docColumn.setCreator(userId);
-		 docColumnDao.save(docColumn);
+	public void addColumn(DocColumn docColumn,String userIds, String sourceIds, Long loginId) {
+		Long parentId = docColumn.getParentId();
+		if(null!=parentId){
+			DocColumn parentDocColumn = docColumnDao.findOne(parentId);
+			docColumn.setLevel(parentDocColumn.getLevel()+1);
+		}
+		String conditionField = docColumn.getConditionField();
+		Integer conditionType = docColumn.getConditionType();
+		StringBuffer str= new StringBuffer();
+		//换行符转换成List
+		List<String> list = CommonHelper.strToList(conditionField,CommonHelper.NEW_LINE);
+		if(null!=list &&list.size()>0){
+			for(int i = 0; i<list.size();i++){
+				String line = list.get(i);
+				line = line.replaceAll(" ", "");	
+				String [] strArray = line.split("=");
+				if(strArray.length>1){
+					String beforeLine= strArray[0];
+					String afterLine= strArray[1].trim();
+					beforeLine= beforeLine.replace("标题关键字", "title like '%");
+					beforeLine= beforeLine.replace("来源关键字", "sourceName like '%");
+					beforeLine= beforeLine.replace("文章关键字", "body like '%");
+					str.append(beforeLine).append(afterLine).append("%'");
+					if(null!=conditionType &&conditionType.equals(1)&&list.size()>1){
+						str.append(" and ");
+					}
+				}else{
+					//逻辑拼接
+					str.append(" ").append(line).append(" ");
+				}
+			}
+		}
+		docColumn.setConditionField(str.toString());
+		if(null==docColumn.getId()){
+			docColumn.setCreateTime(new Date());
+		}
+		docColumn.setUpdateTime(new Date());
+		docColumn.setCreator(loginId);
+		docColumnDao.save(docColumn);
+		List<String> userIdList = CommonHelper.strToList(userIds,CommonHelper.SEPARATOR_COMMA);
+		List<String> sourceIdList = CommonHelper.strToList(sourceIds,CommonHelper.SEPARATOR_COMMA);
+		Long docColumnId = docColumn.getId();
+		if(CollectionUtils.isNotEmpty(userIdList)){
+			for(String userId:userIdList){
+				UserDocColumnRel rel = new  UserDocColumnRel();
+				rel.setDocColumnId(docColumnId);
+				rel.setUserId(CommonHelper.toLong(userId));
+				rel.setCreateTime(CommonHelper.getNow());
+				rel.setCreator(loginId);
+				userDocColumnRelDao.save(rel);
+			}
+		}
+		
+		if(CollectionUtils.isNotEmpty(sourceIdList)){
+			for(String sourceId:sourceIdList){
+				DocColumnDocSourceRel dds = new  DocColumnDocSourceRel();
+				dds.setDocColumnId(docColumnId);
+				dds.setDocSourceId(CommonHelper.toLong(sourceId));
+				dds.setUpdateTime(CommonHelper.getNow());
+				dds.setCreateTime(CommonHelper.getNow());
+				dds.setCreator(loginId);
+				docColumnDocSourceRelDao.save(dds);
+			}
+		}
 	}
 
 	@Override
 	public Page<DocColumnVO> findColumnList(int pageNumber, Integer pageSize, String name,Long loginUserId) {
 		StringBuffer sql = new StringBuffer();
 		List<Object> params = new ArrayList<Object>();
-		sql.append("select tc.name,tu.user_name,tc.if_special,tc.level,ptu.name parentName,tc.id ,tc.parent_id  from t_doc_column tc ,t_user tu,t_doc_column ptu where tc.creator=tu.id and ptu.id=tc.parent_id");
+		sql.append("select tc.name,tu.user_name,tc.if_special,tc.level,ptu.name parentName,tc.id ,tc.parent_id ,tc.condition_field,tc.condition_type from t_doc_column tc ,t_user tu,t_doc_column ptu where tc.creator=tu.id and ptu.id=tc.parent_id");
 		if(StringUtils.isNotBlank(name)){
 			params.add("%"+String.valueOf(name)+"%");
 		    sql.append(" and tc.name like ?").append(params.size()); 
@@ -134,13 +195,13 @@ public class ColumnServiceImpl implements IColumnService{
 	public DocColumnVO findColumn(Long id) {
 		StringBuffer sql = new StringBuffer();
 		List<Object> params = new ArrayList<Object>();
-		sql.append("select tc.name,tu.user_name,tc.if_special,tc.level,ptu.name parentName,tc.id ,tc.parent_id from t_doc_column tc ,t_user tu,t_doc_column ptu where tc.creator=tu.id and ptu.id=tc.parent_id");
+		sql.append("select tc.name,tu.user_name,tc.if_special,tc.level,ptu.name parentName,tc.id ,tc.parent_id ,tc.condition_field,tc.condition_type from t_doc_column tc ,t_user tu,t_doc_column ptu where tc.creator=tu.id and ptu.id=tc.parent_id");
 		if(null!=id){
 			params.add(id);
 		    sql.append(" and tc.id = ?").append(params.size()); 
 		}
 		sql.append("   order by tc.create_time desc ");
-		List<DocColumnVO> v = Lists.transform(
+		List<DocColumnVO> docColumnVOList = Lists.transform(
 				dynamicQuery.nativeQuery(Object[].class, sql.toString(), id),
 				new Function<Object[], DocColumnVO>() {
 					@Override
@@ -148,10 +209,15 @@ public class ColumnServiceImpl implements IColumnService{
 						return new DocColumnVO(objs);
 					}
 			});
-		if (CollectionUtils.isEmpty(v)) {
+		if (CollectionUtils.isEmpty(docColumnVOList)) {
 			return null;
 		}
-		return v.get(0);
+		//处理特殊字段
+		DocColumnVO vo = docColumnVOList.get(0);
+		String conditionField = vo.getConditionField();
+		List<String> list = CommonHelper.strToList(conditionField,"%'");
+		vo.setConditionField(conditionField);
+		return vo;
 	}
 
 	@Override
@@ -160,11 +226,17 @@ public class ColumnServiceImpl implements IColumnService{
 		if(null!=list&&list.size()>0){
 			return new  JsonResult(ResultCode.ERROR_CODE,"该栏目下包含子栏目,不可以删除！");
 		}
-		List docInfoList = docInfoDao.findByColumnId(id) ;
-		if(null!=docInfoList&&docInfoList.size()>0){
-			return new  JsonResult(ResultCode.ERROR_CODE,"该栏目下包含文章,不可以删除！");
-		}
-		return null;
+		return new JsonResult(ResultCode.SUCCESS_CODE,"");
+	}
+
+	@Override
+	public List<Long> getSources(Long docColumnIds) {
+		return this.docColumnDocSourceRelDao.findSourceIdsByDocColumnId(docColumnIds);
+	}
+
+	@Override
+	public List<Long> getUsers(Long docColumnIds) {
+		return this.userDocColumnRelDao.findUserByDocColumnId(docColumnIds);
 	}
    
 }	
