@@ -29,7 +29,6 @@ define(function(require, exports, module) {
         		async : false,
         		url :  "/loginPost",
         		success : function(result){
-        			console.log(result.code);
         			if(result.code==200){
         				window.location.href="index";
         			}else{

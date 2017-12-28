@@ -226,11 +226,7 @@ public class ColumnServiceImpl implements IColumnService{
 		if(null!=list&&list.size()>0){
 			return new  JsonResult(ResultCode.ERROR_CODE,"该栏目下包含子栏目,不可以删除！");
 		}
-/*		List docInfoList = docInfoDao.findByColumnId(id) ;
-		if(null!=docInfoList&&docInfoList.size()>0){
-			return new  JsonResult(ResultCode.ERROR_CODE,"该栏目下包含文章,不可以删除！");
-		}*/
-		return null;
+		return new JsonResult(ResultCode.SUCCESS_CODE,"");
 	}
 
 	@Override

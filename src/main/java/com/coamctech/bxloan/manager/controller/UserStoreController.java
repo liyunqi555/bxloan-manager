@@ -35,7 +35,7 @@ public class UserStoreController {
     private UserMngService userMngService;
     
     /**
-     * 用户管理主页面
+     * 用户收藏管理主页面
      */
     @RequestMapping
     public String index(HttpSession session,Model model){
@@ -59,7 +59,7 @@ public class UserStoreController {
     
     
     /**
-     * 用户管理主页面初始化
+     * 用户收藏管理主页面初始化
      */
     @RequestMapping("/findByCondition")
 	@ResponseBody
@@ -78,31 +78,12 @@ public class UserStoreController {
     	
     }
     
-    @RequestMapping("/checkDownload")
-	@ResponseBody
-	public JsonResult checkDownload(@RequestParam("userName") String  userName){
-		try{
-			Page<UserStoreVO> page = null;
-			page = userMngService.findUserStoreList(new Integer(0 / 1000), new Integer(1000),
-					userName);
-			//查询正常合同列表
-			if(page == null || page.getContent() == null || page.getContent().size() == 0){
-				return new JsonResult(ResultCode.ERROR_CODE,"无数据，无法导出报表",null);
-			}
-		}catch (Exception e) {
-			logger.error(e.getMessage());
-			return new JsonResult(ResultCode.ERROR_CODE,"服务器异常",null);
-		}
-		return new JsonResult(ResultCode.SUCCESS_CODE,"导出成功",null);
-		
-	}
-	
 	@RequestMapping("/downloadExcel")
 	@ResponseBody
-	public JsonResult downloadExcel(HttpServletRequest request, HttpServletResponse response, String userName){
+	public JsonResult downloadExcel(HttpServletRequest request, HttpServletResponse response, String selectedStr){
 		try {
 			/**下载excel到本地*/
-			userMngService.exportUserStore(userName, request, response);
+			userMngService.exportUserStore(selectedStr, request, response);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return new JsonResult(ResultCode.ERROR_CODE,"服务器异常",null);

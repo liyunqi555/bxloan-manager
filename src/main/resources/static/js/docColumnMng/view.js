@@ -108,49 +108,6 @@ define(function(require, exports, module) {
 			$('#conditionField').val($('#conditionField').val()+"\n and ");
 		}
 	},
-/*	saveColumn:function(){ 
-		var viewSelf = this;
-		var $form=$("form[role='addColumnForm']");
-		var treeObj1=$.fn.zTree.getZTreeObj("userZTree");
-        nodes1=treeObj1.getCheckedNodes(true);
-        var userIds = "";
-        console.log("你是怎么知道的");
-        for(var i=0;i<nodes1.length;i++){
-        	userIds+=nodes1[i].id + ",";
-        }
-        if(userIds==""){
-        	utils.alert.warn("请选择角色或用户");
-        	return false;
-        }
-        
-        var treeObj2=$.fn.zTree.getZTreeObj("sourceZTree");
-        nodes2=treeObj2.getCheckedNodes(true);
-        var sourceIds = "";
-        for(var i=0;i<nodes2.length;i++){
-        	sourceIds+=nodes2[i].id + ",";
-        }
-        if(sourceIds==""){
-        	utils.alert.warn("请选择来源");
-        	return false;
-        }
-		  $form.validate({
-			rules: rm.rules,
-            messages: rm.messages,
-            submitHandler: function(form) {
-				var formSelf = $(form);
-				
-				viewSelf.model.submitForm($form, userIds,sourceIds,function(result) {
-						if (result.code=='200') {
-							$("#add-modal-form").modal("hide");
-							formSelf.resetForm();
-							viewSelf.dt.fnDraw(); // 重新加载表格中的数据
-						} else {
-							utils.alert.err("<strong>" + result.msg + "</strong>");
-						}
-					});
-			  	}
-			});
-	},*/
 	formValidate:function(){
         $("#addColumnForm").validate({
             rules: rm.rules,
@@ -369,7 +326,6 @@ define(function(require, exports, module) {
 		    $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 编辑栏目");
 	    	 $('#addName').val(name);
 	    	 $('#docColumnCdMask').val(parentName);
-	    	 console.log(parentId);
 	    	 $('#ifSpecial').val(ifSpecial);
 	    	 $('#docColumnId').val(parentId);
 	    	 $("input[name='id']").val(id);

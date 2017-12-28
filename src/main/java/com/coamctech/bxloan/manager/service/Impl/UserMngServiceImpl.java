@@ -1,20 +1,17 @@
 package com.coamctech.bxloan.manager.service.Impl;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.coamctech.bxloan.manager.service.VO.UserStoreVO;
-import com.coamctech.bxloan.manager.utils.ReportExcelUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -30,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.common.DynamicQuery.DynamicQuery;
+import com.coamctech.bxloan.manager.dao.DocColumnDao;
 import com.coamctech.bxloan.manager.dao.RoleDao;
 import com.coamctech.bxloan.manager.dao.RoleUserRelDao;
 import com.coamctech.bxloan.manager.dao.UserDao;
@@ -41,6 +39,7 @@ import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.domain.UserDocColumnRel;
 import com.coamctech.bxloan.manager.domain.UserDocSourceRel;
 import com.coamctech.bxloan.manager.service.UserMngService;
+import com.coamctech.bxloan.manager.service.VO.UserSignVO;
 import com.coamctech.bxloan.manager.service.VO.UserStoreVO;
 import com.coamctech.bxloan.manager.service.VO.UserTreeVO;
 import com.coamctech.bxloan.manager.service.VO.UserVO;
@@ -72,6 +71,9 @@ public class UserMngServiceImpl implements UserMngService{
 	
 	@Autowired
 	private UserDocSourceRelDao userDocSourceRelDao;
+	
+	@Autowired
+	private DocColumnDao docColumnDao;
 
 	@Override
 	public Page<UserVO> findBySearch(Integer pageNumber, Integer pageSize,
@@ -355,7 +357,7 @@ public class UserMngServiceImpl implements UserMngService{
 			String userName) {
 		List<Object> params = new ArrayList<Object>();
 		StringBuffer sql = new StringBuffer();
-		sql.append(" SELECT u.id,u.user_name,di.title,u.create_time ");
+		sql.append(" SELECT us.id,u.user_name,di.title,u.create_time ");
 		sql.append(" FROM t_user_store us,t_user u,t_doc_info di WHERE u.id=us.user_id and us.doc_info_id = di.id");
 		int i = 0;
 		if(StringUtils.isNotBlank(userName)){
@@ -375,25 +377,50 @@ public class UserMngServiceImpl implements UserMngService{
 		Page<UserStoreVO> resultPage = new PageImpl<UserStoreVO>(returnList, new PageRequest(pageNumber, pageSize), page.getTotalElements());
 		return resultPage;
 	}
+	
+	private Page<UserStoreVO> findExportList(Integer pageNumber, Integer pageSize,
+			String selectedStr) {
+		StringBuffer newStr = new StringBuffer();
+		String[] str = selectedStr.split(",");
+		for(String index : str){
+			newStr.append("'").append(index).append("'").append(",");
+		}
+		List<Object> params = new ArrayList<Object>();
+		StringBuffer sql = new StringBuffer();
+		sql.append(" SELECT us.id,u.user_name,di.title,u.create_time ");
+		sql.append(" FROM t_user_store us,t_user u,t_doc_info di WHERE u.id=us.user_id and us.doc_info_id = di.id");
+		sql.append(" AND convert(varchar,us.id) in (").append(newStr.toString().substring(0,newStr.length() - 1)).append(")");
+		Page<Object[]> page = dynamicQuery.nativeQuery(Object[].class,
+				new PageRequest(pageNumber, pageSize), sql.toString());
+		List<UserStoreVO> returnList = Lists.newArrayList(Lists.transform(
+				page.getContent(), new Function<Object[], UserStoreVO>() {
+					@Override
+					public UserStoreVO apply(Object[] objs) {
+						UserStoreVO vo = new UserStoreVO(objs);
+						return vo;
+					}
+				}));
+		Page<UserStoreVO> resultPage = new PageImpl<UserStoreVO>(returnList, new PageRequest(pageNumber, pageSize), page.getTotalElements());
+		return resultPage;
+	}
 
 	@Override
-	public void exportUserStore(String userName, HttpServletRequest request,
+	public void exportUserStore(String selectedStr, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		try{
-			Resource resource = new ClassPathResource("/excel/userStore_template.xlsx");
-			InputStream is = new FileInputStream(resource.getFile());
-			//System.out.println("scr.getInputStream()scr.getInputStream()=="+resource.getInputStream());
+			Resource resource = new ClassPathResource("excel/111.xlsx");
+			InputStream is = resource.getInputStream();
 			int PAGE_SIZE = 1000000;
 			Map<String, List<UserStoreVO>> map = new HashMap<String, List<UserStoreVO>>();
-			Page<UserStoreVO> page = this.findUserStoreList(0, PAGE_SIZE, userName);
+			Page<UserStoreVO> page = this.findExportList(0, PAGE_SIZE, selectedStr);
 			List<UserStoreVO> list = page.getContent();
 			map.put("reportList", list);
 			/**导出excel工具类*/
 			ReportExcelUtils reportExcelUtils= new ReportExcelUtils();
 			/**加载模版并且生成导出文件落地*/
-			String fileName = reportExcelUtils.genernateExcelFileName(is, "/excel/", "111", map);
+			String fileName = reportExcelUtils.genernateExcelFileName(is, "excel/", "用户收藏", map);
 			/**获取文件路径*/
-			String reportPath = "/excel/";
+			String reportPath = "excel/";
 			File file = new File(reportPath+fileName);
 			/**从服务器下载到本地*/
 			ReportExcelUtils.downloadFile(file, fileName, request, response);
@@ -402,5 +429,41 @@ public class UserMngServiceImpl implements UserMngService{
 		}catch(Exception e){
 			throw new Exception("下载失败！");
 		}
+		
+	}
+
+	@Override
+	public Page<UserSignVO> findUserSignList(Integer pageNumber,
+			Integer pageSize,Long userId, String columnName) {
+		List<Object> params = new ArrayList<Object>();
+		StringBuffer sql = new StringBuffer();
+		sql.append(" SELECT t.id,tc.name,tc.parent_id,tc.level ");
+		sql.append(" FROM t_user_doc_column_rel t,t_doc_column tc where t.doc_column_id=tc.id");
+		int i = 0;
+		if(userId!=null){
+			sql.append(" AND t.user_id = ?").append(++i);
+			params.add(userId);
+		}
+		if(StringUtils.isNotBlank(columnName)){
+			sql.append(" AND tc.name like ?").append(++i);
+			params.add(StringUtils.join("%", columnName, "%"));
+		}
+		Page<Object[]> page = dynamicQuery.nativeQuery(Object[].class,
+				new PageRequest(pageNumber, pageSize), sql.toString(),params.toArray());
+		List<UserSignVO> returnList = Lists.newArrayList(Lists.transform(
+				page.getContent(), new Function<Object[], UserSignVO>() {
+					@Override
+					public UserSignVO apply(Object[] objs) {
+						UserSignVO vo = new UserSignVO(objs);
+						if(vo.getParentId()!=null){
+							vo.setParentColumnName(docColumnDao.findOne(vo.getParentId()).getName());
+						}else{
+							vo.setParentColumnName("");
+						}
+						return vo;
+					}
+				}));
+		Page<UserSignVO> resultPage = new PageImpl<UserSignVO>(returnList, new PageRequest(pageNumber, pageSize), page.getTotalElements());
+		return resultPage;
 	}
 }

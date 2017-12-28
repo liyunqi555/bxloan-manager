@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 
 public class BaseTest {
 	private static Logger logger = LoggerFactory.getLogger(BaseTest.class);
-//	protected static final String base = "http://localhost:8081/";
-	protected static final String base = "http://211.99.230.29:8096/";
+	protected static final String base = "http://localhost:8081/";
+//  protected static final String base = "http://211.99.230.29:8096/";
     //admin
     protected static String token = "ee859669ff48b631da9401687e250c3cv101000000_788fc2920c99964013f1703d99aa7394ba61eada";
     //vip1
@@ -38,9 +38,9 @@ public class BaseTest {
 //        lastVersion();
 //        cancelCustomColumn();
       //  worlds();
-//        docInfos();
+        docInfos();
 //        search();
-//       docInfoDetail();
+//        docInfoDetail();
 //        store();
 //        cancelStore();
 //        myStore();
@@ -196,6 +196,7 @@ public class BaseTest {
     protected static void switchViewHistory(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         addTokenAndSign(nvps);
+        
         String res = post(nvps,"api/app/user/switchViewHistory");
     }
     protected static void changePassword(){
@@ -214,9 +215,9 @@ public class BaseTest {
     }
     protected static void login(){
 		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-		nvps.add(new NameValuePair("userName", "ceshi2"));
+		nvps.add(new NameValuePair("userName", "admin"));
 		nvps.add(new NameValuePair("password", MD5Util.md5Hex("12345678")));
-		nvps.add(new NameValuePair("deviceCode", "123456789abcdef10"));
+		nvps.add(new NameValuePair("deviceCode", "123456789abcdef9"));
 		String res = post(nvps,"api/app/user/anon/login");
         JSONObject jo = JSONObject.parseObject(res);
         token=jo.getJSONObject("body").getString("token");

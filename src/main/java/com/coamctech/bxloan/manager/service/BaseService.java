@@ -27,6 +27,9 @@ public class BaseService<T, ID extends Serializable> {
     public Long topLevelColumnIdDoc;
     @Value("${top.level.column.id.report}")
     public Long topLevelColumnIdReport;
+    public static final String TITLE="title";
+    public static final String SOURCE_NAME="sourceName";
+    public static final String BODY="body";
     @Autowired
     private PagingAndSortingRepository<T, ID> pagingAndSortingRepository;
     @Autowired
@@ -74,10 +77,10 @@ public class BaseService<T, ID extends Serializable> {
     //    Page<T> findAll(Pageable var1) {
 //        return pagingAndSortingRepository.findAll(var1);
     public PageList pageList(Page page, String sql, Map<String, Object> param) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityManager entityManager = null;
         PageList pageList = new PageList(page);
         try {
-
+            entityManager = entityManagerFactory.createEntityManager();
             page.setTotalCount(count(sql,param));
             page.initPage(page.getTotalCount());
             Query query = entityManager.createQuery(sql);
@@ -110,15 +113,16 @@ public class BaseService<T, ID extends Serializable> {
 
     //    }
     Long count(String sql,Map<String, Object> param) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        String countSql = sql;
-        int orderIndex = countSql.indexOf("order");
-        if(orderIndex != -1){
-            countSql = countSql.substring(0,orderIndex);
-        }
-        countSql = "select count(1) " + countSql;
-        Query query = entityManager.createQuery(countSql);
+        EntityManager entityManager =null;
         try {
+            entityManager = entityManagerFactory.createEntityManager();
+            String countSql = sql;
+            int orderIndex = countSql.indexOf("order");
+            if(orderIndex != -1){
+                countSql = countSql.substring(0,orderIndex);
+            }
+            countSql = "select count(1) " + countSql;
+            Query query = entityManager.createQuery(countSql);
             if (null != param && param.size() > 0) {
                 for (String key : param.keySet()) {
                     query.setParameter(key, param.get(key));

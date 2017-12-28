@@ -2,32 +2,20 @@ package com.coamctech.bxloan.manager.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.coamctech.bxloan.manager.common.JsonResult;
-import com.coamctech.bxloan.manager.common.Page;
-import com.coamctech.bxloan.manager.common.PageList;
-import com.coamctech.bxloan.manager.common.ResultCode;
 import com.coamctech.bxloan.manager.dao.DocColumnDao;
-import com.coamctech.bxloan.manager.dao.DocInfoDao;
-import com.coamctech.bxloan.manager.dao.UserCustomDocColumnDao;
 import com.coamctech.bxloan.manager.dao.UserDocColumnRelDao;
 import com.coamctech.bxloan.manager.domain.DocColumn;
-import com.coamctech.bxloan.manager.domain.DocInfo;
-import com.coamctech.bxloan.manager.domain.UserCustomDocColumn;
 import com.coamctech.bxloan.manager.domain.UserDocColumnRel;
 import com.coamctech.bxloan.manager.utils.CommonHelper;
-import org.jsoup.Jsoup;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * Created by Administrator on 2017/11/12.

@@ -34,9 +34,9 @@ import com.coamctech.bxloan.manager.service.VO.RoleVO;
 public class RoleController {
     private static final Logger logger = LoggerFactory.getLogger(RoleController.class);
     
-    private static final String roleMainPage = "roleMng";
-    private static final String roleAddPage = "roleAdd";
-    private static final String roleEditPage = "roleEdit";
+    private static final String roleMainPage = "roleMng/roleMng";
+    private static final String roleAddPage = "roleMng/roleAdd";
+    private static final String roleEditPage = "roleMng/roleEdit";
     
     @Autowired
     private RoleMngService roleMngService;

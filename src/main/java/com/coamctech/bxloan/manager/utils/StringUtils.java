@@ -15,6 +15,7 @@ public class StringUtils {
 
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
     private static final Pattern INT_PATTERN = Pattern.compile("^\\d+$");
+    public static final String BLANK_STRING = " ";
 
     public static boolean isBlank(String str) {
         return str == null || str.length() == 0;
