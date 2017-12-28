@@ -30,4 +30,3 @@ public interface UserDocColumnRelDao extends JpaSpecificationExecutor<UserDocCol
 	public List<Long> findUserByDocColumnId(Long userId);
 
 }
-

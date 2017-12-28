@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,9 +41,11 @@ import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.domain.UserDocColumnRel;
 import com.coamctech.bxloan.manager.domain.UserDocSourceRel;
 import com.coamctech.bxloan.manager.service.UserMngService;
+import com.coamctech.bxloan.manager.service.VO.UserStoreVO;
 import com.coamctech.bxloan.manager.service.VO.UserTreeVO;
 import com.coamctech.bxloan.manager.service.VO.UserVO;
 import com.coamctech.bxloan.manager.utils.CommonHelper;
+import com.coamctech.bxloan.manager.utils.ReportExcelUtils;
 import com.coamctech.bxloan.manager.utils.encrypt.MD5Util;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -399,6 +402,5 @@ public class UserMngServiceImpl implements UserMngService{
 		}catch(Exception e){
 			throw new Exception("下载失败！");
 		}
-		
 	}
 }

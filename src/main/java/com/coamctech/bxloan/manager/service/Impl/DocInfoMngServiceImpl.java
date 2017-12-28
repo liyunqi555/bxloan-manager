@@ -158,7 +158,6 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 			}
 		}
 		return newText.toString();
-
 	}
 
 }
