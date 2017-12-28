@@ -50,13 +50,15 @@ public interface IColumnService {
     
     /**
      *新增栏目
+     * @param sourceIds  来源ID
+     * @param userIds  用户ID
      * @param loginId 登陆人ID
      * @param columnId
      * @return
      *
      * @lastModified zhaoqingwen 2017年12月7日 下午3:53:22  
      */
-    public  void addColumn(DocColumn docColumn, Long loginId);
+    public  void addColumn(DocColumn docColumn, String userIds, String sourceIds, Long loginId);
 
 	/**
 	 *获取栏目菜单
@@ -85,7 +87,7 @@ public interface IColumnService {
 	 *
 	 * @lastModified zhaoqingwen 2017年12月22日 上午11:18:27  
 	 */
-	public DocColumnVO findColumn(Long id);
+	 DocColumnVO findColumn(Long id);
 
 	/**
 	 *验证是否可以删除
@@ -94,5 +96,23 @@ public interface IColumnService {
 	 *
 	 * @lastModified zhaoqingwen 2017年12月22日 上午11:19:11  
 	 */
-	public JsonResult validateDelte(Long id);
+	 JsonResult validateDelte(Long id);
+
+	 /**
+	 *根据栏目查询来源
+	 * @param docColumnIds
+	 * @return 来源Id集合
+	 *
+	 * @lastModified zhaoqingwen 2017年12月28日 上午2:46:43  
+	 */
+	 List<Long>  getSources(Long docColumnIds);
+
+	 /**
+	 *根据栏目查询来源
+	 * @param docColumnIds
+	 * @return 用户集合
+	 *
+	 * @lastModified zhaoqingwen 2017年12月28日 上午2:48:26  
+	 */
+	List<Long>  getUsers(Long docColumnIds);
 }

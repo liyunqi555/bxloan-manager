@@ -57,7 +57,7 @@
 	            			<button id="button-query" class="btn btn-sm btn-purple" type="button">
 		                      <i class="ace-icon fa fa-search">
 		                      </i>
-		                                                查询
+		                                             查询
 		                    </button>
 		                    <button id="button-reset" class="btn btn-sm btn-default">
 		                      <i class="ace-icon fa fa-undo">
@@ -137,19 +137,22 @@
         <!-- 页面内容end -->
         	<div id="add-modal-form" class="modal fade" tabindex="-1" role="basic"
 		aria-hidden="true" style="" data-backdrop="static">
-		<div class="modal-dialog" style="width: 500px; margin: 30px auto\0;">
+		<div class="modal-dialog" style="width: 80%; margin: 500px auto\0;">
 			<div class="modal-content">
-				<form id="addColumnForm" name="addColumnForm"
-					action="/docColumnMng/addColumn" class="form-horizontal" role="addColumnForm"
-					method="post" onsubmit="return false;">
+			<!-- action="/docColumnMng/addColumn" method="post" onsubmit="return false;" -->
+				<form id="addColumnForm" name="addColumnForm" class="form-horizontal" role="addColumnForm"
+					>
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">
 							&times;</button>
 						<h4 class="blue bigger"></h4>
 					</div>
 					<div class="modal-body">
-						<div class="row">
-							<div class="col-xs-12">
+						<div class="row row_content ">
+							<div class="col-md-4 row_left">
+								<div class="form-group center">
+									<h5>栏目信息</h5>
+								</div>
 								<input type="hidden" id="form-field-0" name="id" />
 								<div class="form-group">
 									<label class="col-sm-3 control-label no-padding-right"
@@ -172,6 +175,37 @@
 											<option value='0'>否</option>
 										</select>
 									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3 control-label no-padding-right"
+										for="conditionType">
+										关联模式：
+									</label>
+									<div class="col-sm-7">
+										<select name="conditionType" id="conditionType" 
+											class="form-control required">
+											<option value='1'>普通模式</option>
+											<option value='2'>高级模式</option>
+										</select>
+									</div>
+
+								</div>
+								<div class="form-group">
+									<label class="col-sm-3 control-label no-padding-right"
+										for="conditionField">
+										条件表达式：
+									</label>
+									<div class="col-sm-7">
+										<textarea type="text" id="conditionField" name="conditionField"   
+											class="form-control" ></textarea>
+									</div>
+								</div>
+								<div class="form-group center" >
+									<button class=" fa btn  btn-primary " name="titleKeyWord" id="titleKeyWord" type="button">标题关键字</button>
+									<button class=" fa btn  btn-primary" name="sourceKeyWord" id="sourceKeyWord" type="button">来源关键字 </button>
+									<button class=" fa btn  btn-primary" name="bodyKeyWord" id="bodyKeyWord" type="button">文章关键字</button>
+									<button class=" fa btn  btn-primary" name="or" id="or" type="button" >or</button>
+									<button class=" fa btn  btn-primary" name="and" id="and" type="button">and</button>
 								</div>
 								<div class="form-group ">
 									<label class="col-sm-3 control-label  no-padding-right" > <font
@@ -203,12 +237,40 @@
 									</div>
 								</div>
 								<input name='id'  type="hidden" ></input>
-							</div>
 						</div>
+							<!--中间 -->
+							<div class="col-md-4 row_center">
+								<div class="form-group center">
+									<h5>来源列表</h5>
+								</div>
+								<span class="block input-icon input-icon-right">
+									<div id="sourceZTree" class="ztree">
+										<div class="col-xs-12" style="overflow-y: auto;max-height: 500px;position:absolute;z-index:999;background:#fff;border:1px solid #e3e3e3">
+											<ul id="tree" class="ztree">
+											</ul>
+										</div>
+									</div> 
+								</span>
+							</div>
+							<!--右侧 -->
+							<div class="col-md-4 row_left">
+								<div class="form-group center">
+									<h5>角色用户列表</h5>
+								</div>
+								<span class="block input-icon input-icon-right">
+									<div id="userZTree" class="ztree">
+										<div class="col-xs-12" style="overflow-y: auto;max-height: 500px;position:absolute;z-index:999;background:#fff;border:1px solid #e3e3e3">
+											<ul id="tree" class="ztree">
+											</ul>
+										</div>
+									</div> 
+								</span>
+							</div>
 					</div>
-					<div class="modal-footer">
-						<button id="add-simple-submit" class="btn btn-sm btn-primary"
-							type="submit" data-loading-text="正在保存中..." >
+					</div>
+					<div class="modal-footer center">
+						<button id="add-simple-submit" class="btn btn-sm btn-primary" 
+							type="button" data-loading-text="正在保存中..." >
 							<i class="ace-icon fa fa-save"> </i> 保存
 						</button>
 						<button class="btn btn-sm btn-default" data-dismiss="modal"

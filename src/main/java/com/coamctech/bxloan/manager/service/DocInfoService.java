@@ -183,7 +183,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
     }
     private String getConditionSql(DocColumn docColumn){
         StringBuilder conditionSql = new StringBuilder();
-        String conditionField = docColumn.getCondtionField();
+        String conditionField = docColumn.getConditionField();
         Integer conditionType = docColumn.getConditionType();
 
         conditionSql.append(" ( 1=1 ");

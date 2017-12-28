@@ -81,7 +81,7 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 
 	@Override
 	public void addDocInfo(DocInfo docInfo, Long id) {
-		if(null==docInfo.getCreateTime()){
+		if(null==docInfo.getId()){
 			docInfo.setCreateTime(new Date());
 		}
 		docInfo.setUpdateTime(new Date());
@@ -89,7 +89,6 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 		//正文处理
 		docInfo.setBody(handleText(docInfo.getBody()));
 		docInfo.setCnBoty(handleText(docInfo.getCnBoty()));
-		//docInfo.setSummary(handleText(docInfo.getSummary()));
 		docInfoDao.save(docInfo);
 	}
 
@@ -159,7 +158,6 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 			}
 		}
 		return newText.toString();
-
 	}
 
 }

@@ -27,7 +27,8 @@ public class DocColumnVO {
     private String creatorName;
     private Date createTime;
     private Date updateTime;
-    private String condtionField;
+    private String conditionField;
+    private Integer conditionType;
     
     public DocColumnVO(){
     	
@@ -42,6 +43,8 @@ public class DocColumnVO {
 		this.parentName = CommonHelper.toStr(objs[i++]);
 		this.id = CommonHelper.toLong(objs[i++]);
 		this.parentId = CommonHelper.toLong(objs[i++]);
+		this.conditionField = CommonHelper.toStr(objs[i++]);
+		this.conditionType= CommonHelper.toInt(objs[i++]);
     }
 	public String getName() {
 		return name;
@@ -97,12 +100,6 @@ public class DocColumnVO {
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
 	}
-	public String getCondtionField() {
-		return condtionField;
-	}
-	public void setCondtionField(String condtionField) {
-		this.condtionField = condtionField;
-	}
 	public Integer getOrder() {
 		return order;
 	}
@@ -114,6 +111,18 @@ public class DocColumnVO {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public String getConditionField() {
+		return conditionField;
+	}
+	public void setConditionField(String conditionField) {
+		this.conditionField = conditionField;
+	}
+	public Integer getConditionType() {
+		return conditionType;
+	}
+	public void setConditionType(Integer conditionType) {
+		this.conditionType = conditionType;
 	}
 
 }
