@@ -260,23 +260,17 @@ public class DataCenterService {
         return list;
     }
     public List<byte[]> getMedia(Long mediaId){
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
-        String sql = "select 文件块内容 from FileBlock t where t.多媒体ID=?1 order by t.文件块位置 asc ";
-        Query query = entityManager.createNativeQuery(sql);
-        query.setParameter(1,mediaId);
-        List<byte[]> list = query.getResultList();
-        return list;
-       /* FileImageOutputStream imageOutput = null;
-        try {
-            imageOutput = new FileImageOutputStream(new File("f://e.jpg"));
-            for(byte[] arr:list){
-                imageOutput.write(arr, 0, arr.length);
-            }
-            imageOutput.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
+        EntityManager entityManager = null;
+        try{
+            entityManager = this.entityManagerFactory.createEntityManager();
+            String sql = "select 文件块内容 from FileBlock t where t.多媒体ID=?1 order by t.文件块位置 asc ";
+            Query query = entityManager.createNativeQuery(sql);
+            query.setParameter(1,mediaId);
+            List<byte[]> list = query.getResultList();
+            return list;
+        }finally {
+            closeEntityManager(entityManager);
+        }
     }
     private void closeEntityManager(EntityManager entityManager){
         if(entityManager!=null){
