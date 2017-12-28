@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -388,11 +389,9 @@ public class UserMngServiceImpl implements UserMngService{
 		StringBuffer sql = new StringBuffer();
 		sql.append(" SELECT us.id,u.user_name,di.title,u.create_time ");
 		sql.append(" FROM t_user_store us,t_user u,t_doc_info di WHERE u.id=us.user_id and us.doc_info_id = di.id");
-		int i = 0;
-		sql.append(" AND convert(varchar,us.id) in (?").append(++i).append(")");
-		params.add(newStr.toString().substring(0,newStr.length() - 1));
+		sql.append(" AND convert(varchar,us.id) in (").append(newStr.toString().substring(0,newStr.length() - 1)).append(")");
 		Page<Object[]> page = dynamicQuery.nativeQuery(Object[].class,
-				new PageRequest(pageNumber, pageSize), sql.toString(),params.toArray());
+				new PageRequest(pageNumber, pageSize), sql.toString());
 		List<UserStoreVO> returnList = Lists.newArrayList(Lists.transform(
 				page.getContent(), new Function<Object[], UserStoreVO>() {
 					@Override

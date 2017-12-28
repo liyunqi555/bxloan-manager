@@ -1,11 +1,16 @@
 package com.coamctech.bxloan.manager.service.Impl;
 
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.coamctech.bxloan.manager.common.JsonResult;
 import com.coamctech.bxloan.manager.common.ResultCode;
+import com.coamctech.bxloan.manager.dao.RoleUserRelDao;
 import com.coamctech.bxloan.manager.dao.UserDao;
+import com.coamctech.bxloan.manager.domain.Role;
 import com.coamctech.bxloan.manager.domain.User;
 import com.coamctech.bxloan.manager.service.UserMngService;
 import com.coamctech.bxloan.manager.service.UserService;
@@ -18,6 +23,9 @@ public class UserServiceImpl implements UserService{
 
 	@Autowired
 	private UserDao userDao;
+	
+	@Autowired
+	private RoleUserRelDao roleUserRelDao;
 
 	@Autowired
 	private UserMngService userMngService;
@@ -42,6 +50,10 @@ public class UserServiceImpl implements UserService{
 			if(CommonHelper.getNow().compareTo(user.getEndTime())>0){
 				return new JsonResult(ResultCode.ERROR_CODE,"用户已失效，请联系管理员",null);
 			}
+		}
+		List<Long> ll = roleUserRelDao.findRoleIdsByUserId(user.getId());
+		if(CollectionUtils.isEmpty(ll)){
+			return new JsonResult(ResultCode.ERROR_CODE,"用户未分配角色，请联系管理员",null);
 		}
 		return new JsonResult(ResultCode.SUCCESS_CODE, "登陆成功", user);
 
