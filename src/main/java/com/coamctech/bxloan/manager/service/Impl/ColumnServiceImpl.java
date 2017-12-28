@@ -232,5 +232,15 @@ public class ColumnServiceImpl implements IColumnService{
 		}*/
 		return null;
 	}
+
+	@Override
+	public List<Long> getSources(Long docColumnIds) {
+		return this.docColumnDocSourceRelDao.findSourceIdsByDocColumnId(docColumnIds);
+	}
+
+	@Override
+	public List<Long> getUsers(Long docColumnIds) {
+		return this.userDocColumnRelDao.findUserByDocColumnId(docColumnIds);
+	}
    
 }	

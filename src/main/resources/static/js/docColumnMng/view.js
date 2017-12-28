@@ -15,7 +15,6 @@ define(function(require, exports, module) {
 		"click button[role=detail]" : "detail",//查看
 		"click button[role=docInfoList]":"docInfoList",//进入文章列表
 		"click #add-simple-submit":"saveColumn",
-		
 		"change #conditionType" : "ifConditionType",//更改模式
 		"click #titleKeyWord":"titleKeyWord",
 		"click #sourceKeyWord":"sourceKeyWord",
@@ -413,12 +412,17 @@ define(function(require, exports, module) {
 			    	 $('#docColumnId').val(result.body.id);
 			    	 $('#conditionField').val(result.body.conditionField);
 			     	 $('#conditionType').val(result.body.conditionType);
+			     	 
 					if(type=='view'){
 						$("#addName").attr("disabled",true);
 						$("#ifSpecial").attr("disabled",true);
 						$("#docColumnCdMask").attr("disabled",true);
 						 $('#conditionField').attr("disabled",true);
 				     	 $('#conditionType').attr("disabled",true);
+				     	$('#sourceZTree').attr("disabled",true);
+				     	$("input").attr("disabled",true);
+						$("select").attr("disabled",true);
+						$("textarea").attr("disabled",true);
 						$("#add-simple-submit").hide();
 					}
 					$("#add-modal-form").modal("show");
@@ -427,6 +431,53 @@ define(function(require, exports, module) {
 				}
 			}
 		});
+		$.ajax({
+        	type : "post",
+			url : "/docColumnMng/getSource",
+			data: {
+				"id" : id
+			},
+			success : function(result){
+				if(result.code=='200'){
+					var ids = result.body;
+					var treeObj = $.fn.zTree.getZTreeObj("sourceZTree");
+					treeObj.checkAllNodes(false);
+					$.each(ids,function(key,value){
+						var node = treeObj.getNodeByParam("id",
+								value, null);
+						if(!node.isParent)
+							treeObj.checkNode(node, true, true);
+					}); 
+					
+				}else{
+					utils.alert.warn(result.msg);
+				}
+			}
+        });
+		
+		$.ajax({
+        	type : "post",
+			url : "/docColumnMng/getUser",
+			data: {
+				"id" : id
+			},
+			success : function(result){
+				if(result.code=='200'){
+					var ids = result.body;
+					var treeObj = $.fn.zTree.getZTreeObj("userZTree");
+					treeObj.checkAllNodes(false);
+					$.each(ids,function(key,value){
+						var node = treeObj.getNodeByParam("id",
+								value, null);
+						treeObj.checkNode(node, true, true);
+					}); 
+					
+				}else{
+					utils.alert.warn(result.msg);
+				}
+			}
+        });
+
     },
 		//加载树菜单
      ToggleTree: function() {

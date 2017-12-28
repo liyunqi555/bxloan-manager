@@ -1,6 +1,9 @@
 package com.coamctech.bxloan.manager.dao;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,4 +22,7 @@ import com.coamctech.bxloan.manager.domain.DocColumnDocSourceRel;
  */
 @Repository
 public interface DocColumnDocSourceRelDao extends JpaSpecificationExecutor<DocColumnDocSourceRel>,PagingAndSortingRepository<DocColumnDocSourceRel,Long> {
+	@Query(value="select docSourceId from  DocColumnDocSourceRel where docColumnId=?1")
+	public List<Long> findSourceIdsByDocColumnId(Long userId);
+
 }

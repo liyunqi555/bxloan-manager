@@ -25,6 +25,9 @@ public interface UserDocColumnRelDao extends JpaSpecificationExecutor<UserDocCol
 	@Modifying
 	@Query(value = "delete from UserDocColumnRel where docColumnId=?1")
 	public void deleteRelByDocColumnId(Long docColumnId);
+	
+	@Query(value="select userId from  UserDocColumnRel where docColumnId=?1")
+	public List<Long> findUserByDocColumnId(Long userId);
 
 }
 

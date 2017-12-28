@@ -151,4 +151,27 @@ public class ColumnManagementController {
 		/**处理并返回查询结果*/
 		return new DataTablesPage(sEcho, page);
 	}
+	@RequestMapping("/getSource")
+    @ResponseBody
+    public  JsonResult getSource(Long  id) {
+    	try{
+    		List<Long> sourceIds  = columnServiceImpl.getSources(id);
+    		return new  JsonResult(ResultCode.SUCCESS_CODE,"",sourceIds);
+    	}catch(Exception e){
+    		return new  JsonResult(ResultCode.ERROR_CODE,"");
+    	}
+     
+    }
+	@RequestMapping("/getUser")
+    @ResponseBody
+    public  JsonResult getUser(Long  id) {
+    	try{
+    		List<Long> userIds  = columnServiceImpl.getUsers(id);
+    		return new  JsonResult(ResultCode.SUCCESS_CODE,"",userIds);
+    	}catch(Exception e){
+    		return new  JsonResult(ResultCode.ERROR_CODE,"");
+    	}
+     
+    }
+	
 }
