@@ -226,7 +226,7 @@ define(function(require, exports, module) {
 			id =  $(e.currentTarget).data('id');
 			name =  $(e.currentTarget).data('name');
 			var type="source"
-			window.location.href ="docInfoMng/findDocInfoListById?id="+id+"&name="+name+"&type="+type; 	
+			window.location.href ="docInfoMng/findDocInfoListById?id="+id+"&name="+name+"&conditionField=null"+"&type="+type; 	
 		}
 	});
 	module.exports = view;

@@ -96,7 +96,7 @@ public class ColumnServiceImpl implements IColumnService{
 	}
 
 	@Override
-	public void addColumn(DocColumn docColumn,String userIds, String sourceIds, Long loginId) {
+	public JsonResult addColumn(DocColumn docColumn,String userIds, String sourceIds, Long loginId) {
 		Long parentId = docColumn.getParentId();
 		if(null!=parentId){
 			DocColumn parentDocColumn = docColumnDao.findOne(parentId);
@@ -104,13 +104,20 @@ public class ColumnServiceImpl implements IColumnService{
 		}
 		String conditionField = docColumn.getConditionField();
 		Integer conditionType = docColumn.getConditionType();
-		StringBuffer str= new StringBuffer();
+		if(null!=conditionType &&conditionType.equals(2)){
+			conditionField =conditionField.replace("标题关键字","title").replace("来源关键字","sourceName").replace("文章关键字","body");
+		}
 		//换行符转换成List
-		List<String> list = CommonHelper.strToList(conditionField,CommonHelper.NEW_LINE);
+		/*List<String> list = CommonHelper.strToList(conditionField,CommonHelper.NEW_LINE);
+		StringBuffer str= new StringBuffer();
 		if(null!=list &&list.size()>0){
 			for(int i = 0; i<list.size();i++){
 				String line = list.get(i);
 				line = line.replaceAll(" ", "");	
+				if(null!=conditionType &&conditionType.equals(1)){
+					str.append("title like '%").append(line).append("%' or  sourceName like '%").append(line).append("%' or  body like '%").append(line).append("%'");
+					continue;
+				}
 				String [] strArray = line.split("=");
 				if(strArray.length>1){
 					String beforeLine= strArray[0];
@@ -119,21 +126,34 @@ public class ColumnServiceImpl implements IColumnService{
 					beforeLine= beforeLine.replace("来源关键字", "sourceName like '%");
 					beforeLine= beforeLine.replace("文章关键字", "body like '%");
 					str.append(beforeLine).append(afterLine).append("%'");
-					if(null!=conditionType &&conditionType.equals(1)&&list.size()>1){
-						str.append(" and ");
-					}
 				}else{
 					//逻辑拼接
 					str.append(" ").append(line).append(" ");
 				}
 			}
-		}
-		docColumn.setConditionField(str.toString());
+		}else{
+			//没有换行符默认是普通模式
+			conditionField = conditionField.replaceAll(" ", "");
+			str.append("title like '%").append(conditionField).append("%' or  sourceName like '%").append(conditionField).append("%' or  body like '%").append(conditionField).append("%'");
+		}*/ 
 		if(null==docColumn.getId()){
 			docColumn.setCreateTime(new Date());
+		}else{
+			DocColumn old = docColumnDao.findOne(docColumn.getId());
+			docColumn.setCreateTime(old.getCreateTime());
 		}
+		docColumn.setConditionField(conditionField);
 		docColumn.setUpdateTime(new Date());
 		docColumn.setCreator(loginId);
+		try{
+			JsonResult result =this.valdationField(docColumn);
+			if(200!=result.getCode()){
+				return new  JsonResult(ResultCode.ERROR_CODE,result.getMsg());
+			}
+		}catch(Exception e){
+			e.getStackTrace();
+			return new  JsonResult(ResultCode.ERROR_CODE,"条件表达语法是错误!");
+		}
 		docColumnDao.save(docColumn);
 		List<String> userIdList = CommonHelper.strToList(userIds,CommonHelper.SEPARATOR_COMMA);
 		List<String> sourceIdList = CommonHelper.strToList(sourceIds,CommonHelper.SEPARATOR_COMMA);
@@ -160,6 +180,44 @@ public class ColumnServiceImpl implements IColumnService{
 				docColumnDocSourceRelDao.save(dds);
 			}
 		}
+		return new  JsonResult(ResultCode.SUCCESS_CODE,"保存成功");
+	}
+
+	private JsonResult valdationField(DocColumn docColumn) {
+		String conditionField = docColumn.getConditionField();
+		if(StringUtils.isBlank(conditionField)){
+			return new  JsonResult(ResultCode.ERROR_CODE,"条件表达式必填!");
+		}
+		StringBuffer sql = new StringBuffer(); 
+		if(StringUtils.isNotBlank(conditionField)){
+			conditionField =conditionField.trim();
+		}
+		Integer conditionType = docColumn.getConditionType();
+		StringBuffer conditionStr = new StringBuffer();
+		if(null!=conditionType &&conditionType.equals(2)){
+			conditionField= conditionField.replace("sourceName", "name");
+			conditionStr.append(conditionField);
+		}else{
+			String [] strArr = conditionField.split(" ");
+			for(String str:strArr){
+				if(StringUtils.isBlank(str)){
+					continue;
+				}
+				conditionStr.append(" ti.title like '%").append(str).append("%' or ").append(" ti.body like '%").append(str).append("%' or ");
+			}
+			conditionStr = new StringBuffer (conditionStr.substring(0, conditionStr.toString().lastIndexOf("or")));
+		}
+		sql.append("select ti.title from t_doc_info ti, t_doc_source ts where ts.id= ti.source_id and ( ").append(conditionStr.toString()).append(" )");
+		try{
+			Long count = dynamicQuery.nativeQueryCount(sql.toString());
+			if(0==count){
+				return new  JsonResult(ResultCode.ERROR_CODE,"无法检索文章,请添加相关关键字文章!");
+			}
+		}catch(Exception e){
+			return new  JsonResult(ResultCode.ERROR_CODE,"条件表达语法是错误!");
+		}
+		return  new  JsonResult(ResultCode.SUCCESS_CODE,"");
+		
 	}
 
 	@Override
@@ -215,7 +273,10 @@ public class ColumnServiceImpl implements IColumnService{
 		//处理特殊字段
 		DocColumnVO vo = docColumnVOList.get(0);
 		String conditionField = vo.getConditionField();
-		List<String> list = CommonHelper.strToList(conditionField,"%'");
+		Integer conditionType = vo.getConditionType();
+		if(null!=conditionType &&conditionType.equals(2)){
+			conditionField =conditionField.replace("title","标题关键字").replace("sourceName","来源关键字").replace("body","文章关键字");
+		}
 		vo.setConditionField(conditionField);
 		return vo;
 	}
