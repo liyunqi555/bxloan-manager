@@ -122,24 +122,12 @@ public class ColumnManagementController {
     	JsonResult result = new JsonResult();
     	try{
     		User curUser = (User)request.getSession().getAttribute("user");
-    		columnServiceImpl.addColumn(docColumn,userIds,sourceIds,curUser.getId());
-    		return new  JsonResult(ResultCode.SUCCESS_CODE,"保存成功");
-
+    		return columnServiceImpl.addColumn(docColumn,userIds,sourceIds,curUser.getId());
     	}catch(Exception e){
     		return new  JsonResult(ResultCode.ERROR_CODE,"保存失败");
     	}
     }
-    /**
-     * 查询合并单据列表信息
-     * @param sEcho  datatables的被请求次数
-     * @param pageNumber  起始页数
-     * @param pageSize  每页多少条记录
-     * @param orgId		机构Id
-     * @param projectType 单据业务类型(002 逾期 003还款  004结息)
-     * @param customerName 客户姓名
-     * @param contractNum  合同编号
-     * @return DataTablesPage DataTablesPage对象
-     */
+
 	@RequestMapping("/findColumnList")
 	@ResponseBody
 	public DataTablesPage findColumnList(@RequestParam("sEcho") Integer sEcho,

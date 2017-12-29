@@ -30,6 +30,7 @@ define(function(require, exports, module) {
 	render: function() {
 		var viewSelf = this;
 		this.initDtTable();
+		//this.initModal();
 		this.initUserTree();
 		this.initSourceTree();
 		this.ifConditionType();
@@ -55,42 +56,60 @@ define(function(require, exports, module) {
 	//新增栏目
 	addColumn: function (){
 		var viewSelf = this;
-		var $form=$("form[role='addColumnForm']");
-		$form.resetForm();
+		var treeObj1 = $.fn.zTree.getZTreeObj("userZTree");
+		treeObj1.checkAllNodes(false);
+		var nodes1 = treeObj1.getNodes();
+		for (var i=0, l=nodes1.length; i < l; i++) {
+			treeObj1.setChkDisabled(nodes1[i], false);
+		}
+		var treeObj2 = $.fn.zTree.getZTreeObj("sourceZTree");
+		treeObj2.checkAllNodes(false);
+		var nodes2 = treeObj2.getNodes();
+		for (var i=0, l=nodes2.length; i < l; i++) {
+			treeObj2.setChkDisabled(nodes2[i], false);
+		}
+		$("#addColumnForm").resetForm();
 	    $("#add-modal-form").modal("show");
+	    viewSelf.initModal();
 	    $("#add-modal-form div.modal-header h4").html("<i class='ace-icon fa fa-plus'></i> 新增栏目");
 	    return false;
 	},
 	ifConditionType : function() {
 		$('#conditionField').val('');
 		if($('#conditionType').val() == '1') {
-            $("#or").css("display","none");
-            $("#and").css("display","none");
+			$("#titleKeyWord").css("display","none");
+			$("#sourceKeyWord").css("display","none");
+	        $("#bodyKeyWord").css("display","none");
+           /* $("#or").css("display","none");
+            $("#and").css("display","none");*/
 		} else {
-			$("#or").removeAttr("style");
-	        $("#and").removeAttr("style");
+			$("#titleKeyWord").removeAttr("style");
+			$("#sourceKeyWord").removeAttr("style");
+	        $("#bodyKeyWord").removeAttr("style");
+/*			$("#or").removeAttr("style");
+	        $("#and").removeAttr("style");*/
 		}
 	},
 	titleKeyWord:function(){
-		if(null==$('#conditionField').val()||""==$('#conditionField').val()){
-			$('#conditionField').val($('#conditionField').val()+"标题关键字=");
+		$('#conditionField').val($('#conditionField').val()+"标题关键字");
+		/*if(null==$('#conditionField').val()||""==$('#conditionField').val()){
 		}else{
 			$('#conditionField').val($('#conditionField').val()+"\n 标题关键字 =");
-		}
+		}*/
 	},
 	sourceKeyWord:function(){
-		if(null==$('#conditionField').val()||""==$('#conditionField').val()){
-			$('#conditionField').val($('#conditionField').val()+"来源关键字 =");
+		$('#conditionField').val($('#conditionField').val()+"来源关键字");
+	/*	if(null==$('#conditionField').val()||""==$('#conditionField').val()){
 		}else{
 			$('#conditionField').val($('#conditionField').val()+"\n来源关键字 =");
-		}
+		}*/
 	},
 	bodyKeyWord:function(){
-		if(null==$('#conditionField').val()||""==$('#conditionField').val()){
-			$('#conditionField').val($('#conditionField').val()+"文章关键字 =");
+		$('#conditionField').val($('#conditionField').val()+"文章关键字 ");
+		/*if(null==$('#conditionField').val()||""==$('#conditionField').val()){
 		}else{
 			$('#conditionField').val($('#conditionField').val()+"\n文章关键字 =");
-		}
+		}*/
 	},
 	ifOr:function(){
 		if(null==$('#conditionField').val()||""==$('#conditionField').val()){
@@ -124,7 +143,6 @@ define(function(require, exports, module) {
 	saveColumn: function(e) {
 		var viewSelf = this;
 		var btnSubmit=$(e.currentTarget);
-         utils.button.ban(btnSubmit);//禁用按钮
 		var $form=$("form[role='addColumnForm']");
 		var treeObj1=$.fn.zTree.getZTreeObj("userZTree");
         nodes1=treeObj1.getCheckedNodes(true);
@@ -134,6 +152,7 @@ define(function(require, exports, module) {
         }
         if(userIds==""){
         	utils.alert.warn("请选择角色或用户");
+        	utils.button.reset(btnSubmit);//启用按钮
         	return false;
         }
         
@@ -145,13 +164,13 @@ define(function(require, exports, module) {
         }
         if(sourceIds==""){
         	utils.alert.warn("请选择来源");
+        	utils.button.reset(btnSubmit);//启用按钮
         	return false;
         }
-/*        if (!$("#addColumnForm").valid()) {
+       if (!$("#addColumnForm").valid()) {
         	utils.button.reset(btnSubmit);//启用按钮
         	return ;	
-        }*/
-        //add by mz 20160223
+        }
     	utils.button.confirm(btnSubmit,function(result){
 			if(result){
 				$.ajax({
@@ -164,8 +183,9 @@ define(function(require, exports, module) {
                     		$("#add-modal-form").modal("hide");
                     		$form.resetForm();
                     		viewSelf.dt.fnDraw(); // 重新加载表格中的数据
+                    		utils.button.reset(btnSubmit);//启用按钮
                     	} else {
-                    		 utils.button.reset(btnSubmit);//启用按钮
+                    		utils.button.reset(btnSubmit);//启用按钮
                     		utils.alert.err("<strong>" + result.msg + "</strong>");
                     	}
                     }
@@ -232,7 +252,7 @@ define(function(require, exports, module) {
 		        		var edit = "<button type='button' role='edit' data-id='" +rowdata.id + "' data-name='"+rowdata.name+ "'data-parentId='"+rowdata.parentId  + "'"+"data-parentName='"+rowdata.parentName +"'"+"data-ifSpecial='"+rowdata.ifSpecial + "'  class='btn btn-xs btn-info' title='修改' ><i class='ace-icon fa fa-edit bigger-120'></i></button> ";
 		        		var view = " <button type='button' role='detail' data-id='" +rowdata.id + "'  class='btn btn-xs btn-yellow' title='查看'><i class='ace-icon fa fa-eye bigger-120'></i></button> ";
 		        		var deleteView = "<button type='button' role='btn-detail-del' data-id='" +rowdata.id + "'  class='btn btn-xs btn-danger' title='删除' ><i class='ace-icon fa fa-trash-o bigger-120'></i></button> ";
-                		var list = " <button type='button' role='docInfoList' data-id='" +rowdata.id + "' data-name='"+rowdata.name+ "' class='btn btn-xs btn-purple' title='文章列表'><i class='ace-icon fa fa-check bigger-120'></i></button> ";
+                		var list = " <button type='button' role='docInfoList' data-id='" +rowdata.id + "' data-name='"+rowdata.name+ "' data-field='"+rowdata.conditionField+ "' class='btn btn-xs btn-purple' title='文章列表'><i class='ace-icon fa fa-check bigger-120'></i></button> ";
                 		buttons+= edit+view+deleteView+list;
                 		return buttons;
 		        	}
@@ -263,9 +283,11 @@ define(function(require, exports, module) {
 		var $this = $(this);
 		var columnId =  null;
 		var id =  $(e.currentTarget).data('id');
-		var name = $(e.currentTarget).data('name') ;
+		var name =  $(e.currentTarget).data('name');
+		var conditionField = $(e.currentTarget).data('field') ;
+		utils.alert.suc(conditionField);
 		var type ="column";
-		window.location.href ="docInfoMng/findDocInfoListById?id="+id+"&name="+name+"&type="+type; 	
+		window.location.href ="docInfoMng/findDocInfoListById?id="+id+"&name="+name+"&conditionField="+conditionField+"&type="+type; 	
 	},
 	//删除栏目
 	delDetail : function(e) {
@@ -337,8 +359,8 @@ define(function(require, exports, module) {
 	},
     initModal:function(){
 	    var form=$("form[role='addColumnForm']");
-	    var validator = $(form).validate();
-		validator.resetForm();
+		$("#addColumnForm").resetForm();
+		console.log(form);
 		$("input").attr("disabled",false);
 		$("select").attr("disabled",false);
 		$("textarea").attr("disabled",false);
@@ -370,6 +392,11 @@ define(function(require, exports, module) {
 			     	 $('#conditionType').val(result.body.conditionType);
 			     	 
 					if(type=='view'){
+						var treeObj = $.fn.zTree.getZTreeObj("sourceZTree");
+						var nodes = treeObj.getSelectedNodes();
+						for (var i=0, l=nodes.length; i < l; i++) {
+							treeObj.setChkDisabled(nodes[i], true);
+						}
 						$("#addName").attr("disabled",true);
 						$("#ifSpecial").attr("disabled",true);
 						$("#docColumnCdMask").attr("disabled",true);
@@ -396,14 +423,26 @@ define(function(require, exports, module) {
 			success : function(result){
 				if(result.code=='200'){
 					var ids = result.body;
+					console.log(ids);
 					var treeObj = $.fn.zTree.getZTreeObj("sourceZTree");
 					treeObj.checkAllNodes(false);
 					$.each(ids,function(key,value){
-						var node = treeObj.getNodeByParam("id",
-								value, null);
-						if(!node.isParent)
-							treeObj.checkNode(node, true, true);
+						var node = treeObj.getNodeByParam("id",value, null);
+						treeObj.checkNode(node, true, true);
 					}); 
+					
+					if(type=='view'){
+						var nodes = treeObj.getNodes();
+						for (var i=0, l=nodes.length; i < l; i++) {
+							treeObj.setChkDisabled(nodes[i], true);
+						}
+					}else{
+						var nodes = treeObj.getNodes();
+						for (var i=0, l=nodes.length; i < l; i++) {
+							treeObj.setChkDisabled(nodes[i], false);
+						}
+						
+					}
 					
 				}else{
 					utils.alert.warn(result.msg);
@@ -426,8 +465,13 @@ define(function(require, exports, module) {
 						var node = treeObj.getNodeByParam("id",
 								value, null);
 						treeObj.checkNode(node, true, true);
+						/*if(null!=node.isParent&&!node.isParent)
+						treeObj.checkNode(node, true, true);
+						if(type=='view'){
+							node.checked=false
+						}*/
 					}); 
-					
+
 				}else{
 					utils.alert.warn(result.msg);
 				}
@@ -546,20 +590,10 @@ define(function(require, exports, module) {
 						size:"2em"
 					}
 				},
-				callback : {
-					onAsyncSuccess : function(event, treeId, treeNode, msg) {
-						var treeObj = $.fn.zTree.getZTreeObj(treeId);
-						var nodes = treeObj.transformToArray(treeObj.getNodes());
-				/*		for (var i=0, l=nodes.length; i < l; i++) {
-		                      if (nodes[i].isParent){
-		                          treeObj.setChkDisabled(nodes[i], true);
-		                      }
-		                    }*/
-					},	
-					onCheck : function(event, treeId, treeNode) {}
-				}
+				callback : {}
 				
 			});
+			var treeObj = $.fn.zTree.getZTreeObj("userZTree");
 		},
 		initSourceTree:function(){
 			var viewSelf = this;

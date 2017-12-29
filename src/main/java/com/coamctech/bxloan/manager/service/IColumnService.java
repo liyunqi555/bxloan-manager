@@ -58,7 +58,7 @@ public interface IColumnService {
      *
      * @lastModified zhaoqingwen 2017年12月7日 下午3:53:22  
      */
-    public  void addColumn(DocColumn docColumn, String userIds, String sourceIds, Long loginId);
+    public  JsonResult addColumn(DocColumn docColumn, String userIds, String sourceIds, Long loginId);
 
 	/**
 	 *获取栏目菜单

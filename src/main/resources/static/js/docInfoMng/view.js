@@ -32,6 +32,7 @@ define(function(require, exports, module) {
 		var $form=$("form[role='searchForm']");
 		seachData.push({name:"columnId",value:$form.find("#sColumnId").val()});
 		seachData.push({name:"sourceId",value:$form.find("#sSourceId").val()});
+		seachData.push({name:"conditionField",value:$form.find("#conditionField").val()});
 		seachData.push({name:"columnName",value:$form.find(":text[name='sColumnName']").val()});
 		seachData.push({name:"sourceName",value:$form.find(":text[name='sSourceName']").val()});
 		seachData.push({name:"keyword",value:$form.find(":text[name='keyword']").val()});
@@ -85,7 +86,8 @@ define(function(require, exports, module) {
 	//初始化列表
 	initDtTable: function() {
 		var viewSelf = this;
-		var columnId = $('#sColumnId').val();
+		var conditionField = $('#conditionField').val();
+		console.log(conditionField);
 		var sourceId = $('#sSourceId').val();
 		var sourceName = $('#sSourceName').val();
 		var columnName = $('#sColumnName').val();
@@ -96,7 +98,7 @@ define(function(require, exports, module) {
 			bSort:false,
 			sPaginationType: "full_numbers",  
 			data : {
-      			"columnId":columnId,
+      			"conditionField":conditionField,
       			"columnName":columnName,
       			"keyword":keyword,
       			"sourceId":sourceId
@@ -160,8 +162,8 @@ define(function(require, exports, module) {
 	    		//默认的查询参数
 	    		else{
 	    			aoData.push({
-						name : "columnId",
-						value :  columnId
+						name : "conditionField",
+						value :  conditionField
 					});
 	    			aoData.push({
 						name : "sourceId",
@@ -274,9 +276,6 @@ define(function(require, exports, module) {
 						$.each($("#addDocInfoForm").find("input[type='text'],input[type='hidden'], select,textarea"), function() {
 							$(this).val(obj[$(this).attr("name")]);
 						});
-/*						$.each($("#addDocInfoForm").find("textarea"),function(){
-							$(this).html(obj[$(this).attr("name")]);
-						});*/
 						$("#add-modal-form").modal("show");
 						if(type=='view'){
 							$("input").attr("disabled",true);
@@ -290,7 +289,7 @@ define(function(require, exports, module) {
 			}
 		});
     },
-	initColumnTree:function(){
+/*	initColumnTree:function(){
 			var viewSelf = this;
 			$.fn.zTree.init($("#columnTree"), {
 				async : {
@@ -364,7 +363,7 @@ define(function(require, exports, module) {
                              $("#btn-columnTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
                         }
            });
-	},
+	},*/
 	
 	initSourceTree:function(){
 		var viewSelf = this;

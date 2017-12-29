@@ -44,7 +44,7 @@ public class DocInfoVO implements Serializable {
     	this.title= CommonHelper.toStr(objs[i++]);//标题
 		this.cnTitle= CommonHelper.toStr(objs[i++]);//中文标题
 		this.sourceId= CommonHelper.toLong(objs[i++]);//来源id
-		this.columnId= CommonHelper.toLong(objs[i++]);//栏目id
+		//this.columnId= CommonHelper.toLong(objs[i++]);//栏目id
 	    this.classification= CommonHelper.toStr(objs[i++]);//分类
 		this. groupName= CommonHelper.toStr(objs[i++]);//分组
 		this. website= CommonHelper.toStr(objs[i++]);//网址
@@ -56,7 +56,7 @@ public class DocInfoVO implements Serializable {
 	/*	this.createTime= CommonHelper.toDate(objs[i++]);
 		this.updateTime= CommonHelper.toDate(objs[i++]);
 		this.storeTime= CommonHelper.toDate(objs[i++]);*/
-		this.columnName= CommonHelper.toStr(objs[i++]);
+		//this.columnName= CommonHelper.toStr(objs[i++]);
 		this.ifTop = CommonHelper.toInt(objs[i++]);//来源id
     }
     

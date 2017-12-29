@@ -129,7 +129,7 @@ public class DocumentMngController {
 	public DataTablesPage findDocInfoList(@RequestParam("sEcho") Integer sEcho,
 			@RequestParam("iDisplayStart") Integer pageNumber,
 			@RequestParam("iDisplayLength") Integer pageSize,
-			@RequestParam( value="columnId",required=false) String columnId,
+			@RequestParam( value="conditionField",required=false) String conditionField,
 			@RequestParam( value="columnName",required=false) String columnName,
 			@RequestParam( value="sourceId",required=false) String sourceId,
 			@RequestParam( value="keyword",required=false) String keyword
@@ -137,8 +137,8 @@ public class DocumentMngController {
 		DocInfoConditionVO vo = new DocInfoConditionVO() ;
 		vo.setColumnName(columnName);
 		vo.setKeyword(keyword);
-		if(StringUtils.isNotBlank(columnId)){
-			vo.setColumnId(Long.valueOf(columnId));
+		if(StringUtils.isNotBlank(conditionField)){
+			vo.setConditionField(conditionField);
 		}
 		if(StringUtils.isNotBlank(sourceId)){
 			vo.setSourceId(Long.valueOf(sourceId));
@@ -164,7 +164,7 @@ public class DocumentMngController {
      * @throws UnsupportedEncodingException 
      */
 	@RequestMapping("/findDocInfoListById")
-	public String findDocInfoListById(HttpServletRequest request, Long id ,String name , String type,Model model) throws UnsupportedEncodingException{
+	public String findDocInfoListById(HttpServletRequest request, Long id ,String name , String type,String conditionField, Model model) throws UnsupportedEncodingException{
 		DocInfoConditionVO vo = new DocInfoConditionVO() ;
 		if(StringUtils.isNotBlank(type)&&"source".equals(type)){
 			vo.setSourceId(id);
@@ -176,8 +176,10 @@ public class DocumentMngController {
 		}else{
 			vo.setColumnId(id);
 			vo.setColumnName(name);
-			model.addAttribute("columnId", id);
+			vo.setConditionField(conditionField);
+			//model.addAttribute("columnId", id);
 			model.addAttribute("sColumnId", id);
+			model.addAttribute("conditionField", conditionField);
 			model.addAttribute("columnName",  name);
 		}
 		return "docInfoMng/main";
