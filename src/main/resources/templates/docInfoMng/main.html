@@ -1,6 +1,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
-<head th:include="pre_included">
+<head >
     <meta charset="utf-8" />
     <title>首页</title>
 </head>
@@ -40,7 +40,8 @@
                             <input type="text" id="keyword"  class="form-control col-sm-5 input-sm" placeholder="请输关键字" name="keyword" />
                         </div>
                     </div>
-					 <input type="hidden"   value=""  th:value="${columnId}"  id="sColumnId"  name="sColumnId"/>
+					<!--  <input type="hidden"   value=""  th:value="${columnId}"  id="sColumnId"  name="sColumnId"/> -->
+					 <input type="hidden"   value=""  th:value="${conditionField}"  id="conditionField"  name="conditionField"/>
 					  <input type="hidden"   value=""  th:value="${sourceId}"  id="sSourceId"  name="sSourceId"/>
 					 <input type="hidden"   value=""  th:value="${columnName}"  id="sColumnName"  name="sColumnName"/>
 					  <input type="hidden"   value=""  th:value="${sourceName}"  id="sSourceName"  name="sSourceName"/>
@@ -191,7 +192,7 @@
                                            placeholder="输入关键字" />
                                 </div> 
                             </div>
-                           <div class="form-group">
+                        <!--    <div class="form-group">
                                 <label class="col-sm-3 control-label no-padding-right" for="columnName">
                                     <font color='red'>
                                         *
@@ -222,7 +223,7 @@
 										</div>
 										</span>
 								</div> 
-                            </div>
+                            </div> -->
                             <div class="form-group">
                                 <label class="col-sm-3 control-label no-padding-right" for="sourceName">
                                     <font color='red'>

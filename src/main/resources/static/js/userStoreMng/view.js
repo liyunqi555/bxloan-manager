@@ -49,7 +49,6 @@ define(function(require, exports, module) {
 			});
 		},
 		selectAll : function(){
-			alert(111);
 			if($("#selectAll").prop("checked")){
 				$("input[type='checkbox'][name='doc_id']").prop("checked",true);
 				var arr = $("input[type='checkbox'][name='doc_id']");
@@ -59,7 +58,6 @@ define(function(require, exports, module) {
 						selectedStr += str;
 					}
 				}
-				alert(selectedStr);
 			}else{
 				$("input[type='checkbox'][name='doc_id']").prop("checked",false);
 				var arr = $("input[type='checkbox'][name='doc_id']");

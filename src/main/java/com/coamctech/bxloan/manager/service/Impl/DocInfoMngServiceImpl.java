@@ -15,6 +15,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.coamctech.bxloan.manager.common.DynamicQuery.DynamicQuery;
 import com.coamctech.bxloan.manager.dao.DocInfoDao;
+import com.coamctech.bxloan.manager.domain.DocColumn;
 import com.coamctech.bxloan.manager.domain.DocInfo;
 import com.coamctech.bxloan.manager.service.IDocInfoMngService;
 import com.coamctech.bxloan.manager.service.VO.DocInfoConditionVO;
@@ -47,9 +48,9 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 	public DocInfoVO getDocInfoOne(Long id, Long userId) {
 		StringBuffer sql = new StringBuffer();
 		List<Object> params = new ArrayList<Object>();
-		sql.append("select ti.id, ti.title,ti.cn_title,ti.source_id,ti.column_id,ti.classification,ti.group_name,ti.website,ti.keyword,ti.summary,ti.body,ti.cn_boty,ts.name sourceName,tc.name columnName ,ti.if_top  from  t_doc_info ti, t_doc_column tc,t_doc_source ts  where  ");
-		sql.append(" ti.column_id=tc.id");
-		sql.append(" and ti.source_id = ts.id");
+		sql.append("select ti.id, ti.title,ti.cn_title,ti.source_id,ti.classification,ti.group_name,ti.website,ti.keyword,ti.summary,ti.body,ti.cn_boty,ts.name sourceName,ti.if_top  from  t_doc_info ti,t_doc_source ts  where  ");
+		//sql.append(" ti.column_id=tc.id and");
+		sql.append("  ti.source_id = ts.id");
 		if(null!=id){
 			params.add(id);
 			sql.append(" and ti.id = ?").append(params.size()); 
@@ -83,6 +84,9 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 	public void addDocInfo(DocInfo docInfo, Long id) {
 		if(null==docInfo.getId()){
 			docInfo.setCreateTime(new Date());
+		}else{
+			DocInfo old = docInfoDao.findOne(docInfo.getId());
+			docInfo.setCreateTime(old.getCreateTime());
 		}
 		docInfo.setUpdateTime(new Date());
 		docInfo.setCreator(id);
@@ -96,22 +100,22 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 	public Page<DocInfoVO> findDocInfoList(int pageNumber, Integer pageSize, DocInfoConditionVO docInfoConditionVO) {
 		StringBuffer sql = new StringBuffer();
 		List<Object> params = new ArrayList<Object>();
-		sql.append("select ti.id, ti.title,ti.cn_title,ti.source_id,ti.column_id,ti.classification,ti.group_name,ti.website,ti.keyword,ti.summary,ti.body,ti.cn_boty,ts.name sourceName,tc.name columnName ,ti.if_top from  t_doc_info ti, t_doc_column tc,t_doc_source ts  where  ");
-		sql.append(" ti.column_id=tc.id");
+		sql.append("select ti.id, ti.title,ti.cn_title,ti.source_id,ti.classification,ti.group_name,ti.website,ti.keyword,ti.summary,ti.body,ti.cn_boty,ts.name sourceName ,ti.if_top from  t_doc_info ti,t_doc_source ts  where  1=1 ");
+		//sql.append(" ti.column_id=tc.id");
 		sql.append(" and ti.source_id = ts.id");
 		if(null!=docInfoConditionVO){
-			if(null!=docInfoConditionVO.getColumnId()){
+			/*if(null!=docInfoConditionVO.getColumnId()){
 				params.add(docInfoConditionVO.getColumnId());
 			    sql.append(" and tc.id = ?").append(params.size()); 
-			}
+			}*/
 			if(null!=docInfoConditionVO.getSourceId()){
 				params.add(docInfoConditionVO.getSourceId());
 			    sql.append(" and ts.id = ?").append(params.size()); 
 			}
-			if(StringUtils.isNotBlank(docInfoConditionVO.getColumnName())){
+			/*if(StringUtils.isNotBlank(docInfoConditionVO.getColumnName())){
 				params.add("%"+String.valueOf(docInfoConditionVO.getColumnName())+"%");
 			    sql.append(" and tc.name like ?").append(params.size()); 
-			}
+			}*/
 			if(StringUtils.isNotBlank(docInfoConditionVO.getSourceName())){
 				params.add("%"+String.valueOf(docInfoConditionVO.getSourceName())+"%");
 			    sql.append(" and ts.name like ?").append(params.size()); 
@@ -121,7 +125,24 @@ public class DocInfoMngServiceImpl implements IDocInfoMngService {
 				params.add("%"+String.valueOf(docInfoConditionVO.getKeyword())+"%");
 			    sql.append(" and ti.keyword like ?").append(params.size()); 
 			}
-			
+			if(StringUtils.isNotBlank(docInfoConditionVO.getConditionField())){
+				if(docInfoConditionVO.getConditionField().contains("SourceName")||docInfoConditionVO.getConditionField().contains("title")
+						&&docInfoConditionVO.getConditionField().contains("body")){
+					sql.append(" and ").append(docInfoConditionVO.getConditionField()); 
+				}else{
+					StringBuffer conditionStr = new StringBuffer();
+					String [] strArr = docInfoConditionVO.getConditionField().split(" ");
+					for(String str:strArr){
+						if(StringUtils.isBlank(str)){
+							continue;
+						}
+						conditionStr.append(" ti.title like '%").append(str).append("%' or ").append(" ti.body like '%").append(str).append("%' or ");
+					}
+					conditionStr = new StringBuffer (conditionStr.substring(0, conditionStr.toString().lastIndexOf("or")));
+					sql.append(" and ").append(conditionStr.toString());
+				}
+				
+			}
 		}
 		Page<Object[]> page = dynamicQuery.nativeQuery(Object[].class,	new PageRequest(pageNumber, pageSize), sql.toString(), params.toArray());
         List<DocInfoVO> docInfoVOList = Lists.newArrayList(Lists.transform(page.getContent(),

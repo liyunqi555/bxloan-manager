@@ -18,6 +18,8 @@ public class DocInfoConditionVO {
 	    private Long sourceId;//来源id
 	    private Long columnId;//栏目id
 	    private String keyword;//关键字
+	    private String conditionField;//关联文章的条件
+	    private Integer conditionType;//关联类型，1：普通查询，2：高级查询
 	    
 		public String getSourceName() {
 			return sourceName;
@@ -54,6 +56,18 @@ public class DocInfoConditionVO {
 		}
 		public void setKeyword(String keyword) {
 			this.keyword = keyword;
+		}
+		public String getConditionField() {
+			return conditionField;
+		}
+		public void setConditionField(String conditionField) {
+			this.conditionField = conditionField;
+		}
+		public Integer getConditionType() {
+			return conditionType;
+		}
+		public void setConditionType(Integer conditionType) {
+			this.conditionType = conditionType;
 		}
 
 

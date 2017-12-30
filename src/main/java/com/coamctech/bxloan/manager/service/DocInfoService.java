@@ -122,7 +122,10 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
                 logger.info("该用户userId={}没有配置来源",userId);
                 return docInfos;
             }
-
+            List<String> sourceIds = new ArrayList<>();
+            canVisitDocSourceIds.forEach(id->{
+                sourceIds.add(String.valueOf(id));
+            });
             Map<String, Object> param = new HashMap<>();
             entityManager = this.entityManagerFactory.createEntityManager();
             StringBuilder sql = new StringBuilder();
@@ -133,13 +136,14 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
                     .append("t.id ,t.title , t.cn_title , t.summary , t.update_time , t.body , t.cn_boty ,ds.name ")
                     .append("  from t_doc_info t ,t_doc_source ds  where t.source_id=ds.id ");
             Iterable<DocColumn> docColumns = docColumnService.findAll(columnIds);
-            sql.append(" and ( 1=1 ");
+            sql.append(" and ( 1=2 ");
             for(DocColumn docColumn:docColumns){
                 sql.append(" or ").append(this.getConditionSql(docColumn));
             }
             sql.append(" ) ");
-            sql.append(" and  t.source_Id in(:sourceId) ");
-            param.put("sourceId",canVisitDocSourceIds);
+//            sql.append(" and  t.source_Id in(:sourceId) ");
+            sql.append(" and  t.source_Id in( ").append(StringUtils.join(sourceIds, ",")).append(" ) ");
+//            param.put("sourceId",canVisitDocSourceIds);
 
             if(StringUtils.isNotEmpty(keyworld)){
                 sql.append(" and t.title like :title ");
