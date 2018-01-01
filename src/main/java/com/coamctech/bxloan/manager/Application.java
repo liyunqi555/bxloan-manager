@@ -39,7 +39,7 @@ public class Application extends SpringBootServletInitializer {
             File truststore = new ClassPathResource("tomcat.jks").getFile();
             connector.setScheme("https");
             connector.setSecure(true);
-            connector.setPort(8443);
+            connector.setPort(443);
             protocol.setSSLEnabled(true);
             protocol.setKeystoreFile(keystore.getAbsolutePath());
             protocol.setKeystorePass("lirong");
