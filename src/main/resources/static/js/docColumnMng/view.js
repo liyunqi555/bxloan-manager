@@ -68,6 +68,8 @@ define(function(require, exports, module) {
 		for (var i=0, l=nodes2.length; i < l; i++) {
 			treeObj2.setChkDisabled(nodes2[i], false);
 		}
+		 $("input[name='id']").val("");
+		 $("#docColumnId").val("");
 		$("#addColumnForm").resetForm();
 	    $("#add-modal-form").modal("show");
 	    viewSelf.initModal();
