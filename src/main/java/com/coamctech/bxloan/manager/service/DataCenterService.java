@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.imageio.stream.FileImageOutputStream;
 import javax.persistence.EntityManager;
@@ -272,9 +273,35 @@ public class DataCenterService {
             closeEntityManager(entityManager);
         }
     }
+    public List<byte[]> getImage(String uri){
+        EntityManager entityManager = null;
+        try{
+            entityManager = this.entityManagerFactory.createEntityManager();
+            String sql = "select FileStream from Image t where t.uri=?1 ";
+            Query query = entityManager.createNativeQuery(sql);
+            query.setParameter(1,uri);
+            List<byte[]> list = query.getResultList();
+            return list;
+        }finally {
+            closeEntityManager(entityManager);
+        }
+    }
     private void closeEntityManager(EntityManager entityManager){
         if(entityManager!=null){
             entityManager.close();
+        }
+    }
+    public List<String> childConcept(@RequestParam(name="conceptUri")String conceptUri){
+        EntityManager entityManager = null;
+        try{
+            entityManager = this.entityManagerFactory.createEntityManager();
+            String sql = "select t.child from ont_concept_hierarchy t where t.parent=?1 ";
+            Query query = entityManager.createNativeQuery(sql);
+            query.setParameter(1,conceptUri);
+            List<String> list = query.getResultList();
+            return list;
+        }finally {
+            closeEntityManager(entityManager);
         }
     }
 
