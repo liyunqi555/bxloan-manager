@@ -13,6 +13,7 @@ public class UserStoreVO extends BaseEntity implements Serializable{
 	private String userName;
 	private String docName;
 	private String createTime;
+	private Long docId;
 	
 	public UserStoreVO(){
 		super();
@@ -25,6 +26,7 @@ public class UserStoreVO extends BaseEntity implements Serializable{
     	this.userName=CommonHelper.toStr(objs[i++]);
     	this.docName=CommonHelper.toStr(objs[i++]);
     	this.createTime=CommonHelper.date2Str(CommonHelper.toDate(objs[i++]), CommonHelper.DF_DATE);
+    	this.docId=CommonHelper.toLong(objs[i++]);
 		
 	}
 	
@@ -53,6 +55,15 @@ public class UserStoreVO extends BaseEntity implements Serializable{
 	public void setCreateTime(String createTime) {
 		this.createTime = createTime;
 	}
+
+	public Long getDocId() {
+		return docId;
+	}
+
+	public void setDocId(Long docId) {
+		this.docId = docId;
+	}
+	
 	
 	
 	
