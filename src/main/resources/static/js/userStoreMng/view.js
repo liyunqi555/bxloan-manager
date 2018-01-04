@@ -7,7 +7,8 @@ define(function(require, exports, module) {
 			"click #selectAll" : "selectAll",
 			"click button[role='btn-Query']":"query",
 			"click button[role='btn-Reset']":"reset",
-			"click button[role='btn-Export']":"exportExcel"
+			"click button[role='btn-Export']":"exportExcel",
+			"click button[role='detail']":"detail"
 			
 		},
 		initialize: function() { /** 初始化 */
@@ -21,6 +22,12 @@ define(function(require, exports, module) {
             	$('#userName').attr("readonly",true);
             }
 		},
+		detail:function(e){ //查看按钮事件
+        	var viewSelf = this;
+			var btnSelf = $(e.currentTarget);
+			var roleId = btnSelf.data("id"); 
+			window.location.href="/docInfo/article/"+roleId;
+        },
 		getCheckBox : function(){
 			var viewSelf = this;
 			$(document).on("change","input[type='checkbox'][name='doc_id']",function() {
@@ -49,7 +56,6 @@ define(function(require, exports, module) {
 			});
 		},
 		selectAll : function(){
-			alert(111);
 			if($("#selectAll").prop("checked")){
 				$("input[type='checkbox'][name='doc_id']").prop("checked",true);
 				var arr = $("input[type='checkbox'][name='doc_id']");
@@ -59,7 +65,6 @@ define(function(require, exports, module) {
 						selectedStr += str;
 					}
 				}
-				alert(selectedStr);
 			}else{
 				$("input[type='checkbox'][name='doc_id']").prop("checked",false);
 				var arr = $("input[type='checkbox'][name='doc_id']");
@@ -117,7 +122,15 @@ define(function(require, exports, module) {
 					}},
 			        {mData: "userName"},
 			        {mData: "docName"},
-			        {mData: "createTime"}
+			        {mData: "createTime"},
+			        {mData: null, mRender: function(data, type, rowdata) {
+		    	    	var operation = 
+						"<div class='btn-group'>" + 
+							"<button data-id='" + rowdata.docId + "' class='btn btn-xs btn-yellow' role='detail' data-toggle='tooltip' data-placement='bottom' title='查看'>" +
+								"<i class='ace-icon fa fa-eye'></i></button>" +
+						"</div>";
+		    	    	return operation;
+		    		}}
 			    ]
 			});
 			viewSelf.dt = dt;

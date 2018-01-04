@@ -473,6 +473,18 @@ define(function(require, exports, module) {
 							node.checked=false
 						}*/
 					}); 
+					if(type=='view'){
+						var nodes = treeObj.getNodes();
+						for (var i=0, l=nodes.length; i < l; i++) {
+							treeObj.setChkDisabled(nodes[i], true);
+						}
+					}else{
+						var nodes = treeObj.getNodes();
+						for (var i=0, l=nodes.length; i < l; i++) {
+							treeObj.setChkDisabled(nodes[i], false);
+						}
+						
+					}
 
 				}else{
 					utils.alert.warn(result.msg);

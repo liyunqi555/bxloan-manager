@@ -19,32 +19,33 @@ import org.slf4j.LoggerFactory;
 
 public class BaseTest {
 	private static Logger logger = LoggerFactory.getLogger(BaseTest.class);
-	protected static final String base = "http://localhost:8081/";
-//  protected static final String base = "http://211.99.230.29:8096/";
+//	protected static final String base = "http://localhost:8081/";
+  protected static final String base = "http://211.99.230.29:8096/";
     //admin
     protected static String token = "ee859669ff48b631da9401687e250c3cv101000000_788fc2920c99964013f1703d99aa7394ba61eada";
     //vip1
     protected static String sign = "C667EFAA2F3B2D80D1D2184519813E57";
     public static void main(String[] args) {
-     login();
-        //login_vip1();
+//     login();
+        login_vip1();
 //        topColumns();
-      // banner();
+      banner();
 //        customColumn();
-//
-//       haveCustomDocColumns();
-       // noCustomDocColumns();
+
+       haveCustomDocColumns();
+       noCustomDocColumns();
 //        switchOrder();
 //        lastVersion();
-//        cancelCustomColumn();
-      //  worlds();
+        cancelCustomColumn();
+        worlds();
         docInfos();
-//        search();
-//        docInfoDetail();
+       // search();
+       // docInfoDetail();
 //        store();
+//        myStore();
 //        cancelStore();
 //        myStore();
-//        myHistory();
+        //myHistory();
 //        dataCenter_home();
 //        dataCenter_store();
 //        dataCenter_detail();
@@ -109,13 +110,14 @@ public class BaseTest {
     }
     public static void cancelStore(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new NameValuePair("idsStr","1"));
+        nvps.add(new NameValuePair("idsStr","2"));
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/home/cancelStore");
     }
     public static void store(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new NameValuePair("docInfoId","19"));
+        nvps.add(new NameValuePair("topLevelColumnId","1"));
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/home/store");
     }
@@ -128,16 +130,16 @@ public class BaseTest {
     public static void search(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new NameValuePair("pageIndex","0"));
-        nvps.add(new NameValuePair("keyword","关键的1"));
-        nvps.add(new NameValuePair("topLevelColumnId","1"));
+        nvps.add(new NameValuePair("keyword","天赋"));
+//        nvps.add(new NameValuePair("topLevelColumnId","1"));
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/home/search");
     }
     public static void docInfos(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new NameValuePair("pageIndex","0"));
-        nvps.add(new NameValuePair("columnId","6"));
-        nvps.add(new NameValuePair("topLevelColumnId","2"));
+        nvps.add(new NameValuePair("columnId","32"));
+        nvps.add(new NameValuePair("topLevelColumnId","29"));
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/home/docInfos");
     }
@@ -162,7 +164,7 @@ public class BaseTest {
     }
     public static void customColumn(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new NameValuePair("columnId","4"));
+        nvps.add(new NameValuePair("columnId","5"));
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/home/customColumn");
     }
@@ -208,10 +210,13 @@ public class BaseTest {
     }
     protected static void login_vip1(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new NameValuePair("userName", "vip1"));
+        nvps.add(new NameValuePair("userName", "xinguang"));
         nvps.add(new NameValuePair("password", MD5Util.md5Hex("12345678")));
-        nvps.add(new NameValuePair("deviceCode", "123456789abcdefvip1"));
+        nvps.add(new NameValuePair("deviceCode", "123456789abcdefvip11"));
         String res = post(nvps,"api/app/user/anon/login");
+        JSONObject jo = JSONObject.parseObject(res);
+        token=jo.getJSONObject("body").getString("token");
+        sign = jo.getJSONObject("body").getString("sign");
     }
     protected static void login(){
 		List<NameValuePair> nvps = new ArrayList<NameValuePair>();

@@ -357,7 +357,7 @@ public class UserMngServiceImpl implements UserMngService{
 			String userName) {
 		List<Object> params = new ArrayList<Object>();
 		StringBuffer sql = new StringBuffer();
-		sql.append(" SELECT us.id,u.user_name,di.title,u.create_time ");
+		sql.append(" SELECT us.id,u.user_name,di.title,u.create_time,us.doc_info_id ");
 		sql.append(" FROM t_user_store us,t_user u,t_doc_info di WHERE u.id=us.user_id and us.doc_info_id = di.id");
 		int i = 0;
 		if(StringUtils.isNotBlank(userName)){
