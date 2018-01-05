@@ -277,14 +277,16 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         if(StringUtils.isNotEmpty(cnBoty)){
             Document document = Jsoup.parse(cnBoty, "UTF-8");
             Element element = document.selectFirst("img[src]");
-            String imgUrl = element.attr("src");
-            docInfo.setImgUrl(imgUrl);
-            Elements elements = document.select("img[src^=DB:]");
-            elements.forEach(e->{
-                String dbId = this.appConfigDomain+"/api/app/files/anon/img?mediaId="+e.attr("src");
-                e.attr("src",dbId);
-            });
-            docInfo.setCnBoty(document.body().toString());
+            if(element!=null){
+                String imgUrl = element.attr("src");
+                docInfo.setImgUrl(imgUrl);
+                Elements elements = document.select("img[src^=DB:]");
+                elements.forEach(e->{
+                    String dbId = this.appConfigDomain+"/api/app/files/anon/img?mediaId="+e.attr("src");
+                    e.attr("src",dbId);
+                });
+                docInfo.setCnBoty(document.body().toString());
+            }
         }else if(StringUtils.isNotEmpty(body)){
             Document document = Jsoup.parse(body, "UTF-8");
             Element element = document.selectFirst("img[src]");
@@ -382,6 +384,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
             }
             docInfosList.add(docInfo);
         });
+        addDocSourceName(docInfosList);
         //按收藏顺序排序
         Collections.sort(docInfosList, new DocInfoStoreTimeComparator());
         return docInfosList;
