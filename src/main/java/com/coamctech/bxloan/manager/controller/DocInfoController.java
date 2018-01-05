@@ -28,7 +28,7 @@ public class DocInfoController {
     @RequestMapping(value="/article/{docId}")
     public String index2(Model model,@PathVariable("docId") Long docId){
     	DocInfo doc = docInfoDao.findOne(docId);
-		doc = docInfoService.parseImgUrl(doc);
+		docInfoService.parseImgUrl(doc);
     	if(StringUtils.isNotBlank(doc.getCnBoty())){
     		model.addAttribute("body", doc.getCnBoty());
     	}else{
