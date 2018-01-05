@@ -28,7 +28,7 @@ public class BaseService<T, ID extends Serializable> {
     @Value("${top.level.column.id.report}")
     public Long topLevelColumnIdReport;
     @Value("${app.config.domain}")
-    public Long appConfigDomain;
+    public String appConfigDomain;
 
     public static final String TITLE="title";
     public static final String SOURCE_NAME="sourceName";
