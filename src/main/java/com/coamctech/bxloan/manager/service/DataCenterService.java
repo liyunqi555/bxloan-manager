@@ -277,7 +277,7 @@ public class DataCenterService {
         EntityManager entityManager = null;
         try{
             entityManager = this.entityManagerFactory.createEntityManager();
-            String sql = "select FileStream from Image t where t.uri=?1 ";
+            String sql = "select FileStream from Image t where t.imageId=?1 ";
             Query query = entityManager.createNativeQuery(sql);
             query.setParameter(1,uri);
             List<byte[]> list = query.getResultList();

@@ -34,7 +34,7 @@ public class AppFileController extends AppBaseController{
     @RequestMapping("anon/img")
     public void img(@RequestParam(name="mediaId") String mediaId,HttpServletResponse response){
         if(mediaId.startsWith("DB:")){
-            List<byte[]> list = dataCenterService.getImage(mediaId);
+            List<byte[]> list = dataCenterService.getImage(mediaId.substring(3));
             if(list.size()>0){
                 writeResponse(response,list);
             }
