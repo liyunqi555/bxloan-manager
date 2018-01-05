@@ -36,17 +36,18 @@ public class AppDataCenterController extends AppBaseController{
     @Autowired
     private UserStoreService userStoreService;
 
+    private static final String UN_CLASSIFY_NAME = "未分类";
     /**
      * 数据中心首页
      * @param conceptUri
      * @return
      */
     @RequestMapping("home")
-    public JsonResult home(@RequestParam(name="pageIndex")Integer pageIndex,@RequestParam(name="conceptUri")String conceptUri,String propertyUri){
-        if(StringUtils.isBlank(propertyUri)){
+    public JsonResult home(@RequestParam(name="pageIndex")Integer pageIndex,@RequestParam(name="conceptUri")String conceptUri,@RequestParam(name="childConceptUri") String childConceptUri){
+        if(UN_CLASSIFY_NAME.equals(childConceptUri)){
             return dataCenterService.entityList(pageIndex,1000,conceptUri);
         }else{
-            return dataCenterService.entityList(pageIndex,1000,conceptUri,propertyUri);
+            return dataCenterService.entityList(pageIndex,1000,childConceptUri);
         }
     }
 
@@ -58,6 +59,7 @@ public class AppDataCenterController extends AppBaseController{
     @RequestMapping("childConcept")
     public JsonResult childConcept(@RequestParam(name="conceptUri")String conceptUri){
         List<String> childConcept = dataCenterService.childConcept(conceptUri);
+        childConcept.add(UN_CLASSIFY_NAME);
         return JsonResult.success(childConcept);
     }
     /**
