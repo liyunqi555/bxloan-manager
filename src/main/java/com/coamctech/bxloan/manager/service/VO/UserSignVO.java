@@ -13,6 +13,7 @@ public class UserSignVO extends BaseEntity implements Serializable{
 	private String columnName;
 	private String parentColumnName;
 	private Integer level; 
+	private String conditionField;
 	
 	public UserSignVO(){
 		super();
@@ -25,7 +26,7 @@ public class UserSignVO extends BaseEntity implements Serializable{
 		this.columnName=CommonHelper.toStr(objs[i++]);
     	this.parentId=CommonHelper.toLong(objs[i++]);
     	this.level=CommonHelper.toInt(objs[i++]);
-		
+    	this.conditionField = CommonHelper.toStr(objs[i++]);
 	}
 
 	public Long getId() {
@@ -66,6 +67,14 @@ public class UserSignVO extends BaseEntity implements Serializable{
 
 	public void setLevel(Integer level) {
 		this.level = level;
+	}
+
+	public String getConditionField() {
+		return conditionField;
+	}
+
+	public void setConditionField(String conditionField) {
+		this.conditionField = conditionField;
 	}
 	
 	

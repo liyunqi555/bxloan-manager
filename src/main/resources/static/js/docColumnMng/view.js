@@ -431,20 +431,19 @@ define(function(require, exports, module) {
 					$.each(ids,function(key,value){
 						var node = treeObj.getNodeByParam("id",value, null);
 						treeObj.checkNode(node, true, true);
+						if(type=='view'){
+							var nodes = treeObj.getNodes();
+							for (var i=0, l=nodes.length; i < l; i++) {
+								treeObj.setChkDisabled(node, true);
+							}
+						}else{
+							var nodes = treeObj.getNodes();
+							for (var i=0, l=nodes.length; i < l; i++) {
+								treeObj.setChkDisabled(node, false);
+							}
+							
+						}
 					}); 
-					
-					if(type=='view'){
-						var nodes = treeObj.getNodes();
-						for (var i=0, l=nodes.length; i < l; i++) {
-							treeObj.setChkDisabled(nodes[i], true);
-						}
-					}else{
-						var nodes = treeObj.getNodes();
-						for (var i=0, l=nodes.length; i < l; i++) {
-							treeObj.setChkDisabled(nodes[i], false);
-						}
-						
-					}
 					
 				}else{
 					utils.alert.warn(result.msg);
@@ -472,6 +471,18 @@ define(function(require, exports, module) {
 						if(type=='view'){
 							node.checked=false
 						}*/
+						if(type=='view'){
+							var nodes = treeObj.getNodes();
+							for (var i=0, l=nodes.length; i < l; i++) {
+								treeObj.setChkDisabled(node, true);
+							}
+						}else{
+							var nodes = treeObj.getNodes();
+							for (var i=0, l=nodes.length; i < l; i++) {
+								treeObj.setChkDisabled(node, false);
+							}
+							
+						}
 					}); 
 
 				}else{

@@ -31,7 +31,7 @@ public class DocInfoController {
     		model.addAttribute("body", doc.getBody());
     	}
     	if(StringUtils.isNotBlank(doc.getCnTitle())){
-    		model.addAttribute("title", doc.getCnTitle());
+        model.addAttribute("title", doc.getCnTitle());
     	}else{
     		model.addAttribute("title", doc.getTitle());
     	}
