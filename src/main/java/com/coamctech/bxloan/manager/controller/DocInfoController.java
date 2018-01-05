@@ -1,5 +1,6 @@
 package com.coamctech.bxloan.manager.controller;
 
+import com.coamctech.bxloan.manager.service.DocInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,7 +17,9 @@ public class DocInfoController {
 	
 	@Autowired
 	private DocInfoDao docInfoDao;
-	
+	@Autowired
+	private DocInfoService docInfoService;
+
 	@RequestMapping
 	public String index(){
 		return "docInfo";
@@ -25,13 +28,14 @@ public class DocInfoController {
     @RequestMapping(value="/article/{docId}")
     public String index2(Model model,@PathVariable("docId") Long docId){
     	DocInfo doc = docInfoDao.findOne(docId);
+		doc = docInfoService.parseImgUrl(doc);
     	if(StringUtils.isNotBlank(doc.getCnBoty())){
     		model.addAttribute("body", doc.getCnBoty());
     	}else{
     		model.addAttribute("body", doc.getBody());
     	}
     	if(StringUtils.isNotBlank(doc.getCnTitle())){
-        model.addAttribute("title", doc.getCnTitle());
+        	model.addAttribute("title", doc.getCnTitle());
     	}else{
     		model.addAttribute("title", doc.getTitle());
     	}

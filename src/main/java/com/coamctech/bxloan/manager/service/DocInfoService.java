@@ -18,6 +18,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -224,7 +225,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
             return;
         }
         docInfos.forEach(docInfo ->{
-            parseImgUrl(docInfo);
+            docInfo = parseImgUrl(docInfo);
         });
     }
     private void addDocSourceName(List<DocInfo> docInfos){
@@ -268,17 +269,35 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
             docInfo.setStoreFlag(flag?1:0);
         });
     }
-    private void parseImgUrl(DocInfo docInfo){
+    public DocInfo parseImgUrl(DocInfo doc){
+        DocInfo docInfo = new DocInfo();
+        BeanUtils.copyProperties(doc,docInfo);
         String body = docInfo.getBody();
-        Document document = Jsoup.parse(body, "UTF-8");
-        Element element = document.selectFirst("img[src]");
-        String imgUrl = element.attr("src");
-        docInfo.setImgUrl(imgUrl);
-        Elements elements = document.select("img[src^=DB:]");
-        elements.forEach(e->{
-            String dbId = this.appConfigDomain+"/api/app/files/anon/img?mediaId="+e.attr("src");
-            e.attr("src",dbId);
-        });
+        String cnBoty = docInfo.getCnBoty();
+        if(StringUtils.isNotEmpty(cnBoty)){
+            Document document = Jsoup.parse(cnBoty, "UTF-8");
+            Element element = document.selectFirst("img[src]");
+            String imgUrl = element.attr("src");
+            docInfo.setImgUrl(imgUrl);
+            Elements elements = document.select("img[src^=DB:]");
+            elements.forEach(e->{
+                String dbId = this.appConfigDomain+"/api/app/files/anon/img?mediaId="+e.attr("src");
+                e.attr("src",dbId);
+            });
+            docInfo.setCnBoty(document.body().toString());
+        }else if(StringUtils.isNotEmpty(body)){
+            Document document = Jsoup.parse(body, "UTF-8");
+            Element element = document.selectFirst("img[src]");
+            String imgUrl = element.attr("src");
+            docInfo.setImgUrl(imgUrl);
+            Elements elements = document.select("img[src^=DB:]");
+            elements.forEach(e->{
+                String dbId = this.appConfigDomain+"/api/app/files/anon/img?mediaId="+e.attr("src");
+                e.attr("src",dbId);
+            });
+            docInfo.setBody(document.body().toString());
+        }
+        return docInfo;
     }
 
     /**
@@ -301,7 +320,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         if(docSource!=null){
             docInfo.setSourceName(docSource.getName());
         }
-        this.parseImgUrl(docInfo);
+        docInfo = this.parseImgUrl(docInfo);
         return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG, docInfo);
     }
 
