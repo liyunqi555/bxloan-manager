@@ -51,6 +51,16 @@ public class AppDataCenterController extends AppBaseController{
     }
 
     /**
+     * 获取子概念
+     * @param conceptUri
+     * @return
+     */
+    @RequestMapping("childConcept")
+    public JsonResult childConcept(@RequestParam(name="conceptUri")String conceptUri){
+        List<String> childConcept = dataCenterService.childConcept(conceptUri);
+        return JsonResult.success(childConcept);
+    }
+    /**
      *
      * @param conceptUri
      * @param entityid

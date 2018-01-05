@@ -13,6 +13,8 @@ import com.coamctech.bxloan.manager.utils.TokenUtils;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -268,9 +270,15 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
     }
     private void parseImgUrl(DocInfo docInfo){
         String body = docInfo.getBody();
-        Elements elements = Jsoup.parse(body, "UTF-8").select("img[src]");
-        String imgUrl = elements.attr("src");
+        Document document = Jsoup.parse(body, "UTF-8");
+        Element element = document.selectFirst("img[src]");
+        String imgUrl = element.attr("src");
         docInfo.setImgUrl(imgUrl);
+        Elements elements = document.select("img[src^=DB:]");
+        elements.forEach(e->{
+            String dbId = this.appConfigDomain+"/api/app/files/anon/img?mediaId="+e.attr("src");
+            e.attr("src",dbId);
+        });
     }
 
     /**
@@ -293,6 +301,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         if(docSource!=null){
             docInfo.setSourceName(docSource.getName());
         }
+        this.parseImgUrl(docInfo);
         return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG, docInfo);
     }
 
@@ -359,3 +368,4 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         return docInfosList;
     }
 }
+
