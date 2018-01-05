@@ -437,7 +437,7 @@ public class UserMngServiceImpl implements UserMngService{
 			Integer pageSize,Long userId, String columnName) {
 		List<Object> params = new ArrayList<Object>();
 		StringBuffer sql = new StringBuffer();
-		sql.append(" SELECT t.id,tc.name,tc.parent_id,tc.level ");
+		sql.append(" SELECT t.id,tc.name,tc.parent_id,tc.level ,tc.condition_field ");
 		sql.append(" FROM t_user_doc_column_rel t,t_doc_column tc where t.doc_column_id=tc.id");
 		int i = 0;
 		if(userId!=null){
