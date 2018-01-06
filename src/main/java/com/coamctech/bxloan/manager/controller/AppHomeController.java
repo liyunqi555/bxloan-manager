@@ -65,9 +65,10 @@ public class AppHomeController extends AppBaseController{
     public JsonResult banner(){
         JsonResult jsonResult = JsonResult.success();
         List<DocInfo> docInfos = docInfoService.getTopDocInfos();
-        docInfos.forEach(docInfo->{
+        docInfoService.parseImgUrl(docInfos);
+        docInfos.forEach(docInfo -> {
             docInfo.setBody("");
-            docInfo.setSummary("");
+            docInfo.setCnBoty("");
         });
         jsonResult.setBody(docInfos);
         return jsonResult;
@@ -85,6 +86,11 @@ public class AppHomeController extends AppBaseController{
         Long userId = TokenUtils.sessionUser().getId();
         Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
         List<DocInfo> docInfoList = docInfoService.searchDocInfos(page, userId, Arrays.asList(this.topLevelColumnIdDoc), null);
+        docInfoService.parseImgUrl(docInfoList);
+        docInfoList.forEach(d->{
+            d.setBody("");
+            d.setCnBoty("");
+        });
         jsonResult.setBody(docInfoList);
         return  jsonResult;
     }
@@ -112,6 +118,7 @@ public class AppHomeController extends AppBaseController{
             parentColumnIds.add(topLevelColumnId);
         }
         List<DocInfo> docInfos = this.docInfoService.searchDocInfos(page, userId, parentColumnIds, keyword);
+        docInfoService.parseImgUrl(docInfos);
         docInfos.forEach(d->{
             d.setBody("");
             d.setCnBoty("");
@@ -149,6 +156,7 @@ public class AppHomeController extends AppBaseController{
         }else{
             docInfos = this.docInfoService.searchDocInfos(page, userId, Arrays.asList(topLevelColumnId), null);
         }
+        docInfoService.parseImgUrl(docInfos);
         docInfos.forEach(d->{
             d.setBody("");
             d.setCnBoty("");
@@ -267,6 +275,7 @@ public class AppHomeController extends AppBaseController{
         long userId = TokenUtils.sessionUser().getId();
         Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
         List<DocInfo> docInfos = docInfoService.myHistory(page,userId);
+        docInfoService.parseImgUrl(docInfos);
         return JsonResult.success(docInfos);
     }
     /**
@@ -280,6 +289,7 @@ public class AppHomeController extends AppBaseController{
         long userId = TokenUtils.sessionUser().getId();
         Page page = new Page(pageIndex,DEFAULT_PAGE_SIZE);
         List<DocInfo> docInfos = docInfoService.myStore(page, userId,topLevelColumnId);
+        docInfoService.parseImgUrl(docInfos);
         return JsonResult.success(docInfos);
     }
 

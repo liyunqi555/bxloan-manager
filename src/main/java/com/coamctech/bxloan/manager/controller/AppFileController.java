@@ -32,9 +32,19 @@ public class AppFileController extends AppBaseController{
     private UserStoreService userStoreService;
 
     @RequestMapping("anon/img")
-    public void img(@RequestParam(name="mediaId") Long mediaId,HttpServletResponse response){
-        List<byte[]> list = dataCenterService.getMedia(mediaId);
-        writeResponse(response,list);
+    public void img(@RequestParam(name="mediaId") String mediaId,HttpServletResponse response){
+        if(mediaId.startsWith("DB:")){
+            List<byte[]> list = dataCenterService.getImage(mediaId.substring(3));
+            if(list.size()>0){
+                writeResponse(response,list);
+            }
+        }else{
+            List<byte[]> list = dataCenterService.getMedia(Long.valueOf(mediaId));
+            if(list.size()>0){
+                writeResponse(response,list);
+            }
+        }
+
     }
     private void writeResponse(HttpServletResponse response, List<byte[]> list){
         response.reset();

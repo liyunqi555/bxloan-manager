@@ -1,3 +1,4 @@
+
 package app;
 
 import java.io.IOException;
@@ -19,26 +20,26 @@ import org.slf4j.LoggerFactory;
 
 public class BaseTest {
 	private static Logger logger = LoggerFactory.getLogger(BaseTest.class);
-//	protected static final String base = "http://localhost:8081/";
-  protected static final String base = "http://211.99.230.29:8096/";
+	protected static final String base = "http://localhost:8081/";
+//  protected static final String base = "http://211.99.230.29:8096/";
     //admin
     protected static String token = "ee859669ff48b631da9401687e250c3cv101000000_788fc2920c99964013f1703d99aa7394ba61eada";
     //vip1
     protected static String sign = "C667EFAA2F3B2D80D1D2184519813E57";
     public static void main(String[] args) {
-//     login();
-        login_vip1();
+     login();
+//        login_vip1();
 //        topColumns();
-      banner();
+//      banner();
 //        customColumn();
 
-       haveCustomDocColumns();
-       noCustomDocColumns();
+//       haveCustomDocColumns();
+//       noCustomDocColumns();
 //        switchOrder();
 //        lastVersion();
-        cancelCustomColumn();
-        worlds();
-        docInfos();
+//        cancelCustomColumn();
+//        worlds();
+//        docInfos();
        // search();
        // docInfoDetail();
 //        store();
@@ -46,7 +47,8 @@ public class BaseTest {
 //        cancelStore();
 //        myStore();
         //myHistory();
-//        dataCenter_home();
+        dataCenter_home();
+        dataCenter_childConcept();
 //        dataCenter_store();
 //        dataCenter_detail();
 //        dataCenter_myStore();
@@ -90,10 +92,17 @@ public class BaseTest {
         //nvps.add(new NameValuePair("conceptUri","国家"));
         //nvps.add(new NameValuePair("propertyUri","亚洲"));
 //                nvps.add(new NameValuePair("conceptUri","组织"));
-        nvps.add(new NameValuePair("conceptUri","事件"));
+        nvps.add(new NameValuePair("conceptUri","国家"));
+        nvps.add(new NameValuePair("childConceptUri","未分类"));
         nvps.add(new NameValuePair("pageIndex","0"));
         addTokenAndSign(nvps);
         String res = post(nvps,"api/app/dataCenter/home");
+    }
+    public static void dataCenter_childConcept(){
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new NameValuePair("conceptUri","国家"));
+        addTokenAndSign(nvps);
+        String res = post(nvps,"api/app/dataCenter/childConcept");
     }
     public static void myHistory(){
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
@@ -357,3 +366,4 @@ public class BaseTest {
         }
     }
 }
+

@@ -13,9 +13,12 @@ import com.coamctech.bxloan.manager.utils.TokenUtils;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -62,7 +65,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
     public List<DocInfo> getTopDocInfos(){
 
         List<DocInfo> docInfos = docInfoDao.findFirst6ByOrderByIfTopDescUpdateTimeDesc();
-        parseImgUrl(docInfos);
+
         return docInfos;
     }
 
@@ -180,7 +183,6 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
             }
         }
 
-        parseImgUrl(docInfos);
 //        addDocSourceName(pageList.getList());
         addStoreFlag(docInfos,userId);
         return docInfos;
@@ -217,13 +219,13 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         conditionField = conditionField.replace(this.BODY,StringUtils.BLANK_STRING+body+StringUtils.BLANK_STRING);
         return conditionField;
     }
-    private void parseImgUrl(Iterable<DocInfo> docInfos){
+    public void parseImgUrl(Iterable<DocInfo> docInfos){
         if(docInfos==null){
             return;
         }
-        docInfos.forEach(docInfo ->{
+        for(DocInfo docInfo : docInfos){
             parseImgUrl(docInfo);
-        });
+        }
     }
     private void addDocSourceName(List<DocInfo> docInfos){
         if(docInfos==null || docInfos.size()==0){
@@ -266,11 +268,34 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
             docInfo.setStoreFlag(flag?1:0);
         });
     }
-    private void parseImgUrl(DocInfo docInfo){
+    public void parseImgUrl(DocInfo docInfo){
         String body = docInfo.getBody();
-        Elements elements = Jsoup.parse(body, "UTF-8").select("img[src]");
-        String imgUrl = elements.attr("src");
-        docInfo.setImgUrl(imgUrl);
+        String cnBoty = docInfo.getCnBoty();
+        if(StringUtils.isNotEmpty(cnBoty)){
+            Document document = Jsoup.parse(cnBoty, "UTF-8");
+            Element element = document.selectFirst("img[src]");
+            if(element!=null){
+                String imgUrl = element.attr("src");
+                docInfo.setImgUrl(imgUrl);
+                Elements elements = document.select("img[src^=DB:]");
+                elements.forEach(e->{
+                    String dbId = this.appConfigDomain+"/api/app/files/anon/img?mediaId="+e.attr("src");
+                    e.attr("src",dbId);
+                });
+                docInfo.setCnBoty(document.body().toString());
+            }
+        }else if(StringUtils.isNotEmpty(body)){
+            Document document = Jsoup.parse(body, "UTF-8");
+            Element element = document.selectFirst("img[src]");
+            String imgUrl = element.attr("src");
+            docInfo.setImgUrl(imgUrl);
+            Elements elements = document.select("img[src^=DB:]");
+            elements.forEach(e->{
+                String dbId = this.appConfigDomain+"/api/app/files/anon/img?mediaId="+e.attr("src");
+                e.attr("src",dbId);
+            });
+            docInfo.setBody(document.body().toString());
+        }
     }
 
     /**
@@ -293,6 +318,7 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         if(docSource!=null){
             docInfo.setSourceName(docSource.getName());
         }
+        this.parseImgUrl(docInfo);
         return new JsonResult(ResultCode.SUCCESS_CODE,ResultCode.SUCCESS_MSG, docInfo);
     }
 
@@ -311,7 +337,6 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         });
         Iterable<DocInfo> docInfos = docInfoDao.findAll(docInfoIds);
         List<DocInfo> docInfosList = new ArrayList<>();
-        parseImgUrl(docInfos);
         docInfos.forEach(docInfo->{
             for(UserViewHistory userViewHistory:userViewHistories) {
                 if (userViewHistory.getDocInfoId().equals(docInfo.getId())) {
@@ -341,8 +366,6 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
         });
         Iterable<DocInfo> docInfos = docInfoDao.findAll(docInfoIds);
 
-        parseImgUrl(docInfos);
-
         List<DocInfo> docInfosList = new ArrayList<>();
         docInfos.forEach(docInfo->{
             for(UserStore userStore:userStores) {
@@ -354,8 +377,10 @@ public class DocInfoService extends BaseService<DocInfo,Long>{
             }
             docInfosList.add(docInfo);
         });
+        addDocSourceName(docInfosList);
         //按收藏顺序排序
         Collections.sort(docInfosList, new DocInfoStoreTimeComparator());
         return docInfosList;
     }
 }
+

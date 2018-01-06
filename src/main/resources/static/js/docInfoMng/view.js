@@ -12,7 +12,8 @@ define(function(require, exports, module) {
 		"click #btn-sourceTree": "initSourceTree",//初始化树菜单
 		"click button[role=btn-delDocInfo]" : "delDocInfo",//删除
 		"click button[role=editDocInfo]" : "editDocInfo",//编辑
-		"click button[role=detailDocInfo]" : "detailDocInfo"//查看
+		"click button[role=detailDocInfo]" : "detailDocInfo",//查看
+		"click button[role=btn-preview]" : "preview"//文章预览
 			
 	},
 	initialize: function() {
@@ -87,7 +88,6 @@ define(function(require, exports, module) {
 	initDtTable: function() {
 		var viewSelf = this;
 		var conditionField = $('#conditionField').val();
-		console.log(conditionField);
 		var sourceId = $('#sSourceId').val();
 		var sourceName = $('#sSourceName').val();
 		var columnName = $('#sColumnName').val();
@@ -147,7 +147,8 @@ define(function(require, exports, module) {
 	        		var edit = "<button type='button' role='editDocInfo' data-id='" +rowdata.id + "'"+"data-name='"+rowdata.name+ "'data-parentId='"+rowdata.parentId  + "'"+"data-parentName='"+rowdata.parentName +"'"+"data-ifSpecial='"+rowdata.ifSpecial + "'  class='btn btn-xs btn-info' title='修改' ><i class='ace-icon fa fa-edit bigger-120'></i></button> ";
 	        		var view = " <button type='button' role='detailDocInfo' data-id='" +rowdata.id + "'  class='btn btn-xs btn-yellow' title='查看'><i class='ace-icon fa fa-eye bigger-120'></i></button> ";
 	        		var deleteView = "<button type='button' role='btn-delDocInfo' data-id='" +rowdata.id + "'  class='btn btn-xs btn-danger' title='删除' ><i class='ace-icon fa fa-trash-o bigger-120'></i></button> ";
-            		buttons+= edit+view+deleteView;
+	        		var preview = "<button type='button' role='btn-preview' data-id='" +rowdata.id + "'  class='btn btn-xs btn-success' title='文章预览' ><i class='ace-icon fa fa-eye fa-trash-o bigger-120'></i></button> ";
+            		buttons+= edit+view+deleteView+preview;
             		return buttons;
 	        	
 		        }}],	
@@ -192,7 +193,6 @@ define(function(require, exports, module) {
 		var $this = $(this);
 		var btnSelf = $(e.currentTarget);
 		var id = btnSelf.data("id");
-		console.log(id);
 		utils.button.confirm(btnSelf,function(result){
 			if(!result){//取消
 				return false;
@@ -289,82 +289,13 @@ define(function(require, exports, module) {
 			}
 		});
     },
-/*	initColumnTree:function(){
-			var viewSelf = this;
-			$.fn.zTree.init($("#columnTree"), {
-				async : {
-					enable : true,
-					url : "/userColumnSourceAssign/getAllColumn"
-				},
-	             view:{//表示tree的显示状态
-	                 selectMulti:false//表示多选
-	             },
-				check: {
-					enable: true,
-					chkStyle : "radio",
-					radioType : "level"
-				},
-				data : {
-					simpleData : {
-						enable : true,
-						idKey : "id",
-						pIdKey : "parentId"
-					},
-					key : {
-						name : "name"
-					}
-				},
-				callback : {
-					onCheck : function(event, treeId, treeNode) {
-						var id = treeNode.id;
-						if(0==id){
-							return false ;
-						}
-                     	var treeObj = $.fn.zTree.getZTreeObj(treeId);
-                     	var node = treeObj.getNodeByParam("id", id, null);
-                     	var parentNode = node.getParentNode();
-                     	var columnName = node.name; 
-                        treeObj.expandNode(parentNode, true, false);
-                        $('#docColumnField').val(id);
-						$('#columnId').val(id);
-						$('#columnName').val(columnName);
-					    $("#addcolumnZTree").toggle(300,
-					    		function() {
-		                            if (($("#addcolumnZTree").attr("style")) == "<i class='ace-icon fa fa-eye'></i>") {
-		                             	
-		                             } else if (($("#addcolumnZTree").attr("style")) == "display: none;") {
-		                                 $("#btn-columnTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
-		                             } else {
-		                                 $("#btn-columnTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
-		                             }
-		                         });
-					}
-				},
-                onAsyncSuccess: function(event, treeId, treeNode, msg) {
-                 	var treeObj = $.fn.zTree.getZTreeObj(treeId);
-                 	var docColumnField = $("#docColumnField").val(); 
-                     if (docColumnField !== ""&&docColumnField !==null) {
-                    	var node = treeObj.getNodeByParam("id", docColumnCdField, null);
-                       	var parentNode = node.getParentNode();
-                        treeObj.expandNode( parentNode , true, false); 
-                        this.$('#columnId').val(node.id);
- 						$('.columnName').val(node.name);
-                     }
-                     
-                 }
-			});
-		    $("#addcolumnZTree").toggle(300,
-		    		function() {
-                        if (($("#addcolumnZTree").attr("style")) == "<i class='ace-icon fa fa-eye'></i>") {
-                         	
-                         } else if (($("#addcolumnZTree").attr("style")) == "display: none;") {
-                             $("#btn-columnTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
-                         } else {
-                             $("#btn-columnTree")[0].innerHTML = "<i class='ace-icon fa fa-eye'></i>";
-                        }
-           });
-	},*/
-	
+
+    preview :function(e){
+    	var viewSelf = this;
+		var $this = $(this);
+		var docId =  $(e.currentTarget).data('id');
+		window.location.href="/docInfo/article/"+docId;
+    },
 	initSourceTree:function(){
 		var viewSelf = this;
 		$.fn.zTree.init($("#sourceTree"), {
